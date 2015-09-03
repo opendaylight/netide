@@ -20,6 +20,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <artifactId>netide-impl</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  
+  <properties>
+    <jacoco.version>0.7.2.201409121644</jacoco.version>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -41,4 +46,42 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </dependency>
   </dependencies>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>org.opendaylight.netide.*</include>
+          </includes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>pre-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>post-test</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <phase>test</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
 </project>
