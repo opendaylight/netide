@@ -23,6 +23,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   
   <properties>
     <jacoco.version>0.7.2.201409121644</jacoco.version>
+    <sonar.jacoco.reportPath>target/jacoco.exec</sonar.jacoco.reportPath>
   </properties>
   
   <dependencies>
@@ -71,12 +72,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
             <goals>
               <goal>prepare-agent</goal>
             </goals>
+            <configuration>
+             <destFile>${sonar.jacoco.reportPath}</destFile>
+           </configuration>
           </execution>
           <execution>
             <id>post-test</id>
             <goals>
               <goal>report</goal>
             </goals>
+            <configuration>
+               <dataFile>${sonar.jacoco.reportPath}</dataFile>
+           </configuration>
             <phase>test</phase>
           </execution>
         </executions>

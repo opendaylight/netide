@@ -30,4 +30,8 @@ public class NetideProviderTest {
         // currently this method is empty
         provider.close();
     }
+    @Test
+    public void testNexus() {
+    	assert(true);
+    }
 }
