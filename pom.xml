@@ -25,9 +25,9 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   <modules>
     <module>api</module>
     <module>impl</module>
-    <module>karaf</module>
-    <module>features</module>
-    <module>artifacts</module>
+    <!-- <module>karaf</module> -->
+    <!-- <module>features</module> -->
+    <!-- <module>artifacts</module>  -->
   </modules>
   <!-- DO NOT install or deploy the repo root pom as it's only needed to initiate a build -->
   <build>
@@ -48,11 +48,4 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       </plugin>
     </plugins>
   </build>
-
-  <scm>
-    <connection>scm:git:ssh://git.opendaylight.org:29418/netide.git</connection>
-    <developerConnection>scm:git:ssh://git.opendaylight.org:29418/netide.git</developerConnection>
-    <tag>HEAD</tag>
-    <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
-  </scm>
 </project>
