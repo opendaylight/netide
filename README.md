@@ -2,6 +2,7 @@
 
 The **Network Engine** follows the layered SDN controller approach proposed by the Open Networking Foundation. It comprises a client controller layer that executes the modules network applications are composed of and a server SDN controller layer that drives the underlying infrastructure.
 
+
 The challenge is to integrate client and server controllers. A first idea is to connect a client’s South-bound Interface (SBI) to a server’s North-bound Interface (NBI). But as these interfaces do not match, adaptation is necessary. This adaptation has to cater for the idiosyncrasies of the controller frameworks and has to be implemented for each single one.
 For maximal reuse, we use separate adaptors for the clients’SBI – the Backend – and the server’s NBI – the Shim. This separation necessitates a protocol between them, the NetIDE
 Intermediate Protocol.
