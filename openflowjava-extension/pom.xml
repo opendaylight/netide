@@ -7,8 +7,8 @@
     <relativePath>../parent</relativePath>
   </parent>
   <groupId>org.opendaylight.netide</groupId>
-  <artifactId>shim</artifactId>
-  <packaging>bundle</packaging>
+  <artifactId>openflowjava-extension</artifactId>
+  <packaging>jar</packaging>
   <name>NetIDE Shim</name>
   <build>
         <plugins>
