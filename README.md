@@ -56,3 +56,4 @@ application modules running on top of each client controller.
 The composition mechanism in the core leverages on this
 field to implement the correct execution flow of these modules. Finally, ```xid``` is the transaction identifier associated to
 the each message. Replies must use the same value to facilitate the pairing.
+
