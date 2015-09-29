@@ -1,12 +1,12 @@
 package org.opendaylight.netide.shim;
 
+import org.opendaylight.netide.netiplib.Message;
+import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
-import eu.netide.lib.netip.Message;
-import eu.netide.lib.netip.NetIPConverter;
 import io.netty.buffer.Unpooled;
 
 
