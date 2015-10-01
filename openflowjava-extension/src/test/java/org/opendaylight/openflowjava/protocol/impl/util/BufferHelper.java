@@ -10,10 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.junit.Assert;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -68,7 +66,7 @@ public abstract class BufferHelper {
 
     /**
      * Use version 1.3 for encoded message
-     * 
+     *
      * @param input
      *            ByteBuf to be checked for correct OpenFlow Protocol header
      * @param msgType
@@ -82,7 +80,7 @@ public abstract class BufferHelper {
 
     /**
      * Use version 1.0 for encoded message
-     * 
+     *
      * @param input
      *            ByteBuf to be checked for correct OpenFlow Protocol header
      * @param msgType
@@ -142,7 +140,7 @@ public abstract class BufferHelper {
 
     /**
      * Decode message
-     * 
+     *
      * @param decoder
      *            decoder instance
      * @param bb

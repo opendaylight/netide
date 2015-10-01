@@ -16,16 +16,16 @@ public class Activator implements BundleActivator {
 
     private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
-		LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
-	}
+    @Override
+    public void start(BundleContext context) throws Exception {
+        // TODO Auto-generated method stub
+        LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
+    }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
-		LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        // TODO Auto-generated method stub
+        LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
+    }
 
 }

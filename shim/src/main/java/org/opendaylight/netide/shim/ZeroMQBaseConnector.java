@@ -7,15 +7,13 @@
  */
 package org.opendaylight.netide.shim;
 
+import io.netty.buffer.Unpooled;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
-
-import io.netty.buffer.Unpooled;
-
 
 public class ZeroMQBaseConnector implements Runnable {
 
@@ -28,7 +26,6 @@ public class ZeroMQBaseConnector implements Runnable {
     private ZMQ.Context context;
     private Thread thread;
 
-    
     private ICoreListener coreListener;
 
     public ZeroMQBaseConnector() {
@@ -96,7 +93,7 @@ public class ZeroMQBaseConnector implements Runnable {
                 ZMsg message = ZMsg.recvMsg(socket);
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
-                	Message msg = NetIPConverter.parseConcreteMessage(data);
+                    Message msg = NetIPConverter.parseConcreteMessage(data);
                     coreListener.onCoreMessage(Unpooled.wrappedBuffer(msg.getPayload()));
                 }
             }

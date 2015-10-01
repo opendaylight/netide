@@ -7,10 +7,9 @@
  */
 package org.opendaylight.netide.netiplib;
 
-import org.javatuples.Pair;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.javatuples.Pair;
 
 /**
  * Class representing a message of type ERROR.

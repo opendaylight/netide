@@ -7,14 +7,13 @@
  */
 package org.opendaylight.netide.netiplib;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import org.javatuples.Pair;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 
 /**
  * Utility methods for handling NetIP messages.
