@@ -17,11 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler, ICoreListener {
-
     private static final Logger LOG = LoggerFactory.getLogger(ShimSwitchConnectionHandlerImpl.class);
     private static ZeroMQBaseConnector coreConnector;
     private List<ConnectionAdapter> connectionAdapterList;
-
+    
     public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
         coreConnector = connector;
         connectionAdapterList = new ArrayList<ConnectionAdapter>();
@@ -34,7 +33,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
-        LOG.info("SHIM: on Switch connected: " + connectionAdapter.getRemoteAddress().toString());
+        LOG.info("SHIM: on Switch connected: ", connectionAdapter.getRemoteAddress());
         connectionAdapterList.add(connectionAdapter);
         ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter);
         connectionAdapter.setMessageListener(listener);

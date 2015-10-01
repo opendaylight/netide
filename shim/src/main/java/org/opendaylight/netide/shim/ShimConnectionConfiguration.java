@@ -13,9 +13,13 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfigura
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ShimConnectionConfiguration implements ConnectionConfiguration {
-
+    
+    private static final Logger LOG = LoggerFactory.getLogger(ShimConnectionConfiguration.class);
+    
     private int port = 6633;
 
     @Override
@@ -27,7 +31,7 @@ public class ShimConnectionConfiguration implements ConnectionConfiguration {
             addr = InetAddress.getByName("127.0.0.1");
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error(e.getMessage());
         }
 
         return addr;

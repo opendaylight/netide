@@ -20,7 +20,7 @@ public class ZeroMQBaseConnector implements Runnable {
     private static final String STOP_COMMAND = "Control.STOP";
     private static final String CONTROL_ADDRESS = "inproc://ShimControllerQueue";
 
-    private static final Logger logger = LoggerFactory.getLogger(ZeroMQBaseConnector.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ZeroMQBaseConnector.class);
 
     private int port;
     private ZMQ.Context context;
@@ -49,10 +49,10 @@ public class ZeroMQBaseConnector implements Runnable {
                 thread.join();
                 context.term();
             } catch (InterruptedException e) {
-                logger.error("", e);
+                LOG.error("", e);
             }
         }
-        logger.info("ZeroMQBasedConnector stopped.");
+        LOG.info("ZeroMQBasedConnector stopped.");
     }
 
     public void RegisterCoreListener(ICoreListener listener) {
@@ -74,11 +74,11 @@ public class ZeroMQBaseConnector implements Runnable {
 
     @Override
     public void run() {
-        logger.info("ZeroMQBasedConnector started.");
+        LOG.info("ZeroMQBasedConnector started.");
         ZMQ.Socket socket = context.socket(ZMQ.DEALER);
         socket.setIdentity("shim".getBytes());
         socket.connect("tcp://localhost:" + port);
-        logger.info("Listening on port " + port);
+        LOG.info("Listening on port " + port);
 
         ZMQ.Socket controlSocket = context.socket(ZMQ.PULL);
         controlSocket.bind(CONTROL_ADDRESS);
