@@ -20,34 +20,37 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class GetFeaturesInputFactoryTest {
-	private OFDeserializer<GetFeaturesInput> factory;
+    private OFDeserializer<GetFeaturesInput> factory;
 
     @Before
     public void startUp() {
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
-        factory = registry.getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 5, GetFeaturesInput.class));
+        factory = registry
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 5, GetFeaturesInput.class));
     }
-    
+
     @Test
-    public void test() throws Exception{
-    	GetFeaturesInput expectedMessage = createMessage();
-    	SerializerRegistry registry = new SerializerRegistryImpl();
-    	registry.init();
-    	OFSerializer<GetFeaturesInput> serializer = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetFeaturesInput.class));
-    	ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
-    	serializer.serialize(expectedMessage, originalBuffer);
-    	
-    	// TODO: Skipping first 4 bytes due to the way deserializer is implemented 
-    	// Skipping version, type and length from OF header
-    	originalBuffer.skipBytes(4);
-    	GetFeaturesInput deserializedMessage = BufferHelper.deserialize(factory, originalBuffer);
-    	Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
-    	Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
+    public void test() throws Exception {
+        GetFeaturesInput expectedMessage = createMessage();
+        SerializerRegistry registry = new SerializerRegistryImpl();
+        registry.init();
+        OFSerializer<GetFeaturesInput> serializer = registry
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetFeaturesInput.class));
+        ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
+        serializer.serialize(expectedMessage, originalBuffer);
+
+        // TODO: Skipping first 4 bytes due to the way deserializer is
+        // implemented
+        // Skipping version, type and length from OF header
+        originalBuffer.skipBytes(4);
+        GetFeaturesInput deserializedMessage = BufferHelper.deserialize(factory, originalBuffer);
+        Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
+        Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
     }
-    
-    private GetFeaturesInput createMessage() throws Exception{
-    	GetFeaturesInputBuilder builder = new GetFeaturesInputBuilder();
+
+    private GetFeaturesInput createMessage() throws Exception {
+        GetFeaturesInputBuilder builder = new GetFeaturesInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         return builder.build();
     }

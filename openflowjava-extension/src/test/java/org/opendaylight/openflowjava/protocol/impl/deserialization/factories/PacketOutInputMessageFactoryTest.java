@@ -32,45 +32,49 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class PacketOutInputMessageFactoryTest {
-	private OFDeserializer<PacketOutInput> factory;
+    private OFDeserializer<PacketOutInput> factory;
 
     @Before
     public void startUp() {
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
-        factory = registry.getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 13, PacketOutInput.class));
-        
+        factory = registry
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 13, PacketOutInput.class));
+
     }
-    
+
     @Test
-    public void test() throws Exception{
-    	PacketOutInput expectedMessage = createMessage();
-    	SerializerRegistry registry = new SerializerRegistryImpl();
-    	registry.init();
-    	NetIdePacketOutInputMessageFactory serializer = new NetIdePacketOutInputMessageFactory();
-    	serializer.injectSerializerRegistry(registry);
-    	ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
-    	serializer.serialize(expectedMessage, originalBuffer);
-    	
-    	// TODO: Skipping first 4 bytes due to the way deserializer is implemented 
-    	// Skipping version, type and length from OF header
-    	originalBuffer.skipBytes(4);
-    	PacketOutInput deserializedMessage = BufferHelper.deserialize(factory, originalBuffer);
-    	Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
-    	Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
-    	Assert.assertEquals("Wrong buffer Id", expectedMessage.getBufferId(), deserializedMessage.getBufferId());
-    	Assert.assertEquals("Wrong In Port", expectedMessage.getInPort().getValue(), deserializedMessage.getInPort().getValue());    	
-    	Assert.assertEquals("Wrong Numbers of actions", expectedMessage.getAction().size(), deserializedMessage.getAction().size());
-    	int i = 0;
-    	for (Action a : expectedMessage.getAction()){
-    		Assert.assertEquals("Wrong action", a, deserializedMessage.getAction().get(i));
-    		i++;
-    	}
-    	Assert.assertArrayEquals("Wrong data", expectedMessage.getData(), deserializedMessage.getData());
+    public void test() throws Exception {
+        PacketOutInput expectedMessage = createMessage();
+        SerializerRegistry registry = new SerializerRegistryImpl();
+        registry.init();
+        NetIdePacketOutInputMessageFactory serializer = new NetIdePacketOutInputMessageFactory();
+        serializer.injectSerializerRegistry(registry);
+        ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
+        serializer.serialize(expectedMessage, originalBuffer);
+
+        // TODO: Skipping first 4 bytes due to the way deserializer is
+        // implemented
+        // Skipping version, type and length from OF header
+        originalBuffer.skipBytes(4);
+        PacketOutInput deserializedMessage = BufferHelper.deserialize(factory, originalBuffer);
+        Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
+        Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
+        Assert.assertEquals("Wrong buffer Id", expectedMessage.getBufferId(), deserializedMessage.getBufferId());
+        Assert.assertEquals("Wrong In Port", expectedMessage.getInPort().getValue(),
+                deserializedMessage.getInPort().getValue());
+        Assert.assertEquals("Wrong Numbers of actions", expectedMessage.getAction().size(),
+                deserializedMessage.getAction().size());
+        int i = 0;
+        for (Action a : expectedMessage.getAction()) {
+            Assert.assertEquals("Wrong action", a, deserializedMessage.getAction().get(i));
+            i++;
+        }
+        Assert.assertArrayEquals("Wrong data", expectedMessage.getData(), deserializedMessage.getData());
     }
-    
-    private PacketOutInput createMessage() throws Exception{
-    	PacketOutInputBuilder builder = new PacketOutInputBuilder();
+
+    private PacketOutInput createMessage() throws Exception {
+        PacketOutInputBuilder builder = new PacketOutInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setBufferId(256L);
         builder.setInPort(new PortNumber(256L));
@@ -94,7 +98,7 @@ public class PacketOutInputMessageFactoryTest {
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         actionBuilder.setActionChoice(new PopVlanCaseBuilder().build());
-        actions.add(actionBuilder.build());                
+        actions.add(actionBuilder.build());
         builder.setAction(actions);
         builder.setData(ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14"));
         return builder.build();

@@ -39,19 +39,20 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 
 public class PacketInMessageFactoryTest {
-	private PacketInMessage message;
-	private static final byte MESSAGE_TYPE = 10;
-	private static final byte PADDING = 4;
-	private static byte[] data;
-	@Before
+    private PacketInMessage message;
+    private static final byte MESSAGE_TYPE = 10;
+    private static final byte PADDING = 4;
+    private static byte[] data;
+
+    @Before
     public void startUp() throws Exception {
-	    PacketInMessageBuilder builder = new PacketInMessageBuilder();
-	    BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-	    builder.setBufferId(256L);
+        PacketInMessageBuilder builder = new PacketInMessageBuilder();
+        BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
+        builder.setBufferId(256L);
         builder.setTotalLen(10);
         builder.setReason(PacketInReason.forValue(0));
         builder.setTableId(new TableId(1L));
-        byte[] cookie = new byte[]{(byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01};
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
         MatchBuilder matchBuilder = new MatchBuilder();
         matchBuilder.setType(OxmMatchType.class);
@@ -80,24 +81,26 @@ public class PacketInMessageFactoryTest {
         data = ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
         builder.setData(data);
         message = builder.build();
-	}
-	
-	@Test
-	public void testSerialize(){
-		PacketInMessageFactory packetInSerializationFactory = new PacketInMessageFactory();
-		SerializerRegistry registry = new SerializerRegistryImpl();
-		registry.init();
-		MatchEntriesInitializer.registerMatchEntrySerializers(registry);
-		packetInSerializationFactory.injectSerializerRegistry(registry);
-		ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
-		packetInSerializationFactory.serialize(message, serializedBuffer);
-		BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 68);
-		Assert.assertEquals("Wrong BufferId", message.getBufferId().longValue(), serializedBuffer.readUnsignedInt());
-		Assert.assertEquals("Wrong actions length", message.getTotalLen().intValue(), serializedBuffer.readUnsignedShort());
-		Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readUnsignedByte());
-		Assert.assertEquals("Wrong tableId", message.getTableId().getValue().intValue(), serializedBuffer.readUnsignedByte());
-		byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
-		serializedBuffer.readBytes(cookie);
+    }
+
+    @Test
+    public void testSerialize() {
+        PacketInMessageFactory packetInSerializationFactory = new PacketInMessageFactory();
+        SerializerRegistry registry = new SerializerRegistryImpl();
+        registry.init();
+        MatchEntriesInitializer.registerMatchEntrySerializers(registry);
+        packetInSerializationFactory.injectSerializerRegistry(registry);
+        ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
+        packetInSerializationFactory.serialize(message, serializedBuffer);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 68);
+        Assert.assertEquals("Wrong BufferId", message.getBufferId().longValue(), serializedBuffer.readUnsignedInt());
+        Assert.assertEquals("Wrong actions length", message.getTotalLen().intValue(),
+                serializedBuffer.readUnsignedShort());
+        Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong tableId", message.getTableId().getValue().intValue(),
+                serializedBuffer.readUnsignedByte());
+        byte[] cookie = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
+        serializedBuffer.readBytes(cookie);
         Assert.assertEquals("Wrong cookie", message.getCookie(), new BigInteger(1, cookie));
         Assert.assertEquals("Wrong match type", 1, serializedBuffer.readUnsignedShort());
         serializedBuffer.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
@@ -115,8 +118,8 @@ public class PacketInMessageFactoryTest {
         Assert.assertEquals("Wrong oxm value", 4, serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(7);
         serializedBuffer.skipBytes(PADDING);
-        Assert.assertArrayEquals("Wrong data", message.getData(), serializedBuffer.readBytes(serializedBuffer.readableBytes()).array());
-	}
-
+        Assert.assertArrayEquals("Wrong data", message.getData(),
+                serializedBuffer.readBytes(serializedBuffer.readableBytes()).array());
+    }
 
 }

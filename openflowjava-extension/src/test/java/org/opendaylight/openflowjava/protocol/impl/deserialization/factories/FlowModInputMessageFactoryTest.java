@@ -50,9 +50,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
-
 public class FlowModInputMessageFactoryTest {
-	private FlowModInputMessageFactory flowFactory;
+    private FlowModInputMessageFactory flowFactory;
+
     /**
      * Initializes deserializer registry and lookups correct deserializer
      */
@@ -60,53 +60,64 @@ public class FlowModInputMessageFactoryTest {
     public void startUp() {
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
-        flowFactory = registry.getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 14, FlowModInput.class));
+        flowFactory = registry
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 14, FlowModInput.class));
     }
-    
+
     @Test
-    public void test() throws Exception{
-    	FlowModInput expectedMessage = createMessage();
-    	SerializerRegistry registry = new SerializerRegistryImpl();
-    	registry.init();
-    	OFSerializer<FlowModInput> serializer = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));
-    	ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
-    	serializer.serialize(expectedMessage, originalBuffer);
-    	
-    	// TODO: Skipping first 4 bytes due to the way deserializer is implemented 
-    	// Skipping version, type and length from OF header
-    	originalBuffer.skipBytes(4);
-    	FlowModInput deserializedMessage = BufferHelper.deserialize(flowFactory, originalBuffer);
-    	Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
-    	Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
-    	Assert.assertEquals("Wrong cookie", expectedMessage.getCookie(),  deserializedMessage.getCookie());
-    	Assert.assertEquals("Wrong cookie mask", expectedMessage.getCookieMask(),  deserializedMessage.getCookieMask());
-    	Assert.assertEquals("Wrong table id", expectedMessage.getTableId().getValue(),  deserializedMessage.getTableId().getValue());
-    	Assert.assertEquals("Wrong command", expectedMessage.getCommand().getIntValue(),  deserializedMessage.getCommand().getIntValue());
-    	Assert.assertEquals("Wrong idle timeout", expectedMessage.getIdleTimeout(),  deserializedMessage.getIdleTimeout());
-    	Assert.assertEquals("Wrong hard timeout", expectedMessage.getHardTimeout(), deserializedMessage.getHardTimeout());
-    	Assert.assertEquals("Wrong priority", expectedMessage.getPriority(), deserializedMessage.getPriority());
-    	Assert.assertEquals("Wrong buffer id ", expectedMessage.getBufferId(), deserializedMessage.getBufferId());
-    	Assert.assertEquals("Wrong out port", expectedMessage.getOutPort().getValue(), deserializedMessage.getOutPort().getValue());
-    	Assert.assertEquals("Wrong out group", expectedMessage.getOutGroup(), deserializedMessage.getOutGroup());
-    	Assert.assertEquals("Wrong number of flags",expectedMessage.getFlags().getValue().length, deserializedMessage.getFlags().getValue().length);
-    	for (int i = 0; i < expectedMessage.getFlags().getValue().length; i++){
-    		Assert.assertEquals("Wrong flag",expectedMessage.getFlags().getValue()[i], deserializedMessage.getFlags().getValue()[i]);
-    	}
-    	Assert.assertEquals("Wrong match", expectedMessage.getMatch(), deserializedMessage.getMatch());
-    	Assert.assertEquals("Wrong number of instructions", expectedMessage.getInstruction().size(), deserializedMessage.getInstruction().size());
-    	int i = 0;
-    	for(Instruction ins : expectedMessage.getInstruction()){
-    		Assert.assertEquals("Wrong instruction", ins, deserializedMessage.getInstruction().get(i));
-    		i++;
-    	}
+    public void test() throws Exception {
+        FlowModInput expectedMessage = createMessage();
+        SerializerRegistry registry = new SerializerRegistryImpl();
+        registry.init();
+        OFSerializer<FlowModInput> serializer = registry
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));
+        ByteBuf originalBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
+        serializer.serialize(expectedMessage, originalBuffer);
+
+        // TODO: Skipping first 4 bytes due to the way deserializer is
+        // implemented
+        // Skipping version, type and length from OF header
+        originalBuffer.skipBytes(4);
+        FlowModInput deserializedMessage = BufferHelper.deserialize(flowFactory, originalBuffer);
+        Assert.assertEquals("Wrong version", expectedMessage.getVersion(), deserializedMessage.getVersion());
+        Assert.assertEquals("Wrong XId", expectedMessage.getXid(), deserializedMessage.getXid());
+        Assert.assertEquals("Wrong cookie", expectedMessage.getCookie(), deserializedMessage.getCookie());
+        Assert.assertEquals("Wrong cookie mask", expectedMessage.getCookieMask(), deserializedMessage.getCookieMask());
+        Assert.assertEquals("Wrong table id", expectedMessage.getTableId().getValue(),
+                deserializedMessage.getTableId().getValue());
+        Assert.assertEquals("Wrong command", expectedMessage.getCommand().getIntValue(),
+                deserializedMessage.getCommand().getIntValue());
+        Assert.assertEquals("Wrong idle timeout", expectedMessage.getIdleTimeout(),
+                deserializedMessage.getIdleTimeout());
+        Assert.assertEquals("Wrong hard timeout", expectedMessage.getHardTimeout(),
+                deserializedMessage.getHardTimeout());
+        Assert.assertEquals("Wrong priority", expectedMessage.getPriority(), deserializedMessage.getPriority());
+        Assert.assertEquals("Wrong buffer id ", expectedMessage.getBufferId(), deserializedMessage.getBufferId());
+        Assert.assertEquals("Wrong out port", expectedMessage.getOutPort().getValue(),
+                deserializedMessage.getOutPort().getValue());
+        Assert.assertEquals("Wrong out group", expectedMessage.getOutGroup(), deserializedMessage.getOutGroup());
+        Assert.assertEquals("Wrong number of flags", expectedMessage.getFlags().getValue().length,
+                deserializedMessage.getFlags().getValue().length);
+        for (int i = 0; i < expectedMessage.getFlags().getValue().length; i++) {
+            Assert.assertEquals("Wrong flag", expectedMessage.getFlags().getValue()[i],
+                    deserializedMessage.getFlags().getValue()[i]);
+        }
+        Assert.assertEquals("Wrong match", expectedMessage.getMatch(), deserializedMessage.getMatch());
+        Assert.assertEquals("Wrong number of instructions", expectedMessage.getInstruction().size(),
+                deserializedMessage.getInstruction().size());
+        int i = 0;
+        for (Instruction ins : expectedMessage.getInstruction()) {
+            Assert.assertEquals("Wrong instruction", ins, deserializedMessage.getInstruction().get(i));
+            i++;
+        }
     }
-    
-    private FlowModInput createMessage() throws Exception{
-    	FlowModInputBuilder builder = new FlowModInputBuilder();
+
+    private FlowModInput createMessage() throws Exception {
+        FlowModInputBuilder builder = new FlowModInputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        byte[] cookie = new byte[]{(byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01};
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[]{(byte) 0xFF, 0x05, 0x00, 0x00, 0x09, 0x30, 0x00, 0x30};
+        byte[] cookieMask = new byte[] { (byte) 0xFF, 0x05, 0x00, 0x00, 0x09, 0x30, 0x00, 0x30 };
         builder.setCookieMask(new BigInteger(1, cookieMask));
         builder.setTableId(new TableId(65L));
         builder.setCommand(FlowModCommand.forValue(2));

@@ -46,7 +46,8 @@ public abstract class BufferHelper {
     }
 
     /**
-     * @param payload String in hex format
+     * @param payload
+     *            String in hex format
      * @return ByteBuf filled with OpenFlow protocol message without first 4
      *         bytes
      */
@@ -55,8 +56,8 @@ public abstract class BufferHelper {
     }
 
     /**
-     * @return ByteBuf filled with OpenFlow protocol header message without first 4
-     *         bytes
+     * @return ByteBuf filled with OpenFlow protocol header message without
+     *         first 4 bytes
      */
     public static ByteBuf buildBuffer() {
         ByteBuf bb = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -67,9 +68,13 @@ public abstract class BufferHelper {
 
     /**
      * Use version 1.3 for encoded message
-     * @param input ByteBuf to be checked for correct OpenFlow Protocol header
-     * @param msgType type of received message
-     * @param length expected length of message in header
+     * 
+     * @param input
+     *            ByteBuf to be checked for correct OpenFlow Protocol header
+     * @param msgType
+     *            type of received message
+     * @param length
+     *            expected length of message in header
      */
     public static void checkHeaderV13(ByteBuf input, byte msgType, int length) {
         checkHeader(input, msgType, length, (short) EncodeConstants.OF13_VERSION_ID);
@@ -77,9 +82,13 @@ public abstract class BufferHelper {
 
     /**
      * Use version 1.0 for encoded message
-     * @param input ByteBuf to be checked for correct OpenFlow Protocol header
-     * @param msgType type of received message
-     * @param length expected length of message in header
+     * 
+     * @param input
+     *            ByteBuf to be checked for correct OpenFlow Protocol header
+     * @param msgType
+     *            type of received message
+     * @param length
+     *            expected length of message in header
      */
     public static void checkHeaderV10(ByteBuf input, byte msgType, int length) {
         checkHeader(input, msgType, length, (short) EncodeConstants.OF10_VERSION_ID);
@@ -92,16 +101,17 @@ public abstract class BufferHelper {
         Assert.assertEquals("Wrong Xid", DEFAULT_XID, Long.valueOf(input.readUnsignedInt()));
     }
 
-
     /**
-     * @param ofHeader OpenFlow protocol header
+     * @param ofHeader
+     *            OpenFlow protocol header
      */
     public static void checkHeaderV13(OfHeader ofHeader) {
         checkHeader(ofHeader, (short) EncodeConstants.OF13_VERSION_ID);
     }
 
     /**
-     * @param ofHeader OpenFlow protocol header
+     * @param ofHeader
+     *            OpenFlow protocol header
      */
     public static void checkHeaderV10(OfHeader ofHeader) {
         checkHeader(ofHeader, (short) EncodeConstants.OF10_VERSION_ID);
@@ -114,14 +124,16 @@ public abstract class BufferHelper {
 
     /**
      * @param builder
-     * @param version wire protocol number used
+     * @param version
+     *            wire protocol number used
      * @throws NoSuchMethodException
      * @throws SecurityException
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    public static void setupHeader(Object builder, int version) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public static void setupHeader(Object builder, int version) throws NoSuchMethodException, SecurityException,
+            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         Method m = builder.getClass().getMethod("setVersion", Short.class);
         m.invoke(builder, (short) version);
         Method m2 = builder.getClass().getMethod("setXid", Long.class);
@@ -130,8 +142,11 @@ public abstract class BufferHelper {
 
     /**
      * Decode message
-     * @param decoder decoder instance
-     * @param bb data input buffer
+     * 
+     * @param decoder
+     *            decoder instance
+     * @param bb
+     *            data input buffer
      * @return message decoded pojo
      */
     public static <E extends DataObject> E deserialize(OFDeserializer<E> decoder, ByteBuf bb) {
