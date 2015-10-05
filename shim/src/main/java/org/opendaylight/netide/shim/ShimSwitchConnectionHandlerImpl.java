@@ -8,9 +8,10 @@
 package org.opendaylight.netide.shim;
 
 import io.netty.buffer.ByteBuf;
+import java.math.BigInteger;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.slf4j.Logger;
@@ -19,11 +20,11 @@ import org.slf4j.LoggerFactory;
 public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler, ICoreListener {
     private static final Logger LOG = LoggerFactory.getLogger(ShimSwitchConnectionHandlerImpl.class);
     private static ZeroMQBaseConnector coreConnector;
-    private List<ConnectionAdapter> connectionAdapterList;
+    HashMap<ConnectionAdapter, BigInteger> connectionAdapterMap;
     
     public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
         coreConnector = connector;
-        connectionAdapterList = new ArrayList<ConnectionAdapter>();
+        connectionAdapterMap = new LinkedHashMap<ConnectionAdapter, BigInteger>();
     }
 
     @Override
@@ -34,16 +35,26 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         LOG.info("SHIM: on Switch connected: ", connectionAdapter.getRemoteAddress());
-        connectionAdapterList.add(connectionAdapter);
-        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter);
+        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter, connectionAdapterMap);
         connectionAdapter.setMessageListener(listener);
         connectionAdapter.setSystemListener(listener);
         connectionAdapter.setConnectionReadyListener(listener);
     }
 
     @Override
-    public void onCoreMessage(ByteBuf input) {
-        // TODO Auto-generated method stub
+    public void onCoreMessage(Long datapathId, ByteBuf input) {
+        LOG.info("SHIM: Core message received");
+        ConnectionAdapter conn = getConnectionAdapter(datapathId);
+        if ( conn != null){
+            // TODO: deserialize message and sends to the switch
+        }
     }
-
+    
+    private synchronized ConnectionAdapter getConnectionAdapter(Long datapathId){
+        for(ConnectionAdapter conn : connectionAdapterMap.keySet()){
+            if (connectionAdapterMap.get(conn).longValue() == datapathId)
+                return conn;
+        }
+        return null;
+    }
 }

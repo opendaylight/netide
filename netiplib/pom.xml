@@ -86,7 +86,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Export-Package>
-                            eu.netide.lib.netip;version=${project.version}
+                            org.opendaylight.netide.netiplib;version=${project.version}
                         </Export-Package>
                         <Import-Package>
                             org.osgi.framework

@@ -13,17 +13,18 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
-  <feature name='odl-netide-api' version='${project.version}' description='OpenDaylight :: netide :: api'>
+  <!--<feature name='odl-netide-api' version='${project.version}' description='OpenDaylight :: netide :: api'>
     <feature version='${yangtools.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.netide/netide-api/${project.version}</bundle>
-  </feature>
+  </feature>-->
   <feature name='odl-netide' version='${project.version}' description='OpenDaylight :: netide'>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
-    <feature version='${project.version}'>odl-netide-api</feature>
-    <bundle>mvn:org.opendaylight.netide/netide-impl/${project.version}</bundle>
+    <feature version='${yangtools.version}'>odl-mdsal-models</feature>
+    <bundle>mvn:org.opendaylight.netide/netiplib/1.0.0.0</bundle>
+    <bundle>mvn:org.opendaylight.netide/shim/0.7.0-SNAPSHOT</bundle>
     <configfile finalname="${configfile.directory}/netide.xml">mvn:org.opendaylight.netide/netide-impl/${project.version}/xml/config</configfile>
   </feature>
-  <feature name='odl-netide-rest' version='${project.version}' description='OpenDaylight :: netide :: REST'>
+  <!--<feature name='odl-netide-rest' version='${project.version}' description='OpenDaylight :: netide :: REST'>
     <feature version="${project.version}">odl-netide</feature>
     <feature version="${restconf.version}">odl-restconf</feature>
   </feature>
@@ -31,6 +32,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${project.version}">odl-netide-rest</feature>
     <feature version="${restconf.version}">odl-mdsal-apidocs</feature>
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
-  </feature>
+  </feature>-->
 
 </features>

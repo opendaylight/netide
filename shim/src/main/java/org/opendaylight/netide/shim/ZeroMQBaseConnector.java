@@ -94,7 +94,7 @@ public class ZeroMQBaseConnector implements Runnable {
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
                     Message msg = NetIPConverter.parseConcreteMessage(data);
-                    coreListener.onCoreMessage(Unpooled.wrappedBuffer(msg.getPayload()));
+                    coreListener.onCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(msg.getPayload()));
                 }
             }
             if (poller.pollin(1)) {
