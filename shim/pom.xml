@@ -28,6 +28,7 @@
                             org.opendaylight.openflowjava.protocol.*;version=${project.version},
                             org.opendaylight.openflowjava.*;version=${project.version},
                             org.opendaylight.yang.*,
+                            org.javatuples.*,
                             org.zeromq,
                             zmq
                         </Export-Package>
