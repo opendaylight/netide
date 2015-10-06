@@ -39,7 +39,8 @@ public class ShimMessageListener
     private ZeroMQBaseConnector coreConnector;
     private ConnectionAdapter switchConnection;
     private SerializationFactory factory;
-
+    private IHandshakeListener handshakeListener;
+    
     public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection) {
         this.coreConnector = connector;
         this.switchConnection = switchConnection;
@@ -52,6 +53,10 @@ public class ShimMessageListener
         this.connectionRegistry = connectionRegistry;
     }
 
+    public void RegisterCoreListener(IHandshakeListener listener) {
+        this.handshakeListener = listener;
+    }
+    
     /// OpenflowProtocolListener methods/////
     @Override
     public void onEchoRequestMessage(EchoRequestMessage arg0) {
@@ -104,11 +109,7 @@ public class ShimMessageListener
         LOG.info("SHIM Hello Message received: ", arg0);
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
         if (datapathId == null){
-            HelloInputBuilder builder = new HelloInputBuilder();
-            builder.setVersion(arg0.getVersion());
-            builder.setXid(arg0.getXid() + 1L);
-            builder.setElements(arg0.getElements());
-            switchConnection.hello(builder.build());
+            handshakeListener.onSwitchHelloMessage(arg0.getXid(), arg0.getVersion());
         }else {
             ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
         }

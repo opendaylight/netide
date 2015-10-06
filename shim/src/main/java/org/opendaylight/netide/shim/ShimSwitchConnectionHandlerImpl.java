@@ -22,6 +22,8 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.NetIdeDeseria
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -31,22 +33,26 @@ import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.javatuples.Pair;
 
-public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler, ICoreListener {
+public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler, ICoreListener, IHandshakeListener {
+    public static final Long DEFAULT_XID = 0x01L;
     private static final Logger LOG = LoggerFactory.getLogger(
             ShimSwitchConnectionHandlerImpl.class);
     
     private static ZeroMQBaseConnector coreConnector;
     private ConnectionAdaptersRegistry connectionRegistry;
-    Pair<Protocol, ProtocolVersions> supportedProtocol;
+    private Pair<Protocol, ProtocolVersions> supportedProtocol;
+    List<Pair<Protocol, ProtocolVersions>> supportedProtocols;
     private DeserializationFactory deserializationFactory;
     private DeserializerRegistry registry;
     
     public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
         coreConnector = connector;
-        
-        supportedProtocol = new Pair<Protocol, ProtocolVersions>(
-                Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_3);
-        
+        supportedProtocol = null;
+        supportedProtocols = new ArrayList<>();
+        supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(
+                Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_0));
+        supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(
+                Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_3));
         deserializationFactory = new DeserializationFactory();
         registry = new NetIdeDeserializerRegistryImpl();
         deserializationFactory.setRegistry(registry);
@@ -69,8 +75,46 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         connectionAdapter.setMessageListener(listener);
         connectionAdapter.setSystemListener(listener);
         connectionAdapter.setConnectionReadyListener(listener);
+        handshake(connectionAdapter);
     }
-
+    
+    public void handshake(ConnectionAdapter connectionAdapter){
+        HelloInputBuilder builder = new HelloInputBuilder();
+        builder.setVersion((short)getMaxOFSupportedProtocol());
+        builder.setXid(DEFAULT_XID);
+        List<Elements> elements = new ArrayList<Elements>();
+        builder.setElements(elements);
+        connectionAdapter.hello(builder.build());
+    }
+    
+    public void onSwitchHelloMessage(long xid, Short version){
+        byte received = version.byteValue();
+        if (xid >= DEFAULT_XID){
+            if (received <=  getMaxOFSupportedProtocol()){
+                setSupportedProtocol(received);
+            }else{
+                setSupportedProtocol(getMaxOFSupportedProtocol());
+            }
+        }
+    }
+    
+    public byte getMaxOFSupportedProtocol(){
+        byte max = 0x00;
+        for (Pair<Protocol,ProtocolVersions> protocols : this.supportedProtocols){
+            if (protocols.getValue0() == Protocol.OPENFLOW && 
+                    protocols.getValue1().getValue() > max){
+                max = protocols.getValue1().getValue();
+            }
+        }
+        return max;
+    }
+    
+    public void setSupportedProtocol(byte version){
+        this.supportedProtocol = new Pair<Protocol, ProtocolVersions>(
+                Protocol.OPENFLOW,
+                ProtocolVersions.parse(Protocol.OPENFLOW, version));
+    }
+    
     @Override
     public void onOpenFlowCoreMessage(Long datapathId, ByteBuf input) {
         LOG.info("SHIM: OpenFlow Core message received");
@@ -106,7 +150,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(proposedVersion).setXid(xid);
         LOG.debug("sending feature request for version={} and xid={}", proposedVersion, xid);
-        
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                 .getFeatures(featuresBuilder.build());
 
@@ -123,7 +166,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                             // Register Switch connection/DatapathId to registry
                             connectionRegistry.registerConnectionAdapter(connectionAdapter,
                                     featureOutput.getDatapathId());
-                            
                             // Send Feature reply to Core
                             ShimRelay.sendOpenFlowMessageToCore( ShimSwitchConnectionHandlerImpl.coreConnector, 
                                     featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue());
