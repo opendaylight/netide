@@ -12,6 +12,7 @@ are independent of the particular controller frameworks and communicates with bo
 
 ## The NetIDE Intermediate protocol v1.0
 
+
 The intermediate protocol serves several needs. It has to
 (i) carry control messages between the modules of the Network Engine (such as shim and backend), e.g., to start up/take down a particular module, providing
 unique identifiers for modules, (ii) carry event and action
