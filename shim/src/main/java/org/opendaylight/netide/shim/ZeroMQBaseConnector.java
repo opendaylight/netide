@@ -8,8 +8,10 @@
 package org.opendaylight.netide.shim;
 
 import io.netty.buffer.Unpooled;
+import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
+import org.opendaylight.netide.netiplib.OpenFlowMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -94,7 +96,11 @@ public class ZeroMQBaseConnector implements Runnable {
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
                     Message msg = NetIPConverter.parseConcreteMessage(data);
-                    coreListener.onCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(msg.getPayload()));
+                    if (msg instanceof HelloMessage){
+                        coreListener.onHelloCoreMessage(((HelloMessage)msg).getSupportedProtocols());
+                    }else if (msg instanceof OpenFlowMessage){
+                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(msg.getPayload()));
+                    }
                 }
             }
             if (poller.pollin(1)) {

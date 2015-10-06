@@ -8,9 +8,13 @@
 package org.opendaylight.netide.shim;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
+import java.util.List;
+import org.opendaylight.netide.netiplib.Protocol;
+import org.opendaylight.netide.netiplib.ProtocolVersions;
+import org.javatuples.Pair;
 
 public interface ICoreListener {
 
-    void onCoreMessage(Long datapathId, ByteBuf input);
+    void onOpenFlowCoreMessage(Long datapathId, ByteBuf input);
+    void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requiredVersion);
 }
