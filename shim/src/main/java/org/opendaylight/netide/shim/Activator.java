@@ -37,8 +37,8 @@ public class Activator implements BundleActivator {
         ConnectionConfiguration conf = new ShimConnectionConfiguration();
         
         connectionProvider.setConfiguration(conf);
-        connectionProvider.startup();
         coreConnector.Start();
+        connectionProvider.startup();
     }
 
     @Override

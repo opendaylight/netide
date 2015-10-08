@@ -11,10 +11,11 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.javatuples.Pair;
 
 public interface ICoreListener {
 
-    void onOpenFlowCoreMessage(Long datapathId, ByteBuf input);
+    void onOpenFlowCoreMessage(Long datapathId, DataObject msg);
     void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requiredVersion);
 }

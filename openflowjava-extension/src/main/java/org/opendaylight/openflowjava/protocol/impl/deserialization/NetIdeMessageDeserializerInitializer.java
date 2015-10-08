@@ -11,11 +11,16 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.FlowModInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.GetFeaturesInputMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.MultipartRequestInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.PacketOutInputMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.SetConfigInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.SimpleDeserializerRegistryHelper;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 
 public final class NetIdeMessageDeserializerInitializer {
 
@@ -30,5 +35,7 @@ public final class NetIdeMessageDeserializerInitializer {
         helper.registerDeserializer(14, null, FlowModInput.class, new FlowModInputMessageFactory());
         helper.registerDeserializer(5, null, GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         helper.registerDeserializer(13, null, PacketOutInput.class, new PacketOutInputMessageFactory());
+        helper.registerDeserializer(9, null, SetConfigInput.class, new SetConfigInputMessageFactory());
+        helper.registerDeserializer(18, null, MultipartRequestInput.class, new MultipartRequestInputMessageFactory());
     }
 }

@@ -9,16 +9,21 @@ package org.opendaylight.netide.netiplib;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.javatuples.Pair;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for handling NetIP messages.
  */
 public abstract class NetIPUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(NetIPUtils.class);
     /**
      * Gets a stub header from the given payload with the length correctly set and protocol version set to 1.1.
      *
@@ -114,18 +119,18 @@ public abstract class NetIPUtils {
             throw new IllegalArgumentException("Can only convert OPENFLOW messages");
         OpenFlowMessage ofm = new OpenFlowMessage();
         ofm.setHeader(message.header);
-
         //INIT SERIALIZATION
-        DeserializerRegistry registry = new DeserializerRegistryImpl();
+        DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
-        DeserializationFactory factory = new DeserializationFactory();
+        NetIdeDeserializationFactory factory = new NetIdeDeserializationFactory();
         factory.setRegistry(registry);
         
         //BUFFER
-        ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
-        buffer.setBytes(0, message.getPayload());
+        ByteBuf buffer = Unpooled.wrappedBuffer(message.getPayload());
+        //buffer.writeBytes(message.getPayload());
+        //buffer.setBytes(0, message.getPayload());
         //OF VERSION
-        short ofVersion = Short.valueOf(buffer.readByte());
+        short ofVersion = buffer.readUnsignedByte();
         DataObject dObj = factory.deserialize(buffer, ofVersion);
         
         ofm.setOfMessage(dObj);

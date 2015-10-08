@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -67,10 +68,11 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
-        LOG.info("SHIM: on Switch connected: ", connectionAdapter.getRemoteAddress());
+        LOG.info("SHIM: on Switch connected: {}", connectionAdapter.getRemoteAddress());
         ShimMessageListener listener = new ShimMessageListener(
                 coreConnector, connectionAdapter);
         listener.registerConnectionAdaptersRegistry(connectionRegistry);
+        listener.registerHandshakeListener(this);
         connectionRegistry.registerConnectionAdapter(connectionAdapter, null);
         connectionAdapter.setMessageListener(listener);
         connectionAdapter.setSystemListener(listener);
@@ -79,6 +81,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
     
     public void handshake(ConnectionAdapter connectionAdapter){
+        LOG.info("SHIM: OF Handshake Switch: {}", connectionAdapter.getRemoteAddress());
         HelloInputBuilder builder = new HelloInputBuilder();
         builder.setVersion((short)getMaxOFSupportedProtocol());
         builder.setXid(DEFAULT_XID);
@@ -87,12 +90,17 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         connectionAdapter.hello(builder.build());
     }
     
+    @Override
     public void onSwitchHelloMessage(long xid, Short version){
+        LOG.info("SHIM: OpenFlow hello message received. Xid: {}, OFVersion: {}", xid, version);
         byte received = version.byteValue();
         if (xid >= DEFAULT_XID){
             if (received <=  getMaxOFSupportedProtocol()){
+                LOG.info("SHIM: OpenFlow handshake agreed on version: {}", received);
                 setSupportedProtocol(received);
+                
             }else{
+                LOG.info("SHIM: OpenFlow handshake agreed on version: {}", getMaxOFSupportedProtocol());
                 setSupportedProtocol(getMaxOFSupportedProtocol());
             }
         }
@@ -116,27 +124,32 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
     
     @Override
-    public void onOpenFlowCoreMessage(Long datapathId, ByteBuf input) {
+    public void onOpenFlowCoreMessage(Long datapathId, DataObject msg) {
         LOG.info("SHIM: OpenFlow Core message received");
         ConnectionAdapter conn = connectionRegistry.getConnectionAdapter(datapathId);
         if ( conn != null){
-            ShimRelay.sendToSwitch(conn, input, 
-                    this.supportedProtocol.getValue1().getValue(), 
-                    ShimSwitchConnectionHandlerImpl.coreConnector, datapathId);
+            LOG.info("SHIM: OpenFlow Core message ");
+            short ofVersion = this.supportedProtocol.getValue1().getValue();
+            ShimRelay.sendDataObjectToSwitch(conn, msg, ofVersion, coreConnector, datapathId);
         }
     }
     
     @Override
     public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols) {
-        LOG.info("SHIM: Hello Core message received");
+        LOG.info("SHIM: Hello Core message received. Pair0: {}", requestedProtocols.get(0));
+        LOG.info("SHIM: Hello Core message received Protocol: {}", requestedProtocols.get(0).getValue0());
+        LOG.info("SHIM: Hello Core message received ProtocolVersion: {}", requestedProtocols.get(0).getValue1());
         for (Pair<Protocol, ProtocolVersions> requested : requestedProtocols){
-            if( requested == supportedProtocol){
+            if( requested.getValue0().getValue() == supportedProtocol.getValue0().getValue() 
+                    && requested.getValue1().getValue() == supportedProtocol.getValue1().getValue()){
+                LOG.info("SHIM: OF version matched");
                 HelloMessage msg = new HelloMessage();
-                List<Pair<Protocol, ProtocolVersions>> supportedProtocols = new ArrayList<>();
-                supportedProtocols.add(supportedProtocol);
-                msg.setSupportedProtocols(supportedProtocols);
+                
+                msg.getSupportedProtocols().add(supportedProtocol);
+                msg.getHeader().setPayloadLength((short)2);
                 coreConnector.SendData(msg.toByteRepresentation());
                 for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()){
+                    LOG.info("SHIM: SendFeatures To core for switch: {}", conn.getRemoteAddress());
                     sendFeaturesToCore((short)supportedProtocol.getValue1().getValue(), 0L, conn);
                 }
             }
@@ -145,11 +158,11 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     
     private void sendFeaturesToCore(final Short proposedVersion, final Long xid,
             final ConnectionAdapter connectionAdapter) {
-        LOG.debug("version set: {}", proposedVersion);
+        LOG.info("version set: {}", proposedVersion);
         // request features
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(proposedVersion).setXid(xid);
-        LOG.debug("sending feature request for version={} and xid={}", proposedVersion, xid);
+        LOG.info("sending feature request for version={} and xid={}", proposedVersion, xid);
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter
                 .getFeatures(featuresBuilder.build());
 
@@ -157,11 +170,11 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
                     public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
-                        LOG.trace("features are back");
+                        LOG.info("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
 
-                            LOG.debug("obtained features: datapathId={}", featureOutput.getDatapathId());
+                            LOG.info("obtained features: datapathId={}", featureOutput.getDatapathId());
                             
                             // Register Switch connection/DatapathId to registry
                             connectionRegistry.registerConnectionAdapter(connectionAdapter,
@@ -172,28 +185,28 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                             
                         } else {
                             // handshake failed
-                            LOG.warn("issuing disconnect during handshake [{}]", 
+                            LOG.info("issuing disconnect during handshake [{}]", 
                                     connectionAdapter.getRemoteAddress());
                             
                             for (RpcError rpcError : rpcFeatures.getErrors()) {
-                                LOG.debug("handshake - features failure [{}]: i:{} | m:{} | s:{}", xid,
+                                LOG.info("handshake - features failure [{}]: i:{} | m:{} | s:{}", xid,
                                         rpcError.getInfo(), rpcError.getMessage(), rpcError.getSeverity(),
                                         rpcError.getCause());
                             }
                         }
 
-                        LOG.debug("postHandshake DONE");
+                        LOG.info("postHandshake DONE");
                     }
 
                     @Override
                     public void onFailure(Throwable t) {
-                        LOG.warn("getting feature failed seriously [{}, addr:{}]: {}", xid,
+                        LOG.info("getting feature failed seriously [{}, addr:{}]: {}", xid,
                                 connectionAdapter.getRemoteAddress(), t.getMessage());
-                        LOG.trace("DETAIL of sending of hello failure:", t);
+                        LOG.info("DETAIL of sending of hello failure:", t);
                     }
                 });
 
-        LOG.debug("future features [{}] hooked ..", xid);
+        LOG.info("future features [{}] hooked ..", xid);
     }
     
 }

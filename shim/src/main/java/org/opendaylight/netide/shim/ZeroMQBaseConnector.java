@@ -12,6 +12,7 @@ import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.opendaylight.netide.netiplib.OpenFlowMessage;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -63,11 +64,13 @@ public class ZeroMQBaseConnector implements Runnable {
 
     public boolean SendData(byte[] data) {
         ZMsg msg = new ZMsg();
-        msg.add("core");
-        msg.add("");
+        
+        //msg.add("core");
+        //msg.add("");
         msg.add(data);
         // relayed via control socket to prevent threading issues
         ZMQ.Socket sendSocket = context.socket(ZMQ.PUSH);
+        sendSocket.setIdentity("shim".getBytes());
         sendSocket.connect(CONTROL_ADDRESS);
         msg.send(sendSocket);
         sendSocket.close();
@@ -95,12 +98,22 @@ public class ZeroMQBaseConnector implements Runnable {
                 ZMsg message = ZMsg.recvMsg(socket);
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
+                    LOG.info("Core Message received: {}", data);
+                    
                     Message msg = NetIPConverter.parseConcreteMessage(data);
+                    LOG.info("Core Message parsed");
                     if (msg instanceof HelloMessage){
-                        coreListener.onHelloCoreMessage(((HelloMessage)msg).getSupportedProtocols());
+                        LOG.info("Core Hello Message received");
+                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols());
                     }else if (msg instanceof OpenFlowMessage){
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(msg.getPayload()));
+                        LOG.info("Core OpenFlow Message received");
+                        DataObject dataObj = ((OpenFlowMessage) msg).getOfMessage();
+                        
+                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), dataObj);
+                    }else {
+                        LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(), msg.getHeader().getMessageType());
                     }
+                    
                 }
             }
             if (poller.pollin(1)) {

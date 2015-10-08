@@ -19,7 +19,7 @@ import org.opendaylight.netide.netiplib.NetIPUtils;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
@@ -49,25 +50,29 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
 public class ShimRelay {
+    private static final Logger LOG = LoggerFactory.getLogger(ShimRelay.class);
     
     public  static void sendOpenFlowMessageToCore(ZeroMQBaseConnector coreConnector, DataObject msg, short ofVersion, long xId, long datapathId) {
+        LOG.info("SHIM RELAY: sending message to core");
         SerializationFactory factory = new SerializationFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
         ByteBuf output = UnpooledByteBufAllocator.DEFAULT.buffer();
         factory.setSerializerTable(registry);
         factory.messageToBuffer(ofVersion, output, msg);
-        
-        Message message = new Message(NetIPUtils.StubHeaderFromPayload(output.array()), output.array());
+        byte[] bytes = new byte[output.readableBytes()];
+        output.readBytes(bytes);
+        Message message = new Message(NetIPUtils.StubHeaderFromPayload(bytes), bytes);
         message.getHeader().setMessageType(MessageType.OPENFLOW);
         message.getHeader().setDatapathId(datapathId);
-        
         // TODO: find the correct values
         message.getHeader().setModuleId(0);
         message.getHeader().setTransactionId((int)xId);
@@ -77,58 +82,86 @@ public class ShimRelay {
     public static void sendToSwitch(ConnectionAdapter connectionAdapter, 
             ByteBuf input, short ofVersion, 
             ZeroMQBaseConnector coreConnector, long datapathId){
-        
-        // Deserialization
-        DeserializationFactory factory = new DeserializationFactory();
+        LOG.info("SHIM RELAY: sending bytebuf to switch");
+        NetIdeDeserializationFactory factory = new NetIdeDeserializationFactory();
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
         factory.setRegistry(registry);
         DataObject msg = factory.deserialize(input, ofVersion);
+        ShimRelay.sendDataObjectToSwitch(connectionAdapter, msg, ofVersion, coreConnector, datapathId);
+    }
+    
+    public static void sendDataObjectToSwitch(ConnectionAdapter connectionAdapter, 
+            DataObject msg, short ofVersion, 
+            ZeroMQBaseConnector coreConnector, long datapathId){
+        
+        LOG.info("SHIM RELAY: sending dataObject to switch");
         
         // Send to Core and intercept response
-        if (msg instanceof BarrierInput){
+        if (msg.getImplementedInterface().getClass().getName().equals(BarrierInput.class.getName())){
+            LOG.info("SHIM RELAY: sending BarrierInput to switch");
             Future<RpcResult<BarrierOutput>> reply = connectionAdapter.barrier((BarrierInput)msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof EchoInput){
+        }else if (msg.getImplementedInterface().getName().equals(EchoInput.class.getName())){
+            LOG.info("SHIM RELAY: sending EchoInput to switch");
             Future<RpcResult<EchoOutput>> reply = connectionAdapter.echo((EchoInput)msg);
-            sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof EchoReplyInput){
+            sendResponseToCore(reply, coreConnector, ofVersion, ((EchoInput) msg).getXid(), datapathId);
+        }else if (msg.getImplementedInterface().getName().equals(EchoReplyInput.class.getName())){
+            LOG.info("SHIM RELAY: sending EchoReplyInput to switch");
             connectionAdapter.echoReply((EchoReplyInput)msg);
-        }else if (msg instanceof ExperimenterInput){
+        }else if (msg.getImplementedInterface().getName().equals(ExperimenterInput.class.getName())){
+            LOG.info("SHIM RELAY: sending ExperimenterInput to switch");
             connectionAdapter.experimenter((ExperimenterInput)msg);
-        }else if (msg instanceof FlowModInput){
+        }else if (msg.getImplementedInterface().getName().equals(FlowModInput.class.getName())){
+            LOG.info("SHIM RELAY: sending FlowModInput to switch");
             connectionAdapter.flowMod((FlowModInput)msg);
-        }else if (msg instanceof GetAsyncInput){
+        }else if (msg.getImplementedInterface().getName().equals(GetAsyncInput.class.getName())){
+            LOG.info("SHIM RELAY: sending GetAsyncInput to switch");
             Future<RpcResult<GetAsyncOutput>> reply = connectionAdapter.getAsync((GetAsyncInput)msg);
-            sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof GetConfigInput){
+            sendResponseToCore(reply, coreConnector, ofVersion, ((GetAsyncInput) msg).getXid(), datapathId);
+        }else if (msg.getImplementedInterface().getName().equals(GetConfigInput.class.getName())){
+            LOG.info("SHIM RELAY: sending GetConfigInput to switch");
             Future<RpcResult<GetConfigOutput>> reply = connectionAdapter.getConfig((GetConfigInput)msg);
-            sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof GetFeaturesInput){
-            Future<RpcResult<GetConfigOutput>> reply = connectionAdapter.getConfig((GetConfigInput)msg);
-            sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof GetQueueConfigInput){
+            sendResponseToCore(reply, coreConnector, ofVersion, ((GetConfigInput) msg).getXid(), datapathId);
+        }else if (msg.getImplementedInterface().getName().equals(GetFeaturesInput.class.getName())){
+            LOG.info("SHIM RELAY: sending GetFeaturesInput to switch");
+            Future<RpcResult<GetFeaturesOutput>> reply = connectionAdapter.getFeatures((GetFeaturesInput)msg);
+            sendResponseToCore(reply, coreConnector, ofVersion, ((GetFeaturesInput) msg).getXid(), datapathId);
+        }else if (msg.getImplementedInterface().getName().equals(GetQueueConfigInput.class.getName())){
+            LOG.info("SHIM RELAY: sending GetQueueConfigInput to switch");
             Future<RpcResult<GetQueueConfigOutput>> reply = connectionAdapter.getQueueConfig((GetQueueConfigInput)msg);
-            sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId);
-        }else if (msg instanceof GroupModInput){
+            sendResponseToCore(reply, coreConnector, ofVersion, ((GetQueueConfigInput) msg).getXid(), datapathId);
+        }else if (msg.getImplementedInterface().getName().equals(GroupModInput.class.getName())){
+            LOG.info("SHIM RELAY: sending GroupModInput to switch");
             connectionAdapter.groupMod((GroupModInput)msg);
-        }else if (msg instanceof HelloInput){
+        }else if (msg.getImplementedInterface().getName().equals(HelloInput.class.getName())){
+            LOG.info("SHIM RELAY: sending HelloInput to switch");
             connectionAdapter.hello((HelloInput)msg);
-        }else if (msg instanceof MeterModInput){
+        }else if (msg.getImplementedInterface().getName().equals(MeterModInput.class.getName())){
+            LOG.info("SHIM RELAY: sending MeterModInput to switch");
             connectionAdapter.meterMod((MeterModInput) msg);
-        }else if (msg instanceof MultipartRequestInput){
+        }else if (msg.getImplementedInterface().getName().equals(MultipartRequestInput.class.getName())){
+            LOG.info("SHIM RELAY: sending MultipartRequestInput to switch");
             connectionAdapter.multipartRequest((MultipartRequestInput)msg);
-        }else if (msg instanceof PacketOutInput){
+        }else if (msg.getImplementedInterface().getName().equals(PacketOutInput.class.getName())){
+            LOG.info("SHIM RELAY: sending PacketOutInput to switch");
             connectionAdapter.packetOut((PacketOutInput)msg);
-        }else if (msg instanceof PortModInput){
+        }else if (msg.getImplementedInterface().getName().equals(PortModInput.class.getName())){
+            LOG.info("SHIM RELAY: sending PortModInput to switch");
             connectionAdapter.portMod((PortModInput) msg);
-        }else if (msg instanceof SetAsyncInput){
+        }else if (msg.getImplementedInterface().getName().equals(SetAsyncInput.class.getName())){
+            LOG.info("SHIM RELAY: sending SetAsyncInput to switch");
             connectionAdapter.setAsync((SetAsyncInput)msg);
-        }else if (msg instanceof SetConfigInput){
+        }else if (msg.getImplementedInterface().getName().equals(SetConfigInput.class.getName())){
+            LOG.info("SHIM RELAY: sending SetConfigInput to switch");
             connectionAdapter.setConfig((SetConfigInput)msg);
-        }else if (msg instanceof TableModInput){
+        }else if (msg.getImplementedInterface().getName().equals(TableModInput.class.getName())){
+            LOG.info("SHIM RELAY: sending TableModInput to switch");
             connectionAdapter.tableMod((TableModInput)msg);
+        }else{
+            LOG.info("SHIM RELAY:Dataobject not recognized");
         }
+            
                 
     }
     
@@ -139,23 +172,18 @@ public class ShimRelay {
             public void onSuccess(RpcResult<E> rpcReply) {
                 if (rpcReply.isSuccessful()) {
                     E result = rpcReply.getResult();
+                    LOG.info("SHIM RELAY: sending Response to switch. Class: {}", result.getClass());
                     sendOpenFlowMessageToCore(coreConnector, result, ofVersion, xId, datapathId);
                 } else {
                     for (RpcError rpcError : rpcReply.getErrors()) {
-                        // TODO: Send Error to Core
-                        /*
-                         * LOG.debug(
-                         * "handshake - features failure [{}]: i:{} | m:{} | s:{}"
-                         * , xid, rpcError.getInfo(), rpcError.getMessage(),
-                         * rpcError.getSeverity(), rpcError.getCause() );
-                         */
+                        LOG.info("SHIM RELAY: error in communication with switch");
                     }
                 }
             }
 
             @Override
             public void onFailure(Throwable t) {
-                // TODO: Send Error to Core
+                LOG.info("SHIM RELAY: failure on communication with switch");
             }
         });
     }

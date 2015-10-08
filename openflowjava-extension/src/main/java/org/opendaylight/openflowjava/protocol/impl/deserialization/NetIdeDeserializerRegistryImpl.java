@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization;
 public class NetIdeDeserializerRegistryImpl extends DeserializerRegistryImpl {
     @Override
     public void init() {
+        System.out.println("NetIdeDeserializerRegistryImpl init");
         super.init();
         NetIdeMessageDeserializerInitializer.registerMessageDeserializers(this);
         InstructionDeserializerInitializer.registerDeserializers(this);

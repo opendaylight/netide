@@ -10,15 +10,11 @@ package org.opendaylight.netide.shim;
 import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
@@ -38,45 +34,50 @@ public class ShimMessageListener
     public static final Long DEFAULT_XID = 0x01020304L;
     private ZeroMQBaseConnector coreConnector;
     private ConnectionAdapter switchConnection;
-    private SerializationFactory factory;
     private IHandshakeListener handshakeListener;
     
     public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection) {
         this.coreConnector = connector;
         this.switchConnection = switchConnection;
-        SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
-        registry.init();
-        factory.setSerializerTable(registry);
     }
     
     public void registerConnectionAdaptersRegistry(ConnectionAdaptersRegistry connectionRegistry){
         this.connectionRegistry = connectionRegistry;
     }
 
-    public void RegisterCoreListener(IHandshakeListener listener) {
+    public void registerHandshakeListener(IHandshakeListener listener) {
         this.handshakeListener = listener;
     }
     
     /// OpenflowProtocolListener methods/////
     @Override
     public void onEchoRequestMessage(EchoRequestMessage arg0) {
-        LOG.info("SHIM Echo request message received: ", arg0);
+        
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
         if ( datapathId == null){
+            LOG.info("SHIM Echo request message received. Managed by shim.");
             EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
             builder.setVersion(arg0.getVersion());
             builder.setXid(arg0.getXid() + 1L);
             builder.setData(arg0.getData());
             this.switchConnection.echoReply(builder.build());
         }else{
+            LOG.info("SHIM Echo request message received. Sent to core.");
             ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
         }
-            
+//        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+//        builder.setVersion(arg0.getVersion());
+//        builder.setXid(arg0.getXid() + 1L);
+//        builder.setData(arg0.getData());
+//        this.switchConnection.echoReply(builder.build());
+//        if ( datapathId != null){
+//            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+//        }
     }
 
     @Override
     public void onErrorMessage(ErrorMessage arg0) {
-        LOG.info("SHIM Message received: ", arg0);
+        LOG.info("SHIM Message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
@@ -86,7 +87,7 @@ public class ShimMessageListener
 
     @Override
     public void onExperimenterMessage(ExperimenterMessage arg0) {
-        LOG.info("SHIM Experimenter message received: ", arg0);
+        LOG.info("SHIM Experimenter message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
@@ -96,7 +97,7 @@ public class ShimMessageListener
 
     @Override
     public void onFlowRemovedMessage(FlowRemovedMessage arg0) {
-        LOG.info("SHIM Flow removed message received: ", arg0);
+        LOG.info("SHIM Flow removed message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
@@ -106,7 +107,7 @@ public class ShimMessageListener
 
     @Override
     public void onHelloMessage(HelloMessage arg0) {
-        LOG.info("SHIM Hello Message received: ", arg0);
+        LOG.info("SHIM Hello Message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
         if (datapathId == null){
             handshakeListener.onSwitchHelloMessage(arg0.getXid(), arg0.getVersion());
@@ -127,17 +128,18 @@ public class ShimMessageListener
 
     @Override
     public void onPacketInMessage(PacketInMessage arg0) {
-        LOG.info("SHIM Packet In message received: ", arg0);
+        LOG.info("SHIM Packet In message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
+            LOG.info("SHIM Packet In message send to core. DatapathId: {}", datapathId);
             ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
         }
     }
 
     @Override
     public void onPortStatusMessage(PortStatusMessage arg0) {
-        LOG.info("SHIM Port Status message received: ", arg0);
+        LOG.info("SHIM Port Status message received: {}", arg0);
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
@@ -148,12 +150,12 @@ public class ShimMessageListener
     //// SystemNotificationsListener methods ////
     @Override
     public void onDisconnectEvent(DisconnectEvent arg0) {
-        LOG.info("SHIM Disconnect event received: ", arg0);
+        LOG.info("SHIM Disconnect event received: {}", arg0);
     }
 
     @Override
     public void onSwitchIdleEvent(SwitchIdleEvent arg0) {
-        LOG.info("SHIM Switch Idle event received: ", arg0);
+        LOG.info("SHIM Switch Idle event received: {}", arg0);
     }
 
     //// SystemNotificationsListener methods ////
