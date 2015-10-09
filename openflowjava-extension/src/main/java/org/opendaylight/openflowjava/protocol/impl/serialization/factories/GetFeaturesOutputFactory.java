@@ -8,11 +8,14 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
+import java.util.HashMap;
+import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
@@ -21,9 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class GetFeaturesOutputFactory  implements OFSerializer<GetFeaturesOutput>, SerializerRegistryInjector{
     
+    @SuppressWarnings("unused")
     private SerializerRegistry registry;
     private static final byte MESSAGE_TYPE = 6;
-    private static final byte PADDING = 4;
+    private static final byte PADDING = 2;
     
     @Override
     public void serialize(GetFeaturesOutput message, ByteBuf outBuffer) {
@@ -33,7 +37,7 @@ public class GetFeaturesOutputFactory  implements OFSerializer<GetFeaturesOutput
         outBuffer.writeByte(message.getTables().intValue());
         outBuffer.writeByte(message.getAuxiliaryId().intValue());
         outBuffer.writeZero(PADDING);
-        outBuffer.writeInt(createCapabilities(message.getCapabilities().getValue()));
+        writeCapabilities(message.getCapabilities(), outBuffer);
         outBuffer.writeInt(message.getReserved().intValue());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
@@ -44,11 +48,16 @@ public class GetFeaturesOutputFactory  implements OFSerializer<GetFeaturesOutput
         this.registry = serializerRegistry;
     }
     
-    private byte createCapabilities(boolean[] bool){
-        byte b = (byte)((bool[0]?1<<7:0) + (bool[1]?1<<6:0) + (bool[2]?1<<5:0) + 
-                (bool[3]?1<<4:0) + (bool[4]?1<<3:0) + (bool[5]?1<<2:0) + 
-                (bool[6]?1<<1:0));
-        
-        return b;
+    private static void writeCapabilities(Capabilities capabilities, ByteBuf outBuffer){
+        Map<Integer, Boolean> map = new HashMap<>();
+        map.put(0, capabilities.isOFPCFLOWSTATS());
+        map.put(1, capabilities.isOFPCTABLESTATS());
+        map.put(2, capabilities.isOFPCPORTSTATS());
+        map.put(3, capabilities.isOFPCGROUPSTATS());
+        map.put(5, capabilities.isOFPCIPREASM());
+        map.put(6, capabilities.isOFPCQUEUESTATS());
+        map.put(8, capabilities.isOFPCPORTBLOCKED());
+        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
+        outBuffer.writeInt(bitmap);
     }
 }

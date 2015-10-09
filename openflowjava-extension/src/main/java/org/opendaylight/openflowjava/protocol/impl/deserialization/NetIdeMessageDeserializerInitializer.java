@@ -15,7 +15,6 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.Mul
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.PacketOutInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.factories.SetConfigInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.SimpleDeserializerRegistryHelper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;

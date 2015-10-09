@@ -118,6 +118,7 @@ public abstract class NetIPUtils {
         if (message.getHeader().getMessageType() != MessageType.OPENFLOW)
             throw new IllegalArgumentException("Can only convert OPENFLOW messages");
         OpenFlowMessage ofm = new OpenFlowMessage();
+        ofm.setPayload(message.getPayload());
         ofm.setHeader(message.header);
         //INIT SERIALIZATION
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();

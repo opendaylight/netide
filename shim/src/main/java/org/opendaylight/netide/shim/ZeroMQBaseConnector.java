@@ -8,6 +8,7 @@
 package org.opendaylight.netide.shim;
 
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
@@ -107,9 +108,9 @@ public class ZeroMQBaseConnector implements Runnable {
                         coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols());
                     }else if (msg instanceof OpenFlowMessage){
                         LOG.info("Core OpenFlow Message received");
-                        DataObject dataObj = ((OpenFlowMessage) msg).getOfMessage();
+                        byte[] payload = ((Message)msg).getPayload();
                         
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), dataObj);
+                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(payload));
                     }else {
                         LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(), msg.getHeader().getMessageType());
                     }

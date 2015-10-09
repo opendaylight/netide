@@ -124,13 +124,13 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
     
     @Override
-    public void onOpenFlowCoreMessage(Long datapathId, DataObject msg) {
+    public void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg) {
         LOG.info("SHIM: OpenFlow Core message received");
         ConnectionAdapter conn = connectionRegistry.getConnectionAdapter(datapathId);
         if ( conn != null){
             LOG.info("SHIM: OpenFlow Core message ");
-            short ofVersion = this.supportedProtocol.getValue1().getValue();
-            ShimRelay.sendDataObjectToSwitch(conn, msg, ofVersion, coreConnector, datapathId);
+            short ofVersion = msg.readUnsignedByte();
+            ShimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId);
         }
     }
     

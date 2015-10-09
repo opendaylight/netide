@@ -72,4 +72,8 @@ public class Message {
         System.arraycopy(payload, 0, bytes, MessageHeader.HEADER_BYTES, payload.length);
         return bytes;
     }
+    
+    public void setPayload(byte[] data){
+        this.payload = data;
+    }
 }

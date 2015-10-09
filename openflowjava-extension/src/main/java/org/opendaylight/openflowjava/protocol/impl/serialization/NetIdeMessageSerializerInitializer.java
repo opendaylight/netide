@@ -11,11 +11,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.EchoRequestMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetFeaturesOutputFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.NetIdePacketOutInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.PacketInMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 
@@ -36,5 +38,6 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(PacketOutInput.class, new NetIdePacketOutInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesOutput.class, new GetFeaturesOutputFactory());
         registryHelper.registerSerializer(EchoRequestMessage.class, new EchoRequestMessageFactory());
+        registryHelper.registerSerializer(MultipartReplyMessage.class, new MultipartReplyMessageFactory());
     }
 }

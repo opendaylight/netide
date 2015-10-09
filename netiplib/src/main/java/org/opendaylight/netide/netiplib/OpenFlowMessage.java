@@ -1,12 +1,5 @@
 package org.opendaylight.netide.netiplib;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.UnpooledByteBufAllocator;
-import org.opendaylight.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
@@ -40,21 +33,5 @@ public class OpenFlowMessage extends Message {
      */
     public void setOfMessage(DataObject ofMessage) {
         this.ofMessage = ofMessage;
-    }
-
-    @Override
-    public byte[] getPayload() { 
-        SerializerRegistry sRegistry = new NetIdeSerializerRegistryImpl();
-        sRegistry.init();
-        SerializationFactory sFactory = new SerializationFactory();
-        sFactory.setSerializerTable(sRegistry);
-        ByteBuf bufOut =  UnpooledByteBufAllocator.DEFAULT.buffer();
-        short ofVersion = Short.valueOf(EncodeConstants.OF13_VERSION_ID);
-        sFactory.messageToBuffer(ofVersion, bufOut, ofMessage);
-        
-        byte[] bytes = new byte[bufOut.readableBytes()];
-        bufOut.readBytes(bytes);
-        
-        return bytes;
     }
 }

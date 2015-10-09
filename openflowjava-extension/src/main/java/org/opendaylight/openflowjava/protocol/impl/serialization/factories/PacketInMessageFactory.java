@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Translates PacketIn messages
  */
 public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, SerializerRegistryInjector {
-    private static final byte PADDING = 4;
+    private static final byte PADDING = 2;
     private static final byte MESSAGE_TYPE = 10;
     private SerializerRegistry registry;
 
