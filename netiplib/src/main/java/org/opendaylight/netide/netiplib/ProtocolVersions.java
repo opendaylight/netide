@@ -8,7 +8,7 @@
 package org.opendaylight.netide.netiplib;
 
 /**
- * Enumeration of known protocol versions. Useful for Protocol->supportedVersion mappings.
+ * Enumeration of known protocol versions. Useful for Protocol to supportedVersion mappings.
  */
 public enum ProtocolVersions {
     /**
