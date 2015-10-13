@@ -45,7 +45,6 @@ public class NetIdeDeserializationFactory{
     public DataObject deserialize(final ByteBuf rawMessage, final short version) {
         DataObject dataObject = null;
         int type = rawMessage.readUnsignedByte();
-        System.out.println("Deserializing message Version: " + version + " type: " + type);
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));
         rawMessage.skipBytes(EncodeConstants.SIZE_OF_SHORT_IN_BYTES);
         OFDeserializer<DataObject> deserializer = registry.getDeserializer(

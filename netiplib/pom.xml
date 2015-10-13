@@ -11,7 +11,7 @@
 
 	<groupId>org.opendaylight.netide</groupId>
     <artifactId>netiplib</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>NetIDE-NetIP Library</name>
     <description>Java Library for handling the NetIDE intermediate protocol.</description>
 
@@ -32,11 +32,6 @@
             <groupId>org.javatuples</groupId>
             <artifactId>javatuples</artifactId>
             <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>yang-binding</artifactId>
-            <version>${yangtools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.netide</groupId>
@@ -60,28 +55,6 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.4</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Export-Package>
-                            org.opendaylight.netide.netiplib.*;version=${project.version},
-                            org.javatuples.*
-                        </Export-Package>
-                        <Import-Package>
-                            org.osgi.framework,
-                            org.opendaylight.yangtools.yang.binding
-                        </Import-Package> 
-                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                    </instructions>
-                </configuration>
-            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -93,5 +66,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
 </project>

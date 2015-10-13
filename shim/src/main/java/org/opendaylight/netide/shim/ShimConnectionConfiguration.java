@@ -20,7 +20,7 @@ public class ShimConnectionConfiguration implements ConnectionConfiguration {
     
     private static final Logger LOG = LoggerFactory.getLogger(ShimConnectionConfiguration.class);
     
-    private int port = 6633;
+    private int port = 6644;
 
     @Override
     public InetAddress getAddress() {

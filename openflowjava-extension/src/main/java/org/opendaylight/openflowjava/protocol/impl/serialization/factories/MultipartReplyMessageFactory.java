@@ -84,7 +84,6 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     
     private void writeName(String name, ByteBuf outBuffer){
         byte[] nameBytes = name.getBytes();
-        System.out.println("Name bytes length: " + nameBytes.length);
         if (nameBytes.length < 16){
             byte[] nameBytesPadding = new byte[16];
             int i = 0;

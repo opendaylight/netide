@@ -65,14 +65,6 @@ public class ShimMessageListener
             LOG.info("SHIM Echo request message received. Sent to core.");
             ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
         }
-//        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-//        builder.setVersion(arg0.getVersion());
-//        builder.setXid(arg0.getXid() + 1L);
-//        builder.setData(arg0.getData());
-//        this.switchConnection.echoReply(builder.build());
-//        if ( datapathId != null){
-//            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
-//        }
     }
 
     @Override
@@ -151,6 +143,7 @@ public class ShimMessageListener
     @Override
     public void onDisconnectEvent(DisconnectEvent arg0) {
         LOG.info("SHIM Disconnect event received: {}", arg0);
+        this.connectionRegistry.removeConnectionAdapter(this.switchConnection);
     }
 
     @Override

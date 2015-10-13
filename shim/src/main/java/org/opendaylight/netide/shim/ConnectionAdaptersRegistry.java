@@ -48,4 +48,11 @@ public class ConnectionAdaptersRegistry {
     public Set<ConnectionAdapter> getConnectionAdapters(){
         return connectionAdapterMap.keySet();
     }
+    
+    public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn){
+        BigInteger datapathID = connectionAdapterMap.remove(conn);
+        if (datapathID != null)
+            return true;
+        return false;
+    }
 }

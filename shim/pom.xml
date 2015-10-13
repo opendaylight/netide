@@ -27,7 +27,9 @@
                             org.zeromq,
                             zmq,
                             org.javatuples.*,
-                            org.opendaylight.openflowjava.*
+                            org.opendaylight.openflowjava.*<!-- ,
+                            !com.google.guava;version=18.0.0 -->,
+                            org.opendaylight.netide.netiplib
                         </Export-Package>
                     </instructions>
                 </configuration>

@@ -137,8 +137,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     @Override
     public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols) {
         LOG.info("SHIM: Hello Core message received. Pair0: {}", requestedProtocols.get(0));
-        LOG.info("SHIM: Hello Core message received Protocol: {}", requestedProtocols.get(0).getValue0());
-        LOG.info("SHIM: Hello Core message received ProtocolVersion: {}", requestedProtocols.get(0).getValue1());
         for (Pair<Protocol, ProtocolVersions> requested : requestedProtocols){
             if( requested.getValue0().getValue() == supportedProtocol.getValue0().getValue() 
                     && requested.getValue1().getValue() == supportedProtocol.getValue1().getValue()){
@@ -184,7 +182,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                                     featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue());
                             
                         } else {
-                            // handshake failed
+                            // Handshake failed
                             LOG.info("issuing disconnect during handshake [{}]", 
                                     connectionAdapter.getRemoteAddress());
                             

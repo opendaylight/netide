@@ -263,12 +263,4 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
         return caseBuilder.build();
         
     }
-    
-   /* private MultipartRequestTableFeaturesCase setTableFeatures(ByteBuf input){
-        MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
-        MultipartRequestTableFeaturesBuilder tableBuilder = new MultipartRequestTableFeaturesBuilder();
-        tableBuilder.set
-        caseBuilder.setMultipartRequestTableFeatures(value)
-    }*/
-
 }

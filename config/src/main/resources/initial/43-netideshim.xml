@@ -1,0 +1,37 @@
+<snapshot>
+   <configuration>
+       
+           <modules xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+              ...
+              <module>
+                 <type xmlns:shim="urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim">
+                    shim:shim
+                 </type>
+                 <name>shim</name>
+                 
+
+                 <rpc-registry>
+                    <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-rpc-registry</type>
+                    <name>binding-rpc-broker</name>
+                 </rpc-registry>
+               </module>
+           </modules>
+           <services xmlns="urn:opendaylight:params:xml:ns:yang:controller:config">
+               <service>
+                   <type xmlns:kitchen="urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim">
+                       shim:shim
+                   </type>
+                   <instance>
+                       <name>shim</name>
+                       <provider>/modules/module[type='shim'][name='shim']</provider>
+                   </instance>
+               </service>
+           </services>
+       
+   </configuration>
+   
+   <required-capabilities>
+       <capability>urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim?module=shim&amp;revision=2014-01-31</capability>
+       <capability>urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim?module=shim&amp;revision=2014-01-31</capability>
+   </required-capabilities>
+</snapshot>
