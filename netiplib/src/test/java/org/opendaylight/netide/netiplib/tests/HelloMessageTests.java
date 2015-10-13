@@ -1,6 +1,15 @@
-
+/*
+ * Copyright (c) 2015 NetIDE Consortium and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.netide.netiplib.tests;
 
+import org.junit.Assert;
+
+import org.junit.Test;
 import org.javatuples.Pair;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
@@ -9,9 +18,6 @@ import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.util.Arrays;
 
 /**
@@ -44,8 +50,9 @@ public class HelloMessageTests {
 
     /**
      * Test message serialization.
+     * testName = "HelloMessage serialization test", suiteName = "HelloMessage Tests"
      */
-    @Test(testName = "HelloMessage serialization test", suiteName = "HelloMessage Tests")
+    @Test
     public void TestMessageSerialization() {
         HelloMessage testMessage = new HelloMessage();
         testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
@@ -59,14 +66,15 @@ public class HelloMessageTests {
         byte[] testBytes = testMessage.toByteRepresentation();
         System.out.println("Expected: " + Arrays.toString(expectedMessage1));
         System.out.println("Actual:   " + Arrays.toString(testBytes));
-        Assert.assertEquals(testBytes.length, expectedMessage1.length, "Length does not match!");
-        Assert.assertEquals(testBytes, expectedMessage1, "Arrays do not match!");
+        Assert.assertEquals("Length does not match!", testBytes.length, expectedMessage1.length);
+        Assert.assertEquals("Arrays do not match!", testBytes, expectedMessage1);
     }
 
     /**
      * Test general message parsing.
+     * testName = "HelloMessage general parse test", suiteName = "HelloMessage Tests"
      */
-    @Test(testName = "HelloMessage general parse test", suiteName = "HelloMessage Tests")
+    @Test
     public void TestMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage1);
         Assert.assertNotNull(testMessage);
@@ -81,8 +89,9 @@ public class HelloMessageTests {
 
     /**
      * Test concrete message parsing.
+     * testName = "HelloMessage concrete parse test", suiteName = "HelloMessage Tests"
      */
-    @Test(testName = "HelloMessage concrete parse test", suiteName = "HelloMessage Tests")
+    @Test
     public void TestMessageParsingConcrete() {
         Message testMessage = NetIPConverter.parseConcreteMessage(expectedMessage1);
         Assert.assertNotNull(testMessage);

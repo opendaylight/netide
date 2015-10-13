@@ -19,6 +19,7 @@
 
     <artifactId>shim-config</artifactId>
     <description>Controller Configuration files for betide-shim + openflowjav</description>
+    <name>NetIDE-Config</name>
     <packaging>jar</packaging>
     <build>
         <plugins>
@@ -37,7 +38,7 @@
                                 <artifact>
                                     <file>${project.build.directory}/classes/initial/43-netideshim.xml</file>
                                     <type>xml</type>
-                                    <classifier>config-He</classifier>
+                                    <classifier>config</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
