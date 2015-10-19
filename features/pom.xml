@@ -32,6 +32,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
   
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.opendaylight.netide</groupId>
+        <artifactId>netide-artifacts</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <!-- project specific dependencies -->
       <dependency>
         <groupId>org.opendaylight.controller</groupId>

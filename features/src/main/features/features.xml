@@ -17,6 +17,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${yangtools.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.netide/shim/${project.version}</bundle>
-    <configfile finalname="${configfile.directory}/43-netideshim.xml">mvn:org.opendaylight.netide/shim-config/${project.version}</configfile>
+    <configfile finalname="${configfile.directory}/43-netideshim.xml">mvn:org.opendaylight.netide/shim-config/${project.version}/xml/config</configfile>
   </feature>
 </features>
