@@ -37,6 +37,5 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
    
    <required-capabilities>
        <capability>urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim?module=shim&amp;revision=2015-10-01</capability>
-       <capability>urn:opendaylight:params:xml:ns:yang:controller:config:shim:shim?module=shim&amp;revision=2015-10-01</capability>
    </required-capabilities>
 </snapshot>
