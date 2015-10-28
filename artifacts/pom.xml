@@ -47,6 +47,11 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <type>xml</type>
         <classifier>config</classifier>
       </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>netide-impl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

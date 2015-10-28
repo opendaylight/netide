@@ -18,7 +18,6 @@ module netide {
         output {
             leaf netip-version {
                 type int8;
-                }
             }
         }
     }
