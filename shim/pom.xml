@@ -19,16 +19,14 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <!-- <Bundle-Activator>org.opendaylight.netide.shim.Activator</Bundle-Activator> -->
+                        <Bundle-Version>${project.version}</Bundle-Version>               
                         <Export-Package>
                             org.opendaylight.netide.shim;version=${project.version},
                             org.opendaylight.yang.*,
                             org.zeromq,
                             zmq,
                             org.javatuples.*,
-                            org.opendaylight.openflowjava.*<!-- ,
-                            !com.google.guava;version=18.0.0 -->,
+                            org.opendaylight.openflowjava.*,
                             org.opendaylight.netide.netiplib
                         </Export-Package>
                     </instructions>

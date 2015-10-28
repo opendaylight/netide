@@ -7,8 +7,6 @@
  */
 package org.opendaylight.netide.shim;
 
-import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
-import org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -18,35 +16,15 @@ import org.slf4j.LoggerFactory;
 public class Activator implements BundleActivator {
 
     private static final Logger LOG = LoggerFactory.getLogger(Activator.class);
-    private SwitchConnectionProvider connectionProvider;
-    private ZeroMQBaseConnector coreConnector;
 
     @Override
     public void start(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-        /*LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
-        connectionProvider  = new SwitchConnectionProviderImpl();
-        coreConnector = new ZeroMQBaseConnector();
-        
-        ShimSwitchConnectionHandlerImpl handler = new ShimSwitchConnectionHandlerImpl(coreConnector);
-        coreConnector.RegisterCoreListener(handler);
-        coreConnector.setPort(5555);
-        
-        connectionProvider.setSwitchConnectionHandler(handler);
-
-        ConnectionConfiguration conf = new ShimConnectionConfiguration();
-        
-        connectionProvider.setConfiguration(conf);
-        coreConnector.Start();
-        connectionProvider.startup();*/
+        LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-        /*LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
-        connectionProvider.shutdown();
-        coreConnector.Stop();*/
+        LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
     }
 
 }
