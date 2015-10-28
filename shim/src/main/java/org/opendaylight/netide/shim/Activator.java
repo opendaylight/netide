@@ -24,7 +24,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         // TODO Auto-generated method stub
-        LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
+        /*LOG.info("NetIDE SHIM ACTIVATOR: Bundle start");
         connectionProvider  = new SwitchConnectionProviderImpl();
         coreConnector = new ZeroMQBaseConnector();
         
@@ -38,15 +38,15 @@ public class Activator implements BundleActivator {
         
         connectionProvider.setConfiguration(conf);
         coreConnector.Start();
-        connectionProvider.startup();
+        connectionProvider.startup();*/
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         // TODO Auto-generated method stub
-        LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
+        /*LOG.info("NetIDE SHIM ACTIVATOR: Bundle stop");
         connectionProvider.shutdown();
-        coreConnector.Stop();
+        coreConnector.Stop();*/
     }
 
 }

@@ -20,7 +20,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Bundle-Activator>org.opendaylight.netide.shim.Activator</Bundle-Activator>
+                        <!-- <Bundle-Activator>org.opendaylight.netide.shim.Activator</Bundle-Activator> -->
                         <Export-Package>
                             org.opendaylight.netide.shim;version=${project.version},
                             org.opendaylight.yang.*,

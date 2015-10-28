@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.r
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.rev151001.StatusOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 
 /**
  * @author giuseppex.petralia@intel.com
@@ -23,7 +24,7 @@ public class StatusImpl implements NetideService {
     @Override
     public Future<RpcResult<StatusOutput>> status() {
         StatusOutputBuilder builder = new StatusOutputBuilder();
-        builder.setNetipVersion((byte)0x02);
+        builder.setNetipVersion(NetIDEProtocolVersion.VERSION_1_1.getValue());
         return RpcResultBuilder.success(builder.build()).buildFuture();
     }
 }
