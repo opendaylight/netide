@@ -13,4 +13,13 @@ module netide {
     revision "2015-10-01" {
         description "Initial revision of netide model";
     }
+    
+    rpc status {
+        output {
+            leaf netip-version {
+                type int8;
+                }
+            }
+        }
+    }
 }
