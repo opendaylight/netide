@@ -12,6 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.EchoRequestMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.ErrorMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.ExperimenterMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetConfigReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetFeaturesOutputFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.HelloMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.MultipartReplyMessageFactory;
@@ -21,6 +22,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHel
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
@@ -48,5 +50,6 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(HelloMessage.class, new HelloMessageFactory());
         registryHelper.registerSerializer(ErrorMessage.class, new ErrorMessageFactory());
         registryHelper.registerSerializer(ExperimenterMessage.class, new ExperimenterMessageFactory());
+        registryHelper.registerSerializer(GetConfigReply.class, new GetConfigReplyMessageFactory());
     }
 }
