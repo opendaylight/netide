@@ -21,7 +21,6 @@ maven-eclipse.xml
 *.class
 out/
 bin/
-gen/
 target/
 target-android/
 **/target
