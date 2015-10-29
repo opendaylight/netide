@@ -27,6 +27,11 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
     private RpcRegistration<NetideService> netideService;
     private SwitchConnectionProvider connectionProvider;
     private ZeroMQBaseConnector coreConnector;
+    private int corePort;
+    
+    public NetideProvider(int _corePort){
+        corePort = _corePort;
+    }
     
     @Override
     public void onSessionInitiated(ProviderContext session) {
@@ -36,7 +41,7 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
         
         ShimSwitchConnectionHandlerImpl handler = new ShimSwitchConnectionHandlerImpl(coreConnector);
         coreConnector.RegisterCoreListener(handler);
-        coreConnector.setPort(5555);
+        coreConnector.setPort(corePort);
         
         connectionProvider.setSwitchConnectionHandler(handler);
 

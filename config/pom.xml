@@ -36,7 +36,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/classes/initial/43-netideshim.xml</file>
+                                    <file>${project.build.directory}/classes/initial/43-netide.xml</file>
                                     <type>xml</type>
                                     <classifier>config</classifier>
                                 </artifact>

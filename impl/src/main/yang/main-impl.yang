@@ -1,7 +1,7 @@
-module netide-impl {
+module main-impl {
     yang-version 1;
-    namespace "urn:opendaylight:params:xml:ns:yang:netide:impl";
-    prefix "netide-impl";
+    namespace "urn:opendaylight:params:xml:ns:yang:netide:main-impl";
+    prefix "main-impl";
 
     import config { prefix config; revision-date 2013-04-05; }
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
@@ -14,14 +14,20 @@ module netide-impl {
             "Initial revision";
     }
 
-    identity netide {
+    identity main-impl {
         base config:module-type;
-        config:java-name-prefix Netide;
+        config:java-name-prefix NetideMain;
     }
 
     augment "/config:modules/config:module/config:configuration" {
-        case netide {
-            when "/config:modules/config:module/config:type = 'netide'";
+        case main-impl {
+            when "/config:modules/config:module/config:type = 'main-impl'";
+            
+            leaf core-port {
+                type int32;
+                config true;
+            }
+            
             container broker {
                 uses config:service-ref {
                     refine type {
@@ -31,5 +37,6 @@ module netide-impl {
                 }
             }
         }
+        
     }
 }
