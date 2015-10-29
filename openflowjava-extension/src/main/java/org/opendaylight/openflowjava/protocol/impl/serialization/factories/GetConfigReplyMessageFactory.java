@@ -13,13 +13,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class GetConfigReplyMessageFactory implements OFSerializer<GetConfigReply>, SerializerRegistryInjector{
+public class GetConfigReplyMessageFactory implements OFSerializer<GetConfigOutput>, SerializerRegistryInjector{
 
     private static final byte MESSAGE_TYPE = 8;
     private SerializerRegistry registry;
@@ -30,7 +30,7 @@ public class GetConfigReplyMessageFactory implements OFSerializer<GetConfigReply
     }
 
     @Override
-    public void serialize(GetConfigReply message, ByteBuf outBuffer) {
+    public void serialize(GetConfigOutput message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getFlags().getIntValue());
         outBuffer.writeShort(message.getMissSendLen());
