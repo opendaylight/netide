@@ -13,19 +13,27 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoRequestMessageFactory implements OFSerializer<EchoRequestMessage>, SerializerRegistryInjector{
-    private static final byte MESSAGE_TYPE = 2;
+public class ErrorMessageFactory implements OFSerializer<ErrorMessage>, SerializerRegistryInjector{
+    
     private SerializerRegistry registry;
+    private static final byte MESSAGE_TYPE = 1;
     
     @Override
-    public void serialize(EchoRequestMessage message, ByteBuf outBuffer) {
+    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+        this.registry = serializerRegistry;
+    }
+
+    @Override
+    public void serialize(ErrorMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
+        outBuffer.writeShort(message.getType());
+        outBuffer.writeShort(message.getCode());
         byte[] data = message.getData();
 
         if (data != null) {
@@ -34,10 +42,4 @@ public class EchoRequestMessageFactory implements OFSerializer<EchoRequestMessag
         
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-
-    @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
-
 }

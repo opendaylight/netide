@@ -13,30 +13,24 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoRequestMessageFactory implements OFSerializer<EchoRequestMessage>, SerializerRegistryInjector{
-    private static final byte MESSAGE_TYPE = 2;
+public class HelloMessageFactory implements OFSerializer<HelloMessage>, SerializerRegistryInjector{
     private SerializerRegistry registry;
+    private static final byte MESSAGE_TYPE = 0;
     
     @Override
-    public void serialize(EchoRequestMessage message, ByteBuf outBuffer) {
+    public void serialize(HelloMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        byte[] data = message.getData();
-
-        if (data != null) {
-            outBuffer.writeBytes(data);
-        }
-        
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 
     @Override
-    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
 
