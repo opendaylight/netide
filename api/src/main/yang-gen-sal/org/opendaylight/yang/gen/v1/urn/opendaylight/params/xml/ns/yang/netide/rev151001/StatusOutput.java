@@ -29,7 +29,8 @@ public interface StatusOutput
 
 
 
-    public static final QName QNAME = org.opendaylight.yangtools.yang.common.QName.cachedReference(org.opendaylight.yangtools.yang.common.QName.create("urn:opendaylight:params:xml:ns:yang:netide","2015-10-01","output"));
+    public static final QName QNAME = org.opendaylight.yangtools.yang.common.QName.cachedReference(
+        org.opendaylight.yangtools.yang.common.QName.create("urn:opendaylight:params:xml:ns:yang:netide", "2015-10-01", "output"));
 
     java.lang.Byte getNetipVersion();
 

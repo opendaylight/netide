@@ -21,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.factories.Multi
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.NetIdePacketOutInputMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.PacketInMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.PortStatusMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.factories.QueueGetConfigReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
@@ -29,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
@@ -60,5 +62,6 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(FlowRemovedMessage.class, new FlowRemovedMessageFactory());
         registryHelper.registerSerializer(PortStatusMessage.class, new PortStatusMessageFactory());
         registryHelper.registerSerializer(BarrierOutput.class, new BarrierReplyMessageFactory());
+        registryHelper.registerSerializer(GetQueueConfigOutput.class, new QueueGetConfigReplyMessageFactory());
     }
 }

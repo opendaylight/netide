@@ -1,5 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.rev151001;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Map;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.AugmentationHolder;
@@ -131,8 +132,8 @@ public class StatusOutputBuilder implements Builder <org.opendaylight.yang.gen.v
         
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((_netipVersion == null) ? 0 : _netipVersion.hashCode());
-            result = prime * result + ((augmentation == null) ? 0 : augmentation.hashCode());
+            result = prime * result + Objects.hashCode(_netipVersion);
+            result = prime * result + Objects.hashCode(augmentation);
         
             hash = result;
             hashValid = true;
@@ -151,21 +152,13 @@ public class StatusOutputBuilder implements Builder <org.opendaylight.yang.gen.v
                 return false;
             }
             org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.rev151001.StatusOutput other = (org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.rev151001.StatusOutput)obj;
-            if (_netipVersion == null) {
-                if (other.getNetipVersion() != null) {
-                    return false;
-                }
-            } else if(!_netipVersion.equals(other.getNetipVersion())) {
+            if (!Objects.equals(_netipVersion, other.getNetipVersion())) {
                 return false;
             }
             if (getClass() == obj.getClass()) {
                 // Simple case: we are comparing against self
                 StatusOutputImpl otherImpl = (StatusOutputImpl) obj;
-                if (augmentation == null) {
-                    if (otherImpl.augmentation != null) {
-                        return false;
-                    }
-                } else if(!augmentation.equals(otherImpl.augmentation)) {
+                if (!Objects.equals(augmentation, otherImpl.augmentation)) {
                     return false;
                 }
             } else {
