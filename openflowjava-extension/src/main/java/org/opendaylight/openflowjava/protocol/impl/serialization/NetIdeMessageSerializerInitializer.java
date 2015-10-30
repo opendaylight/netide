@@ -14,6 +14,7 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.factories.EchoR
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.ErrorMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.ExperimenterMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.FlowRemovedMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetAsyncReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetConfigReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.GetFeaturesOutputFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.HelloMessageFactory;
@@ -29,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
@@ -66,5 +68,6 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(BarrierOutput.class, new BarrierReplyMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new QueueGetConfigReplyMessageFactory());
         registryHelper.registerSerializer(RoleRequestOutput.class, new RoleReplyMessageFactory());
+        registryHelper.registerSerializer(GetAsyncOutput.class, new GetAsyncReplyMessageFactory());
     }
 }
