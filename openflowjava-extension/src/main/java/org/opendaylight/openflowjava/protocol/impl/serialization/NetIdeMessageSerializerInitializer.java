@@ -22,6 +22,7 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.factories.NetId
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.PacketInMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.PortStatusMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.factories.QueueGetConfigReplyMessageFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.factories.RoleReplyMessageFactory;
 import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
@@ -36,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 
 /**
  * @author giuseppex.petralia@intel.com
@@ -63,5 +65,6 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(PortStatusMessage.class, new PortStatusMessageFactory());
         registryHelper.registerSerializer(BarrierOutput.class, new BarrierReplyMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new QueueGetConfigReplyMessageFactory());
+        registryHelper.registerSerializer(RoleRequestOutput.class, new RoleReplyMessageFactory());
     }
 }
