@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.serialization.MatchEntriesInitializer;
+import org.opendaylight.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -79,7 +80,7 @@ public class PacketInMessageFactoryTest {
     @Test
     public void testSerialize() {
         PacketInMessageFactory packetInSerializationFactory = new PacketInMessageFactory();
-        SerializerRegistry registry = new SerializerRegistryImpl();
+        SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
         MatchEntriesInitializer.registerMatchEntrySerializers(registry);
         packetInSerializationFactory.injectSerializerRegistry(registry);

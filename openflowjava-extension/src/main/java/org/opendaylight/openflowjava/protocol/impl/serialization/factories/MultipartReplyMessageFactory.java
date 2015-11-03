@@ -129,7 +129,6 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     private static final byte METER_FEATURES_PADDING = 2;
     private static final int TABLE_FEATURES_LENGTH_INDEX = 0;
     private static final byte TABLE_FEATURES_PADDING = 5;
-    private static final int TABLE_FEATURES_PROPERTY_LENGTH_INDEX = 0;
     private static final byte INSTRUCTIONS_CODE = 0;
     private static final byte INSTRUCTIONS_MISS_CODE = 1;
     private static final byte NEXT_TABLE_CODE = 2;
@@ -223,7 +222,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             tableFeatureBuff.writeInt(tableFeature.getMaxEntries().intValue());
             for (TableFeatureProperties tableFeatureProp : tableFeature.getTableFeatureProperties()){
                 switch(tableFeatureProp.getType()){
-                case OFPTFPTINSTRUCTIONS :  writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_CODE);
+                case OFPTFPTINSTRUCTIONS : writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_CODE);
                     break;
                 case OFPTFPTINSTRUCTIONSMISS : writeInstructionRelatedTableProperty(tableFeatureBuff, tableFeatureProp, INSTRUCTIONS_MISS_CODE);
                     break;

@@ -33,9 +33,8 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeLong(message.getCookie().longValue());
-        OFSerializer<Match> matchSerializer = registry
-                .getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
-        matchSerializer.serialize(message.getMatch(), outBuffer);
+        registry.<Match, OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class))
+            .serialize(message.getMatch(), outBuffer);
         outBuffer.writeZero(PADDING);
 
         byte[] data = message.getData();
