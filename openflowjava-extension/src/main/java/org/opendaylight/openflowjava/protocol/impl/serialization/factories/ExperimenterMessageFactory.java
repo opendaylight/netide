@@ -34,8 +34,7 @@ public class ExperimenterMessageFactory implements OFSerializer<ExperimenterMess
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getExperimenter().getValue().intValue());
         outBuffer.writeInt(message.getExpType().intValue());
-        
-        //TODO: Wait for openflowjava response
+        //TODO: Serializer for data field is vendor specific.
         byte[] data = null;
 
         if (data != null) {

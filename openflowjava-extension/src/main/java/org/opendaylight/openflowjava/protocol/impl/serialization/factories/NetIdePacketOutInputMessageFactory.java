@@ -34,7 +34,7 @@ public class NetIdePacketOutInputMessageFactory implements OFSerializer<PacketOu
         outBuffer.writeZero(PADDING_IN_PACKET_OUT_MESSAGE);
         int actionsStartIndex = outBuffer.writerIndex();
         ListSerializer.serializeList(message.getAction(),
-                TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, outBuffer);
+                TypeKeyMakerFactory.createActionKeyMaker(message.getVersion()), registry, outBuffer);
         outBuffer.setShort(actionsLengthIndex, outBuffer.writerIndex() - actionsStartIndex);
         byte[] data = message.getData();
         if (data != null) {

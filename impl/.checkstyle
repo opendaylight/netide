@@ -7,8 +7,6 @@
   </local-check-config>
   <fileset name="java-sources-default" enabled="true" check-config-name="maven-checkstyle-plugin default" local="true">
     <file-match-pattern match-pattern="src/main/java/.*\.java" include-pattern="true"/>
-    <file-match-pattern match-pattern="src/main/yang-gen-config.*\.java" include-pattern="true"/>
-    <file-match-pattern match-pattern="src/main/yang-gen-sal.*\.java" include-pattern="true"/>
     <file-match-pattern match-pattern="src/main/resources.*\.properties" include-pattern="true"/>
     <file-match-pattern match-pattern="src/test/resources.*\.properties" include-pattern="true"/>
   </fileset>

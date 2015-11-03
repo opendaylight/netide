@@ -19,6 +19,8 @@ maven-eclipse.xml
 
 # ignore java compile time files:
 *.class
+yang-gen-sal/
+yang-gen-config/
 out/
 bin/
 target/

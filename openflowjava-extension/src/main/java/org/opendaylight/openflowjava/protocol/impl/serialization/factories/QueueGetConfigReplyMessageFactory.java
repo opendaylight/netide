@@ -80,7 +80,7 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
     }
     
     private void serializeExperimenterBody(ExperimenterIdQueueProperty body, ByteBuf outBuffer){
-        // TODO: Data missing from yang model. Ask to Openflowjava guys
+        // TODO: Experimenter Data is vendor specific that should implement its own serializer
         outBuffer.writeInt(body.getExperimenter().getValue().intValue());
         outBuffer.writeZero(PROPERTY_EXPERIMENTER_PADDING);
     }
