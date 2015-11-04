@@ -28,8 +28,8 @@ public class QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueC
     private SerializerRegistry registry;
     private static final byte MESSAGE_TYPE = 23;
     private static final byte PADDING = 4;
-    public static final int QUEUE_LENGTH_INDEX = 2;
-    public static final int PROPERTY_LENGTH_INDEX = 1;
+    public static final int QUEUE_LENGTH_INDEX = 8;
+    public static final int PROPERTY_LENGTH_INDEX = 2;
     private static final byte QUEUE_PADDING = 6;
     private static final byte PROPERTY_HEADER_PADDING = 4;
     private static final byte PROPERTY_RATE_PADDING = 6;
