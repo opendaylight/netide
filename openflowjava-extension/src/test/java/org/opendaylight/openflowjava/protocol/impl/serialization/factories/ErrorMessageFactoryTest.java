@@ -47,7 +47,7 @@ public class ErrorMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 30);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 28);
         Assert.assertEquals("Wrong Type", message.getType().intValue(), serializedBuffer.readShort());
         Assert.assertEquals("Wrong Code", message.getCode().intValue(), serializedBuffer.readShort());
         Assert.assertArrayEquals("Wrong data", message.getData(),

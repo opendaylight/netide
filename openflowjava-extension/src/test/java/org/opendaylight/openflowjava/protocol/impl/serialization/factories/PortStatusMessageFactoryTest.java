@@ -71,7 +71,7 @@ public class PortStatusMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 82);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 80);
         Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(PADDING);
         Assert.assertEquals("Wrong PortNo", message.getPortNo().intValue(), serializedBuffer.readUnsignedInt());

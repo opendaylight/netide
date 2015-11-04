@@ -85,7 +85,7 @@ public class PacketInMessageFactoryTest {
         packetInSerializationFactory.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         packetInSerializationFactory.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 68);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 66);
         Assert.assertEquals("Wrong BufferId", message.getBufferId().longValue(), serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong actions length", message.getTotalLen().intValue(),
                 serializedBuffer.readUnsignedShort());

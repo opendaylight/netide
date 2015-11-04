@@ -45,7 +45,7 @@ public class GetConfigReplyMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 14);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 12);
         Assert.assertEquals("Wrong Type", message.getFlags().getIntValue(), serializedBuffer.readShort());
         Assert.assertEquals("Wrong Code", message.getMissSendLen().intValue(), serializedBuffer.readShort());
     }

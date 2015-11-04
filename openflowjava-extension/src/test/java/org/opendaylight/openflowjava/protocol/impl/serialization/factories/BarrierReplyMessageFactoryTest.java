@@ -41,6 +41,6 @@ public class BarrierReplyMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 10);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 8);
     }
 }

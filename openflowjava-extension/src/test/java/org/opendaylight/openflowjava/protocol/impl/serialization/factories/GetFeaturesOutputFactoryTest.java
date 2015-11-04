@@ -47,7 +47,7 @@ public class GetFeaturesOutputFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 34);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 32);
         Assert.assertEquals("Wrong DatapathId", message.getDatapathId().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong Buffer ID", message.getBuffers().longValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong tables",  message.getTables().shortValue(), serializedBuffer.readUnsignedByte());

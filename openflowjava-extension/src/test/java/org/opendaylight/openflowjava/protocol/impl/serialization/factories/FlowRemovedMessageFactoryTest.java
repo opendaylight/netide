@@ -95,7 +95,7 @@ public class FlowRemovedMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 74);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 72);
         Assert.assertEquals("Wrong cookie", message.getCookie().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong priority",  message.getPriority().intValue(), serializedBuffer.readShort());
         Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readByte());

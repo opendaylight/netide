@@ -59,7 +59,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 82);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 80);
         Assert.assertEquals("Wrong port", message.getPort().getValue().longValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(PADDING);
         
