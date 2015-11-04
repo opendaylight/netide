@@ -43,7 +43,7 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeByte(message.getReason().getIntValue());
         outBuffer.writeZero(PADDING);
-        outBuffer.writeShort(message.getPortNo().intValue());
+        outBuffer.writeInt(message.getPortNo().intValue());
         outBuffer.writeZero(PORT_PADDING_1);
         writeMacAddress(message.getHwAddr().getValue(), outBuffer);
         outBuffer.writeZero(PORT_PADDING_2);
