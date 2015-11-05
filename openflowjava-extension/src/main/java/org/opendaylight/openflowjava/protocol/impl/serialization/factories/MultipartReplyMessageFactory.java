@@ -122,7 +122,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     private static final int BUCKET_LENGTH_INDEX = 0;
     private static final byte GROUP_DESC_PADDING = 1;
     private static final byte BUCKET_PADDING = 4;
-    private static final int METER_LENGTH_INDEX = 1;
+    private static final int METER_LENGTH_INDEX = 4;
     private static final byte METER_PADDING = 6;
     private static final int METER_CONFIG_LENGTH_INDEX = 0;
     private static final short LENGTH_OF_METER_BANDS = 16;
@@ -151,6 +151,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
 
     @Override
     public void serialize(MultipartReplyMessage message, ByteBuf outBuffer) {
+        
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);
@@ -208,6 +209,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
     
     private void serializeTableFeaturesBody(MultipartReplyBody body, ByteBuf outBuffer){
+        
         MultipartReplyTableFeaturesCase tableFeaturesCase = (MultipartReplyTableFeaturesCase) body;
         MultipartReplyTableFeatures tableFeatures = tableFeaturesCase.getMultipartReplyTableFeatures();
         for (TableFeatures tableFeature : tableFeatures.getTableFeatures()){
@@ -217,8 +219,10 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             tableFeatureBuff.writeZero(TABLE_FEATURES_PADDING);
             write32String(tableFeature.getName(), tableFeatureBuff);
             tableFeatureBuff.writeBytes(tableFeature.getMetadataMatch());
+            tableFeatureBuff.writeZero(64 - tableFeature.getMetadataMatch().length);
             tableFeatureBuff.writeBytes(tableFeature.getMetadataWrite());
-            writeTableConfig(tableFeature.getConfig(), outBuffer);
+            tableFeatureBuff.writeZero(64 - tableFeature.getMetadataWrite().length);
+            writeTableConfig(tableFeature.getConfig(), tableFeatureBuff);
             tableFeatureBuff.writeInt(tableFeature.getMaxEntries().intValue());
             for (TableFeatureProperties tableFeatureProp : tableFeature.getTableFeatureProperties()){
                 switch(tableFeatureProp.getType()){
@@ -383,22 +387,22 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         for (MeterConfig meterConfig : meter.getMeterConfig()){
             ByteBuf meterConfigBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             meterConfigBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
-            writeMeterFlags(meterConfig.getFlags(), outBuffer);
+            writeMeterFlags(meterConfig.getFlags(), meterConfigBuff);
             meterConfigBuff.writeInt(meterConfig.getMeterId().getValue().intValue());
             for (Bands currentBand : meterConfig.getBands()){
                 MeterBand meterBand = currentBand.getMeterBand();
                 if (meterBand instanceof MeterBandDropCase) {
                     MeterBandDropCase dropBandCase = (MeterBandDropCase) meterBand;
                     MeterBandDrop dropBand = dropBandCase.getMeterBandDrop();
-                    writeBandCommonFields(dropBand, outBuffer);
+                    writeBandCommonFields(dropBand, meterConfigBuff);
                 } else if (meterBand instanceof MeterBandDscpRemarkCase) {
                     MeterBandDscpRemarkCase dscpRemarkBandCase = (MeterBandDscpRemarkCase) meterBand;
                     MeterBandDscpRemark dscpRemarkBand = dscpRemarkBandCase.getMeterBandDscpRemark();
-                    writeBandCommonFields(dscpRemarkBand, outBuffer);
+                    writeBandCommonFields(dscpRemarkBand, meterConfigBuff);
                 } else if (meterBand instanceof MeterBandExperimenterCase) {
                     MeterBandExperimenterCase experimenterBandCase = (MeterBandExperimenterCase) meterBand;
                     MeterBandExperimenter experimenterBand = experimenterBandCase.getMeterBandExperimenter();
-                    writeBandCommonFields(experimenterBand, outBuffer);
+                    writeBandCommonFields(experimenterBand, meterConfigBuff);
                 }
             }
             meterConfigBuff.setShort(METER_CONFIG_LENGTH_INDEX, meterConfigBuff.readableBytes());
@@ -420,7 +424,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         map.put(2, flags.isOFPMFBURST());
         map.put(3, flags.isOFPMFSTATS());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeShort(bitmap);
     }
     
     private void serializeMeterBody(MultipartReplyBody body, ByteBuf outBuffer){
@@ -429,7 +433,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         for (MeterStats meterStats : meter.getMeterStats()){
             ByteBuf meterStatsBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             meterStatsBuff.writeInt(meterStats.getMeterId().getValue().intValue());
-            meterStatsBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
+            meterStatsBuff.writeInt(EncodeConstants.EMPTY_LENGTH);
             meterStatsBuff.writeZero(METER_PADDING);
             meterStatsBuff.writeInt(meterStats.getFlowCount().intValue());
             meterStatsBuff.writeLong(meterStats.getPacketInCount().longValue());
@@ -440,7 +444,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
                 meterStatsBuff.writeLong(meterBandStats.getPacketBandCount().longValue());
                 meterStatsBuff.writeLong(meterBandStats.getByteBandCount().longValue());
             }
-            meterStatsBuff.setShort(METER_LENGTH_INDEX, meterStatsBuff.readableBytes());
+            meterStatsBuff.setInt(METER_LENGTH_INDEX, meterStatsBuff.readableBytes());
             outBuffer.writeBytes(meterStatsBuff);
         }
     }
@@ -614,7 +618,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
         for (FlowStats flowStats : flow.getFlowStats()){
             ByteBuf flowStatsBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             flowStatsBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
-            flowStatsBuff.writeByte(flowStats.getTableId());
+            flowStatsBuff.writeByte(new Long(flowStats.getTableId()).byteValue());
             flowStatsBuff.writeZero(FLOW_STATS_PADDING_1);
             flowStatsBuff.writeInt(flowStats.getDurationSec().intValue());
             flowStatsBuff.writeInt(flowStats.getDurationNsec().intValue());
@@ -627,9 +631,10 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             flowStatsBuff.writeLong(flowStats.getByteCount().longValue());
             OFSerializer<Match> matchSerializer = registry
                     .getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
-            matchSerializer.serialize(flowStats.getMatch(), outBuffer);
-            ListSerializer.serializeList(flowStats.getAction(),
-                    TypeKeyMakerFactory.createActionKeyMaker(message.getVersion()), registry, flowStatsBuff);
+            matchSerializer.serialize(flowStats.getMatch(), flowStatsBuff);
+            ListSerializer.serializeList(flowStats.getInstruction(),
+                    TypeKeyMakerFactory.createInstructionKeyMaker(message.getVersion()), registry, flowStatsBuff);
+            
             flowStatsBuff.setShort(FLOW_STATS_LENGTH_INDEX, flowStatsBuff.readableBytes());
             outBuffer.writeBytes(flowStatsBuff);
         }
@@ -654,7 +659,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 16; i++){
+            for (; i< 256; i++){
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
@@ -672,7 +677,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 16; i++){
+            for (; i< 32; i++){
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
