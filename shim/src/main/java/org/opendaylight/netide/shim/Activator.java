@@ -7,7 +7,6 @@
  */
 package org.opendaylight.netide.shim;
 
-import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;

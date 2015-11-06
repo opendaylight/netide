@@ -7,7 +7,6 @@
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
-    <groupId>org.opendaylight.netide</groupId>
     <artifactId>shim</artifactId>
     <packaging>bundle</packaging>
     <name>NetIDE Shim</name>
@@ -22,12 +21,13 @@
                         <Bundle-Version>${project.version}</Bundle-Version>               
                         <Export-Package>
                             org.opendaylight.netide.shim;version=${project.version},
-                            org.opendaylight.yang.*,
+                            
                             org.zeromq,
                             zmq,
                             org.javatuples.*,
-                            org.opendaylight.openflowjava.*,
-                            org.opendaylight.netide.netiplib
+                            org.opendaylight.netide.openflowjava.*,
+                            org.opendaylight.netide.netiplib,
+                            org.opendaylight.openflowjava.statistics
                         </Export-Package>
                     </instructions>
                 </configuration>
