@@ -77,6 +77,11 @@
               <scope>import</scope>
               <type>pom</type>
             </dependency>
+	    <dependency>
+		<groupId>org.opendaylight.controller</groupId>
+		<artifactId>config-parent</artifactId>
+		<version>${config.version}</version>
+	    </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -206,21 +211,40 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.8</version>
                     <executions>
                         <execution>
                             <id>add-source</id>
+                            <phase>generate-sources</phase>
                             <goals>
                                 <goal>add-source</goal>
                             </goals>
-                            <phase>generate-sources</phase>
                             <configuration>
                                 <sources>
-                                    <source>src/main/yang</source>
+                                    <source>${jmxGeneratorPath}</source>
+                                    <source>${salGeneratorPath}</source>
                                 </sources>
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+		<plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <configuration>
+                        <filesets>
+                            <fileset>
+                                <directory>${jmxGeneratorPath}</directory>
+                                <includes>
+                                    <include>**</include>
+                                </includes>
+                            </fileset>
+                            <fileset>
+                                <directory>${salGeneratorPath}</directory>
+                                <includes>
+                                    <include>**</include>
+                                </includes>
+                            </fileset>
+                        </filesets>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
