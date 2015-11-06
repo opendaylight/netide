@@ -12,32 +12,31 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInputBuilder;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoReplyInputMessageFactory implements OFDeserializer<EchoReplyInput>, DeserializerRegistryInjector{
+public class GetQueueConfigInputMessageFactory implements OFDeserializer<GetQueueConfigInput>, DeserializerRegistryInjector{
 
     private DeserializerRegistry registry;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
     @Override
-    public EchoReplyInput deserialize(ByteBuf rawMessage) {
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+    public GetQueueConfigInput deserialize(ByteBuf rawMessage) {
+        GetQueueConfigInputBuilder builder = new GetQueueConfigInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        int remainingBytes = rawMessage.readableBytes();
-        if (remainingBytes > 0) {
-            builder.setData(rawMessage.readBytes(remainingBytes).array());
-        }
+        builder.setXid((rawMessage.readUnsignedInt()));
+        builder.setPort(new PortNumber(rawMessage.readUnsignedInt()));
         return builder.build();
     }
+    
 
 }

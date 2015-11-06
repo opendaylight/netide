@@ -12,31 +12,27 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInputBuilder;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoReplyInputMessageFactory implements OFDeserializer<EchoReplyInput>, DeserializerRegistryInjector{
+public class BarrierInputMessageFactory implements OFDeserializer<BarrierInput>, DeserializerRegistryInjector{
 
     private DeserializerRegistry registry;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
     @Override
-    public EchoReplyInput deserialize(ByteBuf rawMessage) {
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+    public BarrierInput deserialize(ByteBuf rawMessage) {
+        BarrierInputBuilder builder = new BarrierInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
-        int remainingBytes = rawMessage.readableBytes();
-        if (remainingBytes > 0) {
-            builder.setData(rawMessage.readBytes(remainingBytes).array());
-        }
         return builder.build();
     }
 

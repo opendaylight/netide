@@ -12,32 +12,38 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoReplyInputMessageFactory implements OFDeserializer<EchoReplyInput>, DeserializerRegistryInjector{
+public class TableModInputMessageFactory implements OFDeserializer<TableModInput>, DeserializerRegistryInjector{
 
     private DeserializerRegistry registry;
+    private static final byte PADDING_IN_TABLE_MOD_MESSAGE = 3;
     
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
-
+    
     @Override
-    public EchoReplyInput deserialize(ByteBuf rawMessage) {
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+    public TableModInput deserialize(ByteBuf rawMessage) {
+        TableModInputBuilder builder = new TableModInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
-        int remainingBytes = rawMessage.readableBytes();
-        if (remainingBytes > 0) {
-            builder.setData(rawMessage.readBytes(remainingBytes).array());
-        }
+        builder.setTableId(new TableId((long)rawMessage.readUnsignedByte()));
+        rawMessage.skipBytes(PADDING_IN_TABLE_MOD_MESSAGE);
+        builder.setConfig(createTableConfig(rawMessage.readInt()));
         return builder.build();
     }
-
+    
+    private static TableConfig createTableConfig(int input) {
+        final Boolean one = (input & (1 << 0)) > 0;
+        return new TableConfig(one);
+    }
 }

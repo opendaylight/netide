@@ -11,6 +11,7 @@ import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeToClassInitHelper;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeToClassKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
@@ -18,10 +19,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
@@ -29,7 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 
 /**
@@ -72,6 +78,7 @@ public final class NetIdeTypeToClassMapInitializer {
         helper.registerTypeToClass((short) 4, ExperimenterMessage.class);
         helper.registerTypeToClass((short) 5, GetFeaturesInput.class);
         helper.registerTypeToClass((short) 6, GetFeaturesOutput.class);
+        helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 8, GetConfigOutput.class);
         helper.registerTypeToClass((short) 9, SetConfigInput.class);
         helper.registerTypeToClass((short) 10, PacketInMessage.class);
@@ -81,10 +88,15 @@ public final class NetIdeTypeToClassMapInitializer {
         helper.registerTypeToClass((short) 14, FlowModInput.class);
         helper.registerTypeToClass((short) 18, MultipartRequestInput.class);
         helper.registerTypeToClass((short) 19, MultipartReplyMessage.class);
+        helper.registerTypeToClass((short) 20, BarrierInput.class);
         helper.registerTypeToClass((short) 21, BarrierOutput.class);
+        helper.registerTypeToClass((short) 22, GetQueueConfigInput.class);
         helper.registerTypeToClass((short) 23, GetQueueConfigOutput.class);
+        helper.registerTypeToClass((short) 24, RoleRequestInput.class);
         helper.registerTypeToClass((short) 25, RoleRequestOutput.class);
+        helper.registerTypeToClass((short) 26, GetAsyncInput.class);
         helper.registerTypeToClass((short) 27, GetAsyncOutput.class);
+        helper.registerTypeToClass((short) 28, SetAsyncInput.class);
     }
 
 }

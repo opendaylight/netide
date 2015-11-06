@@ -12,32 +12,27 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInputBuilder;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class EchoReplyInputMessageFactory implements OFDeserializer<EchoReplyInput>, DeserializerRegistryInjector{
+public class GetAsyncRequestMessageFactory implements OFDeserializer<GetAsyncInput>, DeserializerRegistryInjector{
 
     private DeserializerRegistry registry;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
     @Override
-    public EchoReplyInput deserialize(ByteBuf rawMessage) {
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
+    public GetAsyncInput deserialize(ByteBuf rawMessage) {
+        GetAsyncInputBuilder builder = new GetAsyncInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
-        builder.setXid(rawMessage.readUnsignedInt());
-        int remainingBytes = rawMessage.readableBytes();
-        if (remainingBytes > 0) {
-            builder.setData(rawMessage.readBytes(remainingBytes).array());
-        }
+        builder.setXid((rawMessage.readUnsignedInt()));
         return builder.build();
     }
-
 }
