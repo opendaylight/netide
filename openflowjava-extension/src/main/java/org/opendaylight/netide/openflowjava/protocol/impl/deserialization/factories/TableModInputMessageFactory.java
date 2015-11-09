@@ -38,12 +38,12 @@ public class TableModInputMessageFactory implements OFDeserializer<TableModInput
         builder.setXid(rawMessage.readUnsignedInt());
         builder.setTableId(new TableId((long)rawMessage.readUnsignedByte()));
         rawMessage.skipBytes(PADDING_IN_TABLE_MOD_MESSAGE);
-        builder.setConfig(createTableConfig(rawMessage.readInt()));
+        builder.setConfig(createTableConfig(rawMessage.readUnsignedInt()));
         return builder.build();
     }
     
-    private static TableConfig createTableConfig(int input) {
-        final Boolean one = (input & (1 << 0)) > 0;
-        return new TableConfig(one);
+    private static TableConfig createTableConfig(long input) {
+        boolean deprecated = (input & 3) != 0;
+        return new TableConfig(deprecated);
     }
 }

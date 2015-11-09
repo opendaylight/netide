@@ -33,14 +33,9 @@ public class SetConfigInputMessageFactory implements OFDeserializer<SetConfigInp
         SetConfigInputBuilder builder = new SetConfigInputBuilder();
         builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
-        SwitchConfigFlag flag = createSwitchConfigFlagsFromBitmap(rawMessage.readUnsignedShort());
-        builder.setFlags(flag);
+        builder.setFlags(SwitchConfigFlag.forValue(rawMessage.readUnsignedShort()));
         builder.setMissSendLen(rawMessage.readUnsignedShort());
         return builder.build();
-    }
-
-    private static SwitchConfigFlag createSwitchConfigFlagsFromBitmap(int input) {
-        return SwitchConfigFlag.forValue(input);
     }
 
     @Override
