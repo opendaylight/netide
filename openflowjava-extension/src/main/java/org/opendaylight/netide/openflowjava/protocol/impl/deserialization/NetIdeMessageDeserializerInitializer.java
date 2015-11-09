@@ -51,20 +51,21 @@ public final class NetIdeMessageDeserializerInitializer {
         // register OF v1.3 NEW message deserializers
         SimpleDeserializerRegistryHelper helper;
         helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
-        helper.registerDeserializer(14, null, FlowModInput.class, new FlowModInputMessageFactory());
+        //helper.registerDeserializer(0, null, HelloInput.class, new HelloInputMessageFactory());
+        //helper.registerDeserializer(2, null, EchoInput.class, new EchoInputMessageFactory());
+        //helper.registerDeserializer(3, null, EchoReplyInput.class, new EchoReplyInputMessageFactory());
         helper.registerDeserializer(5, null, GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
-        helper.registerDeserializer(13, null, PacketOutInput.class, new PacketOutInputMessageFactory());
+        helper.registerDeserializer(7, null, GetConfigInput.class, new GetConfigInputMessageFactory());
         helper.registerDeserializer(9, null, SetConfigInput.class, new SetConfigInputMessageFactory());
-        helper.registerDeserializer(18, null, MultipartRequestInput.class, new MultipartRequestInputMessageFactory());
-        helper.registerDeserializer( 20, null, BarrierInput.class, new BarrierInputMessageFactory());
-        helper.registerDeserializer( 2, null, EchoInput.class, new EchoInputMessageFactory());
-        helper.registerDeserializer( 3, null, EchoReplyInput.class, new EchoReplyInputMessageFactory());
-        helper.registerDeserializer( 26, null, GetAsyncInput.class, new GetAsyncRequestMessageFactory());
-        helper.registerDeserializer( 7, null, GetConfigInput.class, new GetConfigInputMessageFactory());
-        helper.registerDeserializer(22, null, GetQueueConfigInput.class, new GetQueueConfigInputMessageFactory());
-        helper.registerDeserializer(0, null, HelloInput.class, new HelloInputMessageFactory());
-        helper.registerDeserializer(24, null, RoleRequestInput.class, new RoleRequestInputMessageFactory());
-        helper.registerDeserializer(28, null, SetAsyncInput.class, new SetAsyncInputMessageFactory());
+        helper.registerDeserializer(13, null, PacketOutInput.class, new PacketOutInputMessageFactory());
+        helper.registerDeserializer(14, null, FlowModInput.class, new FlowModInputMessageFactory());
         helper.registerDeserializer(17, null, TableModInput.class, new TableModInputMessageFactory());
+        helper.registerDeserializer(18, null, MultipartRequestInput.class, new MultipartRequestInputMessageFactory());
+        helper.registerDeserializer(20, null, BarrierInput.class, new BarrierInputMessageFactory());
+        helper.registerDeserializer(22, null, GetQueueConfigInput.class, new GetQueueConfigInputMessageFactory());
+        helper.registerDeserializer(24, null, RoleRequestInput.class, new RoleRequestInputMessageFactory());
+        helper.registerDeserializer(26, null, GetAsyncInput.class, new GetAsyncRequestMessageFactory());
+        helper.registerDeserializer(28, null, SetAsyncInput.class, new SetAsyncInputMessageFactory());
+        
     }
 }
