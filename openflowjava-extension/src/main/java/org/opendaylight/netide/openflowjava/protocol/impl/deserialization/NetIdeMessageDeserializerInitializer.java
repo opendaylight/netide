@@ -15,9 +15,12 @@ import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factor
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.GetConfigInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.GetFeaturesInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.GetQueueConfigInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.GroupModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.HelloInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.MeterModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.MultipartRequestInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.PacketOutInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.PortModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.RoleRequestInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.SetAsyncInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.SetConfigInputMessageFactory;
@@ -33,9 +36,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
@@ -59,6 +65,8 @@ public final class NetIdeMessageDeserializerInitializer {
         helper.registerDeserializer(9, null, SetConfigInput.class, new SetConfigInputMessageFactory());
         helper.registerDeserializer(13, null, PacketOutInput.class, new PacketOutInputMessageFactory());
         helper.registerDeserializer(14, null, FlowModInput.class, new FlowModInputMessageFactory());
+        helper.registerDeserializer(15, null, GroupModInput.class, new GroupModInputMessageFactory());
+        helper.registerDeserializer(16, null, PortModInput.class, new PortModInputMessageFactory());
         helper.registerDeserializer(17, null, TableModInput.class, new TableModInputMessageFactory());
         helper.registerDeserializer(18, null, MultipartRequestInput.class, new MultipartRequestInputMessageFactory());
         helper.registerDeserializer(20, null, BarrierInput.class, new BarrierInputMessageFactory());
@@ -66,6 +74,7 @@ public final class NetIdeMessageDeserializerInitializer {
         helper.registerDeserializer(24, null, RoleRequestInput.class, new RoleRequestInputMessageFactory());
         helper.registerDeserializer(26, null, GetAsyncInput.class, new GetAsyncRequestMessageFactory());
         helper.registerDeserializer(28, null, SetAsyncInput.class, new SetAsyncInputMessageFactory());
+        helper.registerDeserializer(29, null, MeterModInput.class, new MeterModInputMessageFactory());
         
     }
 }
