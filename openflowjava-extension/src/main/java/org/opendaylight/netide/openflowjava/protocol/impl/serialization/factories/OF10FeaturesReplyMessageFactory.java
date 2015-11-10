@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionTypeV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
@@ -36,7 +37,7 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
         outBuffer.writeInt(message.getBuffers().intValue());
         outBuffer.writeByte(message.getTables().intValue());
         outBuffer.writeZero(PADDING);
-        outBuffer.writeInt(createCapabilities(message.getCapabilities()));
+        outBuffer.writeInt(createCapabilities(message.getCapabilitiesV10()));
         outBuffer.writeInt(createActionsV10(message.getActionsV10()));
         for(PhyPort port : message.getPhyPort()){
             outBuffer.writeShort(port.getPortNo().intValue());
@@ -72,12 +73,14 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
     
     private void writePortState(PortStateV10 state, ByteBuf outBuffer){
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.isStpListen());
-        map.put(1, state.isLinkDown());
-        map.put(2, state.isStpLearn());
-        map.put(3, state.isStpForward());
-        map.put(4, state.isStpBlock());
-        map.put(5, state.isStpMask());
+        map.put(0, state.isLinkDown());
+        map.put(1, state.isBlocked());
+        map.put(2, state.isLive());
+        map.put(3, state.isStpListen());
+        map.put(4, state.isStpLearn());
+        map.put(5, state.isStpForward());
+        map.put(6, state.isStpBlock());
+        map.put(7, state.isStpMask());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -95,15 +98,16 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
         outBuffer.writeInt(bitmap);
     }
     
-    private static int createCapabilities(Capabilities capabilities){
+    private static int createCapabilities(CapabilitiesV10 capabilities){
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, capabilities.isOFPCFLOWSTATS());
         map.put(1, capabilities.isOFPCTABLESTATS());
         map.put(2, capabilities.isOFPCPORTSTATS());
-        map.put(3, capabilities.isOFPCGROUPSTATS());
+        map.put(3, capabilities.isOFPCSTP());
+        map.put(4, capabilities.isOFPCRESERVED());
         map.put(5, capabilities.isOFPCIPREASM());
         map.put(6, capabilities.isOFPCQUEUESTATS());
-        map.put(8, capabilities.isOFPCPORTBLOCKED());
+        map.put(7, capabilities.isOFPCARPMATCHIP());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         return bitmap;
     }
@@ -121,7 +125,8 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
                 action.isOFPATSETNWTOS(),
                 action.isOFPATSETTPSRC(),
                 action.isOFPATSETTPDST(),
-                action.isOFPATENQUEUE());
+                action.isOFPATENQUEUE(),
+                action.isOFPATVENDOR());
         
     }
     
