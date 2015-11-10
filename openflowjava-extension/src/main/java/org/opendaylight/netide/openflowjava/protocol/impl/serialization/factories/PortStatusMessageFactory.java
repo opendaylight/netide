@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>, SerializerRegistryInjector{
 
-    private static final byte MESSAGE_TYPE = 11;
+    private static final byte MESSAGE_TYPE = 12;
     private static final byte PADDING = 7;
     private static final byte PORT_PADDING_1 = 4;
     private static final byte PORT_PADDING_2 = 2;

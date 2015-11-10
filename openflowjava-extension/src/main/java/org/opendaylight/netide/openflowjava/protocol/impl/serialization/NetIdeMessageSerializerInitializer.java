@@ -18,6 +18,13 @@ import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factorie
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.HelloMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.NetIdePacketOutInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10BarrierReplyMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10FeaturesReplyMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10FlowRemovedMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10PacketInMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10PortStatusMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10QueueGetConfigReplyMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.OF10StatsReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.PacketInMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.PortStatusMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.QueueGetConfigReplyMessageFactory;
@@ -52,8 +59,21 @@ public final class NetIdeMessageSerializerInitializer {
     }
     
     public static void registerMessageSerializers(SerializerRegistry registry) {
-        short version = EncodeConstants.OF13_VERSION_ID;
+        short version = EncodeConstants.OF10_VERSION_ID;
         CommonMessageRegistryHelper registryHelper = new CommonMessageRegistryHelper(version, registry);
+        registryHelper.registerSerializer(ErrorMessage.class, new ErrorMessageFactory());
+        registryHelper.registerSerializer(EchoRequestMessage.class, new EchoRequestMessageFactory());
+        registryHelper.registerSerializer(GetFeaturesOutput.class, new OF10FeaturesReplyMessageFactory());
+        registryHelper.registerSerializer(GetConfigOutput.class, new GetConfigReplyMessageFactory());
+        registryHelper.registerSerializer(PacketInMessage.class, new OF10PacketInMessageFactory());
+        registryHelper.registerSerializer(FlowRemovedMessage.class, new OF10FlowRemovedMessageFactory());
+        registryHelper.registerSerializer(PortStatusMessage.class, new OF10PortStatusMessageFactory());
+        registryHelper.registerSerializer(MultipartReplyMessage.class, new OF10StatsReplyMessageFactory());
+        registryHelper.registerSerializer(BarrierOutput.class, new OF10BarrierReplyMessageFactory());
+        registryHelper.registerSerializer(GetQueueConfigOutput.class, new OF10QueueGetConfigReplyMessageFactory());
+        
+        version = EncodeConstants.OF13_VERSION_ID;
+        registryHelper = new CommonMessageRegistryHelper(version, registry);
         registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory());
         registryHelper.registerSerializer(PacketOutInput.class, new NetIdePacketOutInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesOutput.class, new GetFeaturesOutputFactory());
