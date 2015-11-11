@@ -45,9 +45,10 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQu
                 ByteBuf queuePropertyBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
                 queuePropertyBuff.writeShort(queueProperty.getProperty().getIntValue());
                 queuePropertyBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
+                queuePropertyBuff.writeZero(4);
                 if (queueProperty.getProperty() == QueueProperties.OFPQTMINRATE){
                     RateQueueProperty body = queueProperty.getAugmentation(RateQueueProperty.class);
-                    queuePropertyBuff.writeShort(body.getRate());
+                    queuePropertyBuff.writeShort(body.getRate().intValue());
                     queuePropertyBuff.writeZero(QUEUE_PROPERTY_PADDING);
                 }
                 queuePropertyBuff.setShort(QUEUE_PROPERTY_LENGTH_INDEX, queuePropertyBuff.readableBytes());
@@ -56,5 +57,7 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQu
             queueBuff.setShort(QUEUE_LENGTH_INDEX, queueBuff.readableBytes());
             outBuffer.writeBytes(queueBuff);
         }
+        
+        ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

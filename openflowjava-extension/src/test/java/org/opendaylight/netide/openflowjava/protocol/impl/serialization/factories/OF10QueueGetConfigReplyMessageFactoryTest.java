@@ -14,10 +14,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.QueueGetConfigReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.RateQueuePropertyBuilder;
@@ -30,83 +27,56 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.QueuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
-
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class QueueGetConfigReplyMessageFactoryTest {
+public class OF10QueueGetConfigReplyMessageFactoryTest {
     GetQueueConfigOutput message;
-    private static final byte MESSAGE_TYPE = 23;
-    private static final byte PADDING = 4;
-    private static final byte QUEUE_PADDING = 6;
-    private static final byte PROPERTY_HEADER_PADDING = 4;
-    private static final byte PROPERTY_RATE_PADDING = 6;
+    private static final byte MESSAGE_TYPE = 21;
     
     @Before
     public void startUp() throws Exception {
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
-        BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
-        builder.setPort(new PortNumber(0x00010203L));
-        builder.setQueues(createQueuesList());
+        BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
+        builder.setPort(new PortNumber(1L));
+        builder.setQueues(createQueues());
         message = builder.build();
     }
     
     @Test
     public void testSerialize() {
-        QueueGetConfigReplyMessageFactory serializer = new QueueGetConfigReplyMessageFactory();
-        SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
-        registry.init();
-        serializer.injectSerializerRegistry(registry);
+        OF10QueueGetConfigReplyMessageFactory serializer = new OF10QueueGetConfigReplyMessageFactory();
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 80);
-        Assert.assertEquals("Wrong port", message.getPort().getValue().longValue(), serializedBuffer.readInt());
-        serializedBuffer.skipBytes(PADDING);
-        
+        BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 40);
+        Assert.assertEquals("Wrong port", message.getPort().getValue().longValue(), serializedBuffer.readShort());
+        serializedBuffer.skipBytes(6);
         Assert.assertEquals("Wrong queue Id", message.getQueues().get(0).getQueueId().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong port", message.getQueues().get(0).getPort().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong length", 32, serializedBuffer.readShort());
-        serializedBuffer.skipBytes(QUEUE_PADDING);
+        Assert.assertEquals("Wrong length", 24, serializedBuffer.readShort());
+        serializedBuffer.skipBytes(2);
         List<QueueProperty> properties =  message.getQueues().get(0).getQueueProperty();
         Assert.assertEquals("Wrong property", properties.get(0).getProperty().getIntValue(), serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
-        serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
+        serializedBuffer.skipBytes(4);
         RateQueueProperty rateQueueProperty = properties.get(0).getAugmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueueProperty.getRate().intValue(), serializedBuffer.readShort());
-        serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
-        
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getQueueId().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getPort().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong length", 32, serializedBuffer.readShort());
-        serializedBuffer.skipBytes(QUEUE_PADDING);
-        List<QueueProperty> propertiesTwo =  message.getQueues().get(1).getQueueProperty();
-        Assert.assertEquals("Wrong property", propertiesTwo.get(0).getProperty().getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
-        serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
-        RateQueueProperty rateQueuePropertyTwo = propertiesTwo.get(0).getAugmentation(RateQueueProperty.class);
-        Assert.assertEquals("Wrong rate", rateQueuePropertyTwo.getRate().intValue(), serializedBuffer.readShort());
-        serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
-        
-        
+        serializedBuffer.skipBytes(6);
     }
     
-    private static List<Queues> createQueuesList() {
-        List<Queues> queuesList = new ArrayList<>();
-        for (int i = 1; i < 3; i++) {
-            QueuesBuilder qb = new QueuesBuilder();
-            qb.setQueueId(new QueueId((long) i));
-            qb.setPort(new PortNumber((long) i));
-            qb.setQueueProperty(createPropertiesList());
-            queuesList.add(qb.build());
-        }
-        return queuesList;
+    private List<Queues> createQueues(){
+        List<Queues> list = new ArrayList<>();
+        QueuesBuilder builder = new QueuesBuilder();
+        builder.setQueueId(new QueueId(1L));
+        builder.setQueueProperty(createPropertiesList());
+        list.add(builder.build());
+        return list;
     }
-
+    
     private static List<QueueProperty> createPropertiesList() {
         List<QueueProperty> propertiesList = new ArrayList<>();
         QueuePropertyBuilder pb = new QueuePropertyBuilder();
-        pb.setProperty(QueueProperties.forValue(2));
+        pb.setProperty(QueueProperties.forValue(1));
         RateQueuePropertyBuilder rateBuilder = new RateQueuePropertyBuilder();
         rateBuilder.setRate(5);
         pb.addAugmentation(RateQueueProperty.class, rateBuilder.build());

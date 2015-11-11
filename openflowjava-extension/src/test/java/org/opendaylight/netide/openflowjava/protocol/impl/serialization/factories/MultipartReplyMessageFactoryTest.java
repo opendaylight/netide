@@ -20,9 +20,6 @@ import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factorie
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.serialization.ActionsInitializer;
-import org.opendaylight.openflowjava.protocol.impl.serialization.InstructionsInitializer;
-import org.opendaylight.openflowjava.protocol.impl.serialization.MatchEntriesInitializer;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev100924.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
@@ -195,9 +192,6 @@ public class MultipartReplyMessageFactoryTest {
         serializer = new MultipartReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        MatchEntriesInitializer.registerMatchEntrySerializers(registry);
-        InstructionsInitializer.registerInstructionSerializers(registry);
-        ActionsInitializer.registerActionSerializers(registry);
         serializer.injectSerializerRegistry(registry);
         builder = new MultipartReplyMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);

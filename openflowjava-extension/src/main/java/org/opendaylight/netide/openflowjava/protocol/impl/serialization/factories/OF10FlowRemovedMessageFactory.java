@@ -14,7 +14,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 
@@ -37,17 +36,18 @@ public class OF10FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMe
     public void serialize(FlowRemovedMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                message.getVersion(), MatchV10.class));
         matchSerializer.serialize(message.getMatchV10(), outBuffer);
-        outBuffer.writeLong(message.getCookie().longValue());
+        
+        outBuffer.writeInt(message.getCookie().intValue());
         outBuffer.writeShort(message.getPriority());
         outBuffer.writeByte(message.getReason().getIntValue());
-        outBuffer.skipBytes(PADDING);
+        outBuffer.writeZero(PADDING);
         outBuffer.writeInt(message.getDurationSec().intValue());
         outBuffer.writeInt(message.getDurationNsec().intValue());
         outBuffer.writeShort(message.getIdleTimeout());
-        outBuffer.skipBytes(PADDING);
-        outBuffer.skipBytes(PADDING);
+        outBuffer.writeZero(PADDING);
+        outBuffer.writeZero(PADDING);
         outBuffer.writeLong(message.getPacketCount().longValue());
         outBuffer.writeLong(message.getByteCount().longValue());
         ByteBufUtils.updateOFHeaderLength(outBuffer);

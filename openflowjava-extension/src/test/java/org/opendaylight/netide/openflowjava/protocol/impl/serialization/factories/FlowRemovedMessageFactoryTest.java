@@ -20,7 +20,6 @@ import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factorie
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.serialization.MatchEntriesInitializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableId;
@@ -92,7 +91,6 @@ public class FlowRemovedMessageFactoryTest {
         FlowRemovedMessageFactory serializer = new FlowRemovedMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        MatchEntriesInitializer.registerMatchEntrySerializers(registry);
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);

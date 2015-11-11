@@ -13,6 +13,8 @@ import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionTypeV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
@@ -40,6 +42,7 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         writePortFeature(message.getAdvertisedFeaturesV10(), outBuffer);
         writePortFeature(message.getSupportedFeaturesV10(), outBuffer);
         writePortFeature(message.getPeerFeaturesV10(), outBuffer);
+        ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
     
     private void writePortFeature(PortFeaturesV10 feature, ByteBuf outBuffer){
@@ -62,12 +65,14 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
     
     private void writePortState(PortStateV10 state, ByteBuf outBuffer){
         Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.isStpListen());
-        map.put(1, state.isLinkDown());
-        map.put(2, state.isStpLearn());
-        map.put(3, state.isStpForward());
-        map.put(4, state.isStpBlock());
-        map.put(5, state.isStpMask());
+        map.put(0, state.isLinkDown());
+        map.put(1, state.isBlocked());
+        map.put(2, state.isLive());
+        map.put(3, state.isStpListen());
+        map.put(4, state.isStpLearn());
+        map.put(5, state.isStpForward());
+        map.put(6, state.isStpBlock());
+        map.put(7, state.isStpMask());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
@@ -111,6 +116,7 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         }else{
             outBuffer.writeBytes(nameBytes);
         }
+            
     }
 
 }
