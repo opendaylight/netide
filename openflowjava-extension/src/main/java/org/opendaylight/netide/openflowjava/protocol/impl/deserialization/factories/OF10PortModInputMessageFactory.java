@@ -27,7 +27,7 @@ public class OF10PortModInputMessageFactory implements OFDeserializer<PortModInp
     @Override
     public PortModInput deserialize(ByteBuf rawMessage) {
         PortModInputBuilder builder = new PortModInputBuilder();
-        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
+        builder.setVersion((short) EncodeConstants.OF10_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
         builder.setPortNo(new PortNumber((long)rawMessage.readUnsignedShort()));
         byte[] hwAddress = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];

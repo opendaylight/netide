@@ -17,9 +17,8 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.MultipartRequestBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestDescCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.desc._case.MultipartRequestDescBuilder;
 
@@ -27,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class MultipartRequestDescInputMessageFactoryTest {
-    ByteBuf bb = BufferHelper.buildBuffer("00 00 00 01 00 00 00 00");
+public class OF10StatsRequestInputDescFactoryTest {
+    ByteBuf bb = BufferHelper.buildBuffer("00 00 00 00");
     
     MultipartRequestInput deserializedMessage; 
     
@@ -36,27 +35,26 @@ public class MultipartRequestDescInputMessageFactoryTest {
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
-        MultipartRequestInputMessageFactory factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
+        OF10StatsRequestInputFactory factory = desRegistry
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 16, MultipartRequestInput.class));
         
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
     
     @Test
     public void test() throws Exception {
-        BufferHelper.checkHeaderV13(deserializedMessage);
+        BufferHelper.checkHeaderV10(deserializedMessage);
         
-        Assert.assertEquals("Wrong type", MultipartType.forValue(0), deserializedMessage.getType());
-        Assert.assertEquals("Wrong flags", new MultipartRequestFlags(true), deserializedMessage.getFlags());
-        Assert.assertEquals("Wrong aggregate", createRequestDesc(), deserializedMessage.getMultipartRequestBody());
+        Assert.assertEquals("Wrong type", 0, deserializedMessage.getType().getIntValue());
+        Assert.assertEquals("Wrong flags", new MultipartRequestFlags(false), deserializedMessage.getFlags());
+        Assert.assertEquals("Wrong body", createMultipartRequestBody(), deserializedMessage.getMultipartRequestBody());
     }
     
-    private static MultipartRequestDescCase createRequestDesc() {
+    private static MultipartRequestBody createMultipartRequestBody(){
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
-        MultipartRequestDescBuilder builder = new MultipartRequestDescBuilder();
-        builder.setEmpty(true);
-        caseBuilder.setMultipartRequestDesc(builder.build());
+        MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
+        descBuilder.setEmpty(true);
+        caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }
-
 }

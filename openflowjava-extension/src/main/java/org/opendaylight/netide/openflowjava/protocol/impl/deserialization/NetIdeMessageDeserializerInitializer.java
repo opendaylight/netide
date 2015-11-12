@@ -16,6 +16,15 @@ import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factor
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.GroupModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.MeterModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.MultipartRequestInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10BarrierInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10FeaturesRequestMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10FlowModInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10GetConfigInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10GetQueueConfigInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10PacketOutInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10PortModInputMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10SetConfigMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.OF10StatsRequestInputFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.PacketOutInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.PortModInputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories.RoleRequestInputMessageFactory;
@@ -48,8 +57,21 @@ public final class NetIdeMessageDeserializerInitializer {
     }
 
     public static void registerMessageDeserializers(DeserializerRegistry registry) {
-        // register OF v1.3 NEW message deserializers
+        
         SimpleDeserializerRegistryHelper helper;
+        // register OF v1.0 NEW message deserializers
+        helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF10_VERSION_ID, registry);
+        helper.registerDeserializer(5, null, GetFeaturesInput.class, new OF10FeaturesRequestMessageFactory());
+        helper.registerDeserializer(7, null, GetConfigInput.class, new OF10GetConfigInputMessageFactory());
+        helper.registerDeserializer(9, null, SetConfigInput.class, new OF10SetConfigMessageFactory());
+        helper.registerDeserializer(13, null, PacketOutInput.class, new OF10PacketOutInputMessageFactory());
+        helper.registerDeserializer(14, null, FlowModInput.class, new OF10FlowModInputMessageFactory());
+        helper.registerDeserializer(15, null, PortModInput.class, new OF10PortModInputMessageFactory());
+        helper.registerDeserializer(16, null, MultipartRequestInput.class, new OF10StatsRequestInputFactory());
+        helper.registerDeserializer(18, null, BarrierInput.class, new OF10BarrierInputMessageFactory());
+        helper.registerDeserializer(20, null, GetQueueConfigInput.class, new OF10GetQueueConfigInputMessageFactory());
+        
+        // register OF v1.3 NEW message deserializers
         helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
         helper.registerDeserializer(5, null, GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
         helper.registerDeserializer(7, null, GetConfigInput.class, new GetConfigInputMessageFactory());

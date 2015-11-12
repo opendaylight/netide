@@ -51,13 +51,14 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
         rawMessage.readBytes(cookie);
         builder.setCookie(new BigInteger(1, cookie));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedShort()));
-        builder.setIdleTimeout((int)rawMessage.readUnsignedByte());
-        builder.setHardTimeout((int)rawMessage.readUnsignedByte());
-        builder.setPriority((int)rawMessage.readUnsignedByte());
+        builder.setIdleTimeout((int)rawMessage.readUnsignedShort());
+        builder.setHardTimeout((int)rawMessage.readUnsignedShort());
+        builder.setPriority((int)rawMessage.readUnsignedShort());
         builder.setBufferId(rawMessage.readUnsignedInt());
         builder.setOutPort(new PortNumber((long)rawMessage.readUnsignedShort()));
         builder.setFlagsV10(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
+        
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID, rawMessage.readableBytes(),
                 rawMessage, keyMaker, registry);
         builder.setAction(actions);
