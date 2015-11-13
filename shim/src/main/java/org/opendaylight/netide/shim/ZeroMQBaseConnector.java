@@ -106,7 +106,7 @@ public class ZeroMQBaseConnector implements Runnable {
                     }else if (msg instanceof OpenFlowMessage){
                         LOG.info("Core OpenFlow Message received");
                         byte[] payload = ((Message)msg).getPayload();
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(payload));
+                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
                     }else {
                         LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(), msg.getHeader().getMessageType());
                     }

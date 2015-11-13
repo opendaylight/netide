@@ -16,6 +16,6 @@ import org.javatuples.Pair;
 
 public interface ICoreListener {
 
-    void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg);
+    void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg, int moduleId);
     void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requiredVersion, int moduleId);
 }

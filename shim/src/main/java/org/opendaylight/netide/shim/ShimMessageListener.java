@@ -63,7 +63,7 @@ public class ShimMessageListener
             this.switchConnection.echoReply(builder.build());
         }else{
             LOG.info("SHIM Echo request message received. Sent to core.");
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -73,7 +73,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -83,7 +83,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -93,7 +93,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -104,7 +104,7 @@ public class ShimMessageListener
         if (datapathId == null){
             handshakeListener.onSwitchHelloMessage(arg0.getXid(), arg0.getVersion());
         }else {
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
         
     }
@@ -114,7 +114,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -124,7 +124,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
         if (datapathId != null){
             LOG.info("SHIM Packet In message send to core. DatapathId: {}", datapathId);
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 
@@ -134,7 +134,7 @@ public class ShimMessageListener
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
 
         if (datapathId != null){
-            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());
+            ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue(), 0);
         }
     }
 

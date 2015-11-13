@@ -124,13 +124,13 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
     
     @Override
-    public void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg) {
+    public void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg, int moduleId) {
         LOG.info("SHIM: OpenFlow Core message received");
         ConnectionAdapter conn = connectionRegistry.getConnectionAdapter(datapathId);
         if ( conn != null){
             LOG.info("SHIM: OpenFlow Core message ");
             short ofVersion = msg.readUnsignedByte();
-            ShimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId);
+            ShimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId, moduleId);
         }
     }
     
@@ -149,14 +149,14 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                 coreConnector.SendData(msg.toByteRepresentation());
                 for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()){
                     LOG.info("SHIM: SendFeatures To core for switch: {}", conn.getRemoteAddress());
-                    sendFeaturesToCore((short)supportedProtocol.getValue1().getValue(), 0L, conn);
+                    sendFeaturesToCore((short)supportedProtocol.getValue1().getValue(), 0L, conn, moduleId);
                 }
             }
         }
     }
     
     private void sendFeaturesToCore(final Short proposedVersion, final Long xid,
-            final ConnectionAdapter connectionAdapter) {
+            final ConnectionAdapter connectionAdapter, final int moduleId) {
         LOG.info("version set: {}", proposedVersion);
         // request features
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
@@ -179,7 +179,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                                     featureOutput.getDatapathId());
                             // Send Feature reply to Core
                             ShimRelay.sendOpenFlowMessageToCore( ShimSwitchConnectionHandlerImpl.coreConnector, 
-                                    featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue());
+                                    featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue(), moduleId);
                             
                         } else {
                             // Handshake failed
