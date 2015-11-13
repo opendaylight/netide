@@ -122,7 +122,6 @@ public class ShimMessageListener
     public void onPacketInMessage(PacketInMessage arg0) {
         LOG.info("SHIM Packet In message received");
         BigInteger datapathId = this.connectionRegistry.getDatapathID(this.switchConnection);
-
         if (datapathId != null){
             LOG.info("SHIM Packet In message send to core. DatapathId: {}", datapathId);
             ShimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(), datapathId.longValue());

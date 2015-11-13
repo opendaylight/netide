@@ -29,6 +29,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.netide.netiplib.HelloMessage;
+import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.javatuples.Pair;
@@ -134,7 +135,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
     
     @Override
-    public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols) {
+    public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols, int moduleId) {
         LOG.info("SHIM: Hello Core message received. Pair0: {}", requestedProtocols.get(0));
         for (Pair<Protocol, ProtocolVersions> requested : requestedProtocols){
             if( requested.getValue0().getValue() == supportedProtocol.getValue0().getValue() 
@@ -144,6 +145,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                 
                 msg.getSupportedProtocols().add(supportedProtocol);
                 msg.getHeader().setPayloadLength((short)2);
+                msg.getHeader().setModuleId(moduleId);
                 coreConnector.SendData(msg.toByteRepresentation());
                 for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()){
                     LOG.info("SHIM: SendFeatures To core for switch: {}", conn.getRemoteAddress());
@@ -167,7 +169,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
                     public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
-                        LOG.info("features are back");
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
 

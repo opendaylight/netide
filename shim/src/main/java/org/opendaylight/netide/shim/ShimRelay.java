@@ -109,7 +109,7 @@ public class ShimRelay {
             EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
             builder.setVersion(((EchoOutput)msg).getVersion());
             builder.setXid(((EchoOutput)msg).getXid());
-            builder.setData(((EchoOutput)msg).getData());
+            builder.setData(    ((EchoOutput)msg).getData());
             LOG.info("SHIM RELAY: sending EchoReplyInput to switch");
             Future<RpcResult<Void>> reply = connectionAdapter.echoReply(builder.build());
             logRpcWithNoResponse(reply);

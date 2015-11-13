@@ -8,12 +8,10 @@
 package org.opendaylight.netide.shim;
 
 import io.netty.buffer.Unpooled;
-import io.netty.buffer.UnpooledByteBufAllocator;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.opendaylight.netide.netiplib.OpenFlowMessage;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -100,26 +98,22 @@ public class ZeroMQBaseConnector implements Runnable {
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
                     LOG.info("Core Message received: {}", data);
-                    
                     Message msg = NetIPConverter.parseConcreteMessage(data);
                     LOG.info("Core Message parsed");
                     if (msg instanceof HelloMessage){
                         LOG.info("Core Hello Message received");
-                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols());
+                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),((HelloMessage) msg).getHeader().getModuleId());
                     }else if (msg instanceof OpenFlowMessage){
                         LOG.info("Core OpenFlow Message received");
                         byte[] payload = ((Message)msg).getPayload();
-                        
                         coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(payload));
                     }else {
                         LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(), msg.getHeader().getMessageType());
                     }
-                    
                 }
             }
             if (poller.pollin(1)) {
                 ZMsg message = ZMsg.recvMsg(controlSocket);
-
                 if (message.getFirst().toString().equals(STOP_COMMAND)) {
                     break;
                 } else {

@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
@@ -61,13 +62,22 @@ public final class NetIdeTypeToClassMapInitializer {
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);
         helper.registerTypeToClass((short) 3, EchoOutput.class);
         helper.registerTypeToClass((short) 4, ExperimenterMessage.class);
+        helper.registerTypeToClass((short) 5, GetFeaturesInput.class);
         helper.registerTypeToClass((short) 6, GetFeaturesOutput.class);
+        helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 8, GetConfigOutput.class);
+        helper.registerTypeToClass((short) 9, SetConfigInput.class);
         helper.registerTypeToClass((short) 10, PacketInMessage.class);
         helper.registerTypeToClass((short) 11, FlowRemovedMessage.class);
         helper.registerTypeToClass((short) 12, PortStatusMessage.class);
+        helper.registerTypeToClass((short) 13, PacketOutInput.class);
+        helper.registerTypeToClass((short) 14, FlowModInput.class);
+        helper.registerTypeToClass((short) 15, PortModInput.class);
+        helper.registerTypeToClass((short) 16, MultipartRequestInput.class);
         helper.registerTypeToClass((short) 17, MultipartReplyMessage.class);
+        helper.registerTypeToClass((short) 18, BarrierInput.class);
         helper.registerTypeToClass((short) 19, BarrierOutput.class);
+        helper.registerTypeToClass((short) 20, GetQueueConfigInput.class);
         helper.registerTypeToClass((short) 21, GetQueueConfigOutput.class);
         // init OF v1.0 mapping
         helper = new TypeToClassInitHelper(EncodeConstants.OF13_VERSION_ID, messageClassMap);
