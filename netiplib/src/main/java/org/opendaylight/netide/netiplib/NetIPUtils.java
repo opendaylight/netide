@@ -14,15 +14,11 @@ import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIde
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for handling NetIP messages.
  */
 public abstract class NetIPUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(NetIPUtils.class);
-
     /**
      * Gets a stub header from the given payload with the length correctly set
      * and protocol version set to 1.1.
