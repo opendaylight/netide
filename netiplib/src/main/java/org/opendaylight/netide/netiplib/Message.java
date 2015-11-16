@@ -8,7 +8,8 @@
 package org.opendaylight.netide.netiplib;
 
 /**
- * Class representing a simple NetIP message. This also is the base class for concrete message classes.
+ * Class representing a simple NetIP message. This also is the base class for
+ * concrete message classes.
  */
 public class Message {
     /**
@@ -23,8 +24,10 @@ public class Message {
     /**
      * Creates a new instance of the Message class.
      *
-     * @param header  The header to use.
-     * @param payload The payload.
+     * @param header
+     *            The header to use.
+     * @param payload
+     *            The payload.
      */
     public Message(MessageHeader header, byte[] payload) {
         this.header = header;
@@ -43,7 +46,8 @@ public class Message {
     /**
      * Sets the header.
      *
-     * @param header The new header.
+     * @param header
+     *            The new header.
      */
     public void setHeader(MessageHeader header) {
         this.header = header;
@@ -52,8 +56,8 @@ public class Message {
     /**
      * Gets the current payload as bytes.
      *
-     * @return the payload
-     * ImplNote: This method has to ensure that the returned payload reflects the current state of any convenience fields!
+     * @return the payload ImplNote: This method has to ensure that the returned
+     *         payload reflects the current state of any convenience fields!
      */
     public byte[] getPayload() {
         return payload;
@@ -72,8 +76,8 @@ public class Message {
         System.arraycopy(payload, 0, bytes, MessageHeader.HEADER_BYTES, payload.length);
         return bytes;
     }
-    
-    public void setPayload(byte[] data){
+
+    public void setPayload(byte[] data) {
         this.payload = data;
     }
 }
