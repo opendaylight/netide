@@ -57,7 +57,7 @@ public final class NetIdeMessageDeserializerInitializer {
     }
 
     public static void registerMessageDeserializers(DeserializerRegistry registry) {
-        
+
         SimpleDeserializerRegistryHelper helper;
         // register OF v1.0 NEW message deserializers
         helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF10_VERSION_ID, registry);
@@ -70,7 +70,7 @@ public final class NetIdeMessageDeserializerInitializer {
         helper.registerDeserializer(16, null, MultipartRequestInput.class, new OF10StatsRequestInputFactory());
         helper.registerDeserializer(18, null, BarrierInput.class, new OF10BarrierInputMessageFactory());
         helper.registerDeserializer(20, null, GetQueueConfigInput.class, new OF10GetQueueConfigInputMessageFactory());
-        
+
         // register OF v1.3 NEW message deserializers
         helper = new SimpleDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
         helper.registerDeserializer(5, null, GetFeaturesInput.class, new GetFeaturesInputMessageFactory());
@@ -88,6 +88,6 @@ public final class NetIdeMessageDeserializerInitializer {
         helper.registerDeserializer(26, null, GetAsyncInput.class, new GetAsyncRequestMessageFactory());
         helper.registerDeserializer(28, null, SetAsyncInput.class, new SetAsyncInputMessageFactory());
         helper.registerDeserializer(29, null, MeterModInput.class, new MeterModInputMessageFactory());
-        
+
     }
 }

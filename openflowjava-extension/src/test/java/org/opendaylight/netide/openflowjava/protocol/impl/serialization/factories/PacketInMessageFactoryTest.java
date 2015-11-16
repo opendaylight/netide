@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2015 NetIDE Consortium and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -9,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.PacketInMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -32,6 +38,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 
+/**
+ * @author giuseppex.petralia@intel.com
+ *
+ */
 public class PacketInMessageFactoryTest {
     private PacketInMessage message;
     private static final byte MESSAGE_TYPE = 10;

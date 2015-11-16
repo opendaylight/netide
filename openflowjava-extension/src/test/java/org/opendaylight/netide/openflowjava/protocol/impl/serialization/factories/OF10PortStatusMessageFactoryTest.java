@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10PortStatusMessageFactoryTest {
     PortStatusMessage message;
     private static final byte MESSAGE_TYPE = 12;
-    
+
     @Before
     public void startUp() throws Exception {
         PortStatusMessageBuilder builder = new PortStatusMessageBuilder();
@@ -41,17 +41,17 @@ public class OF10PortStatusMessageFactoryTest {
         builder.setName("Port name");
         builder.setConfigV10(new PortConfigV10(true, false, true, false, true, false, true));
         builder.setStateV10(new PortStateV10(true, false, true, false, true, false, true, false));
-        builder.setCurrentFeaturesV10(new PortFeaturesV10(true, false, true, false, true, 
-                false, true, false, true, false, true, false));
-        builder.setAdvertisedFeaturesV10(new PortFeaturesV10(true, false, true, false, true, 
-                false, true, false, true, false, true, false));
-        builder.setSupportedFeaturesV10(new PortFeaturesV10(true, false, true, false, true, 
-                false, true, false, true, false, true, false));
-        builder.setPeerFeaturesV10(new PortFeaturesV10(true, false, true, false, true, 
-                false, true, false, true, false, true, false));
+        builder.setCurrentFeaturesV10(
+                new PortFeaturesV10(true, false, true, false, true, false, true, false, true, false, true, false));
+        builder.setAdvertisedFeaturesV10(
+                new PortFeaturesV10(true, false, true, false, true, false, true, false, true, false, true, false));
+        builder.setSupportedFeaturesV10(
+                new PortFeaturesV10(true, false, true, false, true, false, true, false, true, false, true, false));
+        builder.setPeerFeaturesV10(
+                new PortFeaturesV10(true, false, true, false, true, false, true, false, true, false, true, false));
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         OF10PortStatusMessageFactory serializer = new OF10PortStatusMessageFactory();
@@ -70,50 +70,52 @@ public class OF10PortStatusMessageFactoryTest {
         Assert.assertEquals("Wrong name", message.getName(), new String(name).trim());
         Assert.assertEquals("Wrong config", message.getConfigV10(), createPortConfig(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong state", message.getStateV10(), createPortState(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong current", message.getCurrentFeaturesV10(), createPortFeatures(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong advertised", message.getAdvertisedFeaturesV10(), createPortFeatures(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong supported", message.getSupportedFeaturesV10(), createPortFeatures(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong current", message.getCurrentFeaturesV10(),
+                createPortFeatures(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong advertised", message.getAdvertisedFeaturesV10(),
+                createPortFeatures(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong supported", message.getSupportedFeaturesV10(),
+                createPortFeatures(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong peer", message.getPeerFeaturesV10(), createPortFeatures(serializedBuffer.readInt()));
     }
-    
-    private static PortConfigV10 createPortConfig(long input){
-        final Boolean _portDown   = ((input) & (1<<0)) > 0;
-        final Boolean _noStp    = ((input) & (1<<1)) > 0;
-        final Boolean _noRecv       = ((input) & (1<<2)) > 0;
-        final Boolean _noRecvStp = ((input) & (1<<3)) > 0;
-        final Boolean _noFlood   = ((input) & (1<<4)) > 0;
-        final Boolean _noFwd    = ((input) & (1<<5)) > 0;
-        final Boolean _noPacketIn    = ((input) & (1<<6)) > 0;
+
+    private static PortConfigV10 createPortConfig(long input) {
+        final Boolean _portDown = ((input) & (1 << 0)) > 0;
+        final Boolean _noStp = ((input) & (1 << 1)) > 0;
+        final Boolean _noRecv = ((input) & (1 << 2)) > 0;
+        final Boolean _noRecvStp = ((input) & (1 << 3)) > 0;
+        final Boolean _noFlood = ((input) & (1 << 4)) > 0;
+        final Boolean _noFwd = ((input) & (1 << 5)) > 0;
+        final Boolean _noPacketIn = ((input) & (1 << 6)) > 0;
         return new PortConfigV10(_noFlood, _noFwd, _noPacketIn, _noRecv, _noRecvStp, _noStp, _portDown);
     }
-    
-    private static PortFeaturesV10 createPortFeatures(long input){
-        final Boolean _10mbHd = ((input) & (1<<0)) > 0;
-        final Boolean _10mbFd = ((input) & (1<<1)) > 0;
-        final Boolean _100mbHd = ((input) & (1<<2)) > 0;
-        final Boolean _100mbFd = ((input) & (1<<3)) > 0;
-        final Boolean _1gbHd = ((input) & (1<<4)) > 0;
-        final Boolean _1gbFd = ((input) & (1<<5)) > 0;
-        final Boolean _10gbFd = ((input) & (1<<6)) > 0;
-        final Boolean _copper = ((input) & (1<<7)) > 0;
-        final Boolean _fiber = ((input) & (1<<8)) > 0;
-        final Boolean _autoneg = ((input) & (1<<9)) > 0;
-        final Boolean _pause = ((input) & (1<<10)) > 0;
-        final Boolean _pauseAsym = ((input) & (1<<11)) > 0;
-        return new PortFeaturesV10(_100mbFd, _100mbHd, _10gbFd, _10mbFd, _10mbHd, _1gbFd, 
-                _1gbHd, _autoneg, _copper, _fiber, _pause, _pauseAsym);
+
+    private static PortFeaturesV10 createPortFeatures(long input) {
+        final Boolean _10mbHd = ((input) & (1 << 0)) > 0;
+        final Boolean _10mbFd = ((input) & (1 << 1)) > 0;
+        final Boolean _100mbHd = ((input) & (1 << 2)) > 0;
+        final Boolean _100mbFd = ((input) & (1 << 3)) > 0;
+        final Boolean _1gbHd = ((input) & (1 << 4)) > 0;
+        final Boolean _1gbFd = ((input) & (1 << 5)) > 0;
+        final Boolean _10gbFd = ((input) & (1 << 6)) > 0;
+        final Boolean _copper = ((input) & (1 << 7)) > 0;
+        final Boolean _fiber = ((input) & (1 << 8)) > 0;
+        final Boolean _autoneg = ((input) & (1 << 9)) > 0;
+        final Boolean _pause = ((input) & (1 << 10)) > 0;
+        final Boolean _pauseAsym = ((input) & (1 << 11)) > 0;
+        return new PortFeaturesV10(_100mbFd, _100mbHd, _10gbFd, _10mbFd, _10mbHd, _1gbFd, _1gbHd, _autoneg, _copper,
+                _fiber, _pause, _pauseAsym);
     }
-    
-    private static PortStateV10 createPortState(long input){
-        final Boolean _linkDown = ((input) & (1<<0)) > 0;
-        final Boolean _blocked = ((input) & (1<<1)) > 0;
-        final Boolean _live = ((input) & (1<<2)) > 0;
-        final Boolean _stpListen = ((input) & (1<<3)) > 0;
-        final Boolean _stpLearn = ((input) & (1<<4)) > 0;
-        final Boolean _stpForward = ((input) & (1<<5)) > 0;
-        final Boolean _stpBlock = ((input) & (1<<6)) > 0;
-        final Boolean _stpMask = ((input) & (1<<7)) > 0;
-        return new PortStateV10(_blocked, _linkDown, _live, _stpBlock, _stpForward, _stpLearn, 
-                _stpListen, _stpMask);
+
+    private static PortStateV10 createPortState(long input) {
+        final Boolean _linkDown = ((input) & (1 << 0)) > 0;
+        final Boolean _blocked = ((input) & (1 << 1)) > 0;
+        final Boolean _live = ((input) & (1 << 2)) > 0;
+        final Boolean _stpListen = ((input) & (1 << 3)) > 0;
+        final Boolean _stpLearn = ((input) & (1 << 4)) > 0;
+        final Boolean _stpForward = ((input) & (1 << 5)) > 0;
+        final Boolean _stpBlock = ((input) & (1 << 6)) > 0;
+        final Boolean _stpMask = ((input) & (1 << 7)) > 0;
+        return new PortStateV10(_blocked, _linkDown, _live, _stpBlock, _stpForward, _stpLearn, _stpListen, _stpMask);
     }
 }

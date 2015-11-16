@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10PacketInMessageFactoryTest {
     PacketInMessage message;
     private static final byte MESSAGE_TYPE = 10;
-    
+
     @Before
     public void startUp() throws Exception {
         PacketInMessageBuilder builder = new PacketInMessageBuilder();
@@ -38,9 +38,9 @@ public class OF10PacketInMessageFactoryTest {
         byte[] data = ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
         builder.setData(data);
         message = builder.build();
-        
+
     }
-    
+
     @Test
     public void testSerialize() {
         OF10PacketInMessageFactory serializer = new OF10PacketInMessageFactory();

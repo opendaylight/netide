@@ -13,21 +13,20 @@ import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionTypeV10;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeaturesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortStateV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMessage>{
+public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMessage> {
 
     private static final byte MESSAGE_TYPE = 12;
     private static final byte PADDING = 7;
-    
+
     @Override
     public void serialize(PortStatusMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
@@ -44,8 +43,8 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         writePortFeature(message.getPeerFeaturesV10(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-    
-    private void writePortFeature(PortFeaturesV10 feature, ByteBuf outBuffer){
+
+    private void writePortFeature(PortFeaturesV10 feature, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, feature.is_10mbHd());
         map.put(1, feature.is_10mbFd());
@@ -62,8 +61,8 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void writePortState(PortStateV10 state, ByteBuf outBuffer){
+
+    private void writePortState(PortStateV10 state, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, state.isLinkDown());
         map.put(1, state.isBlocked());
@@ -76,8 +75,8 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void writePortConfig(PortConfigV10 config, ByteBuf outBuffer){
+
+    private void writePortConfig(PortConfigV10 config, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, config.isPortDown());
         map.put(1, config.isNoStp());
@@ -89,34 +88,34 @@ public class OF10PortStatusMessageFactory implements OFSerializer<PortStatusMess
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void writeMacAddress(String macAddress, ByteBuf outBuffer){
+
+    private void writeMacAddress(String macAddress, ByteBuf outBuffer) {
         String[] macAddressParts = macAddress.split(":");
         byte[] macAddressBytes = new byte[6];
-        for(int i=0; i<6; i++){
+        for (int i = 0; i < 6; i++) {
             Integer hex = Integer.parseInt(macAddressParts[i], 16);
             macAddressBytes[i] = hex.byteValue();
         }
         outBuffer.writeBytes(macAddressBytes);
     }
-    
-    private void writeName(String name, ByteBuf outBuffer){
+
+    private void writeName(String name, ByteBuf outBuffer) {
         byte[] nameBytes = name.getBytes();
-        if (nameBytes.length < 16){
+        if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
             int i = 0;
-            for (byte b : nameBytes){
+            for (byte b : nameBytes) {
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 16; i++){
+            for (; i < 16; i++) {
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
-        }else{
+        } else {
             outBuffer.writeBytes(nameBytes);
         }
-            
+
     }
 
 }

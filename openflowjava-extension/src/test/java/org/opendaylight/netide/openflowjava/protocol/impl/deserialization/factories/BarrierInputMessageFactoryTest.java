@@ -16,25 +16,27 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegi
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
 public class BarrierInputMessageFactoryTest {
+
     ByteBuf bb = BufferHelper.buildBuffer();
-    
-    BarrierInput deserializedMessage; 
-    
+
+    BarrierInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         BarrierInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 20, BarrierInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);

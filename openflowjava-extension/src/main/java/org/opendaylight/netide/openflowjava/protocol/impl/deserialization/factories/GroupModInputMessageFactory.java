@@ -20,24 +20,24 @@ import org.opendaylight.openflowjava.protocol.impl.util.ListDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
-public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput>, DeserializerRegistryInjector{
+public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput>, DeserializerRegistryInjector {
 
     private DeserializerRegistry registry;
     private static final byte PADDING = 1;
     private static final byte PADDING_IN_BUCKETS_HEADER = 4;
     private static final byte BUCKETS_HEADER_LENGTH = 16;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
@@ -53,7 +53,7 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
         rawMessage.skipBytes(PADDING);
         builder.setGroupId(new GroupId(rawMessage.readUnsignedInt()));
         List<BucketsList> bucketsList = new ArrayList<>();
-        while (rawMessage.readableBytes() > 0){
+        while (rawMessage.readableBytes() > 0) {
             BucketsListBuilder bucketsBuilder = new BucketsListBuilder();
             int bucketsLength = rawMessage.readUnsignedShort();
             bucketsBuilder.setWeight(rawMessage.readUnsignedShort());

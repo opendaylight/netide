@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.GetFeaturesOutputFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -26,20 +25,20 @@ public class GetFeaturesOutputFactoryTest {
     private GetFeaturesOutput message;
     private static final byte MESSAGE_TYPE = 6;
     private static final byte PADDING = 2;
-    
+
     @Before
     public void startUp() throws Exception {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setDatapathId(BigInteger.valueOf(1234L));
         builder.setBuffers(1234L);
-        builder.setTables((short)12);
-        builder.setAuxiliaryId((short)12);
-        builder.setCapabilities(new Capabilities(true,false,true,false,true,false,true));
+        builder.setTables((short) 12);
+        builder.setAuxiliaryId((short) 12);
+        builder.setCapabilities(new Capabilities(true, false, true, false, true, false, true));
         builder.setReserved(1234L);
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         GetFeaturesOutputFactory serializer = new GetFeaturesOutputFactory();
@@ -51,14 +50,16 @@ public class GetFeaturesOutputFactoryTest {
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 32);
         Assert.assertEquals("Wrong DatapathId", message.getDatapathId().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong Buffer ID", message.getBuffers().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong tables",  message.getTables().shortValue(), serializedBuffer.readUnsignedByte());
-        Assert.assertEquals("Wrong auxiliary ID", message.getAuxiliaryId().shortValue(), serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong tables", message.getTables().shortValue(), serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong auxiliary ID", message.getAuxiliaryId().shortValue(),
+                serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(PADDING);
-        Assert.assertEquals("Wrong Capabilities", message.getCapabilities(), createCapabilities(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong Capabilities", message.getCapabilities(),
+                createCapabilities(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong reserved", message.getReserved().longValue(), serializedBuffer.readInt());
     }
-    
-    private static Capabilities createCapabilities(int input){
+
+    private static Capabilities createCapabilities(int input) {
         final Boolean one = (input & (1 << 0)) > 0;
         final Boolean two = (input & (1 << 1)) > 0;
         final Boolean three = (input & (1 << 2)) > 0;

@@ -26,19 +26,19 @@ public class OF10FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMe
     private static final byte MESSAGE_TYPE = 11;
     private SerializerRegistry registry;
     private static final byte PADDING = 1;
-    
+
     @Override
     public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
-    
+
     @Override
     public void serialize(FlowRemovedMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                message.getVersion(), MatchV10.class));
+        OFSerializer<MatchV10> matchSerializer = registry
+                .getSerializer(new MessageTypeKey<>(message.getVersion(), MatchV10.class));
         matchSerializer.serialize(message.getMatchV10(), outBuffer);
-        
+
         outBuffer.writeInt(message.getCookie().intValue());
         outBuffer.writeShort(message.getPriority());
         outBuffer.writeByte(message.getReason().getIntValue());

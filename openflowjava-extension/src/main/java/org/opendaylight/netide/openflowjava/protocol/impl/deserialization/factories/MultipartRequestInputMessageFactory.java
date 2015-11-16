@@ -97,7 +97,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class MultipartRequestInputMessageFactory implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector{
+public class MultipartRequestInputMessageFactory
+        implements OFDeserializer<MultipartRequestInput>, DeserializerRegistryInjector {
     private DeserializerRegistry registry;
     private static final byte PADDING = 4;
     private static final byte FLOW_PADDING_1 = 3;
@@ -108,7 +109,7 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
     private static final byte MAX_TABLE_NAME_LENGTH = 32;
     private static final byte MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH = 64;
     private static final byte COMMON_PROPERTY_LENGTH = 4;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
@@ -117,61 +118,76 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
     @Override
     public MultipartRequestInput deserialize(ByteBuf rawMessage) {
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder();
-        builder.setVersion((short)EncodeConstants.OF13_VERSION_ID);
+        builder.setVersion((short) EncodeConstants.OF13_VERSION_ID);
         builder.setXid(rawMessage.readUnsignedInt());
         int type = rawMessage.readUnsignedShort();
         builder.setType(getMultipartType(type));
         builder.setFlags(getMultipartRequestFlags(rawMessage.readUnsignedShort()));
         rawMessage.skipBytes(PADDING);
         switch (MultipartType.forValue(type)) {
-        case OFPMPDESC: builder.setMultipartRequestBody(setDesc(rawMessage));
+        case OFPMPDESC:
+            builder.setMultipartRequestBody(setDesc(rawMessage));
             break;
-        case OFPMPFLOW:  builder.setMultipartRequestBody(setFlow(rawMessage));
+        case OFPMPFLOW:
+            builder.setMultipartRequestBody(setFlow(rawMessage));
             break;
-        case OFPMPAGGREGATE:  builder.setMultipartRequestBody(setAggregate(rawMessage));
+        case OFPMPAGGREGATE:
+            builder.setMultipartRequestBody(setAggregate(rawMessage));
             break;
-        case OFPMPTABLE:  builder.setMultipartRequestBody(setTable(rawMessage));
+        case OFPMPTABLE:
+            builder.setMultipartRequestBody(setTable(rawMessage));
             break;
-        case OFPMPTABLEFEATURES: builder.setMultipartRequestBody(setTableFeatures(rawMessage));
+        case OFPMPTABLEFEATURES:
+            builder.setMultipartRequestBody(setTableFeatures(rawMessage));
             break;
-        case OFPMPPORTSTATS:  builder.setMultipartRequestBody(setPortStats(rawMessage));
-                 break;
-        case OFPMPPORTDESC:   builder.setMultipartRequestBody(setPortDesc(rawMessage));
-                 break;
-        case OFPMPQUEUE:  builder.setMultipartRequestBody(setQueue(rawMessage));
-                 break;
-        case OFPMPGROUP:  builder.setMultipartRequestBody(setGroup(rawMessage));
-                 break;
-        case OFPMPGROUPDESC: builder.setMultipartRequestBody(setGroupDesc(rawMessage));
-                 break;
-        case OFPMPGROUPFEATURES: builder.setMultipartRequestBody(setGroupFeatures(rawMessage));
-                 break;
-        case OFPMPMETER:  builder.setMultipartRequestBody(setMeter(rawMessage));
-                 break;
-        case OFPMPMETERCONFIG: builder.setMultipartRequestBody(setMeterConfig(rawMessage));
-                 break;
-        case OFPMPMETERFEATURES: builder.setMultipartRequestBody(setMeterFeatures(rawMessage));
-                 break;
-        case OFPMPEXPERIMENTER: builder.setMultipartRequestBody(setExperimenter(rawMessage));
-                 break;
+        case OFPMPPORTSTATS:
+            builder.setMultipartRequestBody(setPortStats(rawMessage));
+            break;
+        case OFPMPPORTDESC:
+            builder.setMultipartRequestBody(setPortDesc(rawMessage));
+            break;
+        case OFPMPQUEUE:
+            builder.setMultipartRequestBody(setQueue(rawMessage));
+            break;
+        case OFPMPGROUP:
+            builder.setMultipartRequestBody(setGroup(rawMessage));
+            break;
+        case OFPMPGROUPDESC:
+            builder.setMultipartRequestBody(setGroupDesc(rawMessage));
+            break;
+        case OFPMPGROUPFEATURES:
+            builder.setMultipartRequestBody(setGroupFeatures(rawMessage));
+            break;
+        case OFPMPMETER:
+            builder.setMultipartRequestBody(setMeter(rawMessage));
+            break;
+        case OFPMPMETERCONFIG:
+            builder.setMultipartRequestBody(setMeterConfig(rawMessage));
+            break;
+        case OFPMPMETERFEATURES:
+            builder.setMultipartRequestBody(setMeterFeatures(rawMessage));
+            break;
+        case OFPMPEXPERIMENTER:
+            builder.setMultipartRequestBody(setExperimenter(rawMessage));
+            break;
         default:
-                 break;
+            break;
         }
-        
+
         return builder.build();
     }
-    
-    private static MultipartType getMultipartType(int input){
+
+    private static MultipartType getMultipartType(int input) {
         return MultipartType.forValue(input);
     }
-    
-    private static MultipartRequestFlags getMultipartRequestFlags(int input){
+
+    private static MultipartRequestFlags getMultipartRequestFlags(int input) {
         final Boolean _oFPMPFREQMORE = (input & (1 << 0)) > 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }
-    
-    private MultipartRequestTableFeaturesCase setTableFeatures(ByteBuf input){
+
+    private MultipartRequestTableFeaturesCase setTableFeatures(ByteBuf input) {
         MultipartRequestTableFeaturesCaseBuilder caseBuilder = new MultipartRequestTableFeaturesCaseBuilder();
         MultipartRequestTableFeaturesBuilder tableFeaturesBuilder = new MultipartRequestTableFeaturesBuilder();
         List<TableFeatures> features = new ArrayList<>();
@@ -189,15 +205,15 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
             featuresBuilder.setMetadataWrite(new BigInteger(1, metadataWrite));
             featuresBuilder.setConfig(createTableConfig(input.readUnsignedInt()));
             featuresBuilder.setMaxEntries(input.readUnsignedInt());
-            featuresBuilder.setTableFeatureProperties(createTableFeaturesProperties(input,
-                    length - MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH));
+            featuresBuilder.setTableFeatureProperties(
+                    createTableFeaturesProperties(input, length - MULTIPART_REQUEST_TABLE_FEATURES_STRUCTURE_LENGTH));
             features.add(featuresBuilder.build());
         }
         tableFeaturesBuilder.setTableFeatures(features);
         caseBuilder.setMultipartRequestTableFeatures(tableFeaturesBuilder.build());
         return caseBuilder.build();
     }
-    
+
     private List<TableFeatureProperties> createTableFeaturesProperties(ByteBuf input, int length) {
         List<TableFeatureProperties> properties = new ArrayList<>();
         int tableFeaturesLength = length;
@@ -247,8 +263,7 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD)
                     || type.equals(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS)) {
                 OxmRelatedTableFeaturePropertyBuilder oxmBuilder = new OxmRelatedTableFeaturePropertyBuilder();
-                CodeKeyMaker keyMaker = CodeKeyMakerFactory
-                        .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
                 List<MatchEntry> entries = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                         propertyLength - COMMON_PROPERTY_LENGTH, input, keyMaker, registry);
                 oxmBuilder.setMatchEntry(entries);
@@ -257,9 +272,9 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
                     || type.equals(TableFeaturesPropType.OFPTFPTEXPERIMENTERMISS)) {
                 long expId = input.readUnsignedInt();
                 input.readerIndex(propStartIndex);
-                OFDeserializer<TableFeatureProperties> propDeserializer = registry.getDeserializer(
-                        ExperimenterDeserializerKeyFactory.createMultipartReplyTFDeserializerKey(
-                                EncodeConstants.OF13_VERSION_ID, expId));
+                OFDeserializer<TableFeatureProperties> propDeserializer = registry
+                        .getDeserializer(ExperimenterDeserializerKeyFactory
+                                .createMultipartReplyTFDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId));
                 TableFeatureProperties expProp = propDeserializer.deserialize(input);
                 properties.add(expProp);
                 continue;
@@ -272,21 +287,21 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
         }
         return properties;
     }
-    
+
     private static TableConfig createTableConfig(long input) {
         boolean deprecated = (input & 3) != 0;
         return new TableConfig(deprecated);
     }
-    
-    private MultipartRequestDescCase setDesc(ByteBuf input){
+
+    private MultipartRequestDescCase setDesc(ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
         descBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestFlowCase setFlow(ByteBuf input){
+
+    private MultipartRequestFlowCase setFlow(ByteBuf input) {
         MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         flowBuilder.setTableId(input.readUnsignedByte());
@@ -306,8 +321,8 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
         caseBuilder.setMultipartRequestFlow(flowBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestAggregateCase setAggregate(ByteBuf input){
+
+    private MultipartRequestAggregateCase setAggregate(ByteBuf input) {
         MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
         aggregateBuilder.setTableId(input.readUnsignedByte());
@@ -327,24 +342,24 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
         caseBuilder.setMultipartRequestAggregate(aggregateBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestPortDescCase setPortDesc(ByteBuf input){
+
+    private MultipartRequestPortDescCase setPortDesc(ByteBuf input) {
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder portBuilder = new MultipartRequestPortDescBuilder();
         portBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestPortDesc(portBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestPortStatsCase setPortStats(ByteBuf input){
+
+    private MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
         portBuilder.setPortNo(input.readUnsignedInt());
         caseBuilder.setMultipartRequestPortStats(portBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestQueueCase setQueue(ByteBuf input){
+
+    private MultipartRequestQueueCase setQueue(ByteBuf input) {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
         queueBuilder.setPortNo(input.readUnsignedInt());
@@ -352,64 +367,64 @@ public class MultipartRequestInputMessageFactory implements OFDeserializer<Multi
         caseBuilder.setMultipartRequestQueue(queueBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestGroupCase setGroup(ByteBuf input){
+
+    private MultipartRequestGroupCase setGroup(ByteBuf input) {
         MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
         MultipartRequestGroupBuilder groupBuilder = new MultipartRequestGroupBuilder();
         groupBuilder.setGroupId(new GroupId(input.readUnsignedInt()));
         caseBuilder.setMultipartRequestGroup(groupBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestGroupDescCase setGroupDesc(ByteBuf input){
+
+    private MultipartRequestGroupDescCase setGroupDesc(ByteBuf input) {
         MultipartRequestGroupDescCaseBuilder caseBuilder = new MultipartRequestGroupDescCaseBuilder();
         MultipartRequestGroupDescBuilder groupBuilder = new MultipartRequestGroupDescBuilder();
         groupBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestGroupDesc(groupBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestGroupFeaturesCase setGroupFeatures(ByteBuf input){
+
+    private MultipartRequestGroupFeaturesCase setGroupFeatures(ByteBuf input) {
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder groupBuilder = new MultipartRequestGroupFeaturesBuilder();
         groupBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestGroupFeatures(groupBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestMeterCase setMeter(ByteBuf input){
+
+    private MultipartRequestMeterCase setMeter(ByteBuf input) {
         MultipartRequestMeterCaseBuilder caseBuilder = new MultipartRequestMeterCaseBuilder();
         MultipartRequestMeterBuilder meterBuilder = new MultipartRequestMeterBuilder();
         meterBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
         caseBuilder.setMultipartRequestMeter(meterBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestMeterConfigCase setMeterConfig(ByteBuf input){
+
+    private MultipartRequestMeterConfigCase setMeterConfig(ByteBuf input) {
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder meterBuilder = new MultipartRequestMeterConfigBuilder();
         meterBuilder.setMeterId(new MeterId(input.readUnsignedInt()));
         caseBuilder.setMultipartRequestMeterConfig(meterBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestMeterFeaturesCase setMeterFeatures(ByteBuf input){
+
+    private MultipartRequestMeterFeaturesCase setMeterFeatures(ByteBuf input) {
         MultipartRequestMeterFeaturesCaseBuilder caseBuilder = new MultipartRequestMeterFeaturesCaseBuilder();
         MultipartRequestMeterFeaturesBuilder meterBuilder = new MultipartRequestMeterFeaturesBuilder();
         meterBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestMeterFeatures(meterBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestTableCase setTable(ByteBuf input){
+
+    private MultipartRequestTableCase setTable(ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
         tableBuilder.setEmpty(true);
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }
-    
-    private MultipartRequestExperimenterCase setExperimenter(ByteBuf input){
+
+    private MultipartRequestExperimenterCase setExperimenter(ByteBuf input) {
         MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder experimenterBuilder = new MultipartRequestExperimenterBuilder();
         caseBuilder.setMultipartRequestExperimenter(experimenterBuilder.build());

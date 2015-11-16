@@ -53,11 +53,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public final class NetIdeMessageSerializerInitializer {
-    
+
     private NetIdeMessageSerializerInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
-    
+
     public static void registerMessageSerializers(SerializerRegistry registry) {
         short version = EncodeConstants.OF10_VERSION_ID;
         CommonMessageRegistryHelper registryHelper = new CommonMessageRegistryHelper(version, registry);
@@ -71,7 +71,7 @@ public final class NetIdeMessageSerializerInitializer {
         registryHelper.registerSerializer(MultipartReplyMessage.class, new OF10StatsReplyMessageFactory());
         registryHelper.registerSerializer(BarrierOutput.class, new OF10BarrierReplyMessageFactory());
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new OF10QueueGetConfigReplyMessageFactory());
-        
+
         version = EncodeConstants.OF13_VERSION_ID;
         registryHelper = new CommonMessageRegistryHelper(version, registry);
         registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory());

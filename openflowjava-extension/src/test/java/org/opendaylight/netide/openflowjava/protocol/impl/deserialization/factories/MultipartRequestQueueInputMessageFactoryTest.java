@@ -29,28 +29,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartRequestQueueInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 05 00 01 00 00 00 00 00 00 08 d0 00 00 08 a3");
-    
-    MultipartRequestInput deserializedMessage; 
-    
+
+    MultipartRequestInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         MultipartRequestInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong type", MultipartType.forValue(5), deserializedMessage.getType());
         Assert.assertEquals("Wrong flags", new MultipartRequestFlags(true), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong aggregate", createRequestQueue(), deserializedMessage.getMultipartRequestBody());
     }
-    
+
     private static MultipartRequestQueueCase createRequestQueue() {
         MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder builder = new MultipartRequestQueueBuilder();

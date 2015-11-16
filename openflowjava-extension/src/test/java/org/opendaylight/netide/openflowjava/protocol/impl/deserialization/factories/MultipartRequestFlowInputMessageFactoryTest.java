@@ -17,52 +17,51 @@ import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
 public class MultipartRequestFlowInputMessageFactoryTest {
-    ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 "
-            + "08 00 00 00 00 00 00 55 00 00 00 5f 00 "
+    ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 " + "08 00 00 00 00 00 00 55 00 00 00 5f 00 "
             + "00 00 00 00 01 01 01 01 01 01 01 00 01 01 01 01 01 01 01");
-    
-    MultipartRequestInput deserializedMessage; 
-    
+
+    MultipartRequestInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         MultipartRequestInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong type", MultipartType.forValue(1), deserializedMessage.getType());
         Assert.assertEquals("Wrong flags", new MultipartRequestFlags(true), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong flow", createRequestFlow(), deserializedMessage.getMultipartRequestBody());
     }
-    
+
     private static MultipartRequestFlowCase createRequestFlow() {
         MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder builder = new MultipartRequestFlowBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);
         builder.setOutGroup(95L);
-        byte[] cookie = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+        byte[] cookie = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+        byte[] cookieMask = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
         builder.setCookieMask(new BigInteger(1, cookieMask));
         caseBuilder.setMultipartRequestFlow(builder.build());
         return caseBuilder.build();

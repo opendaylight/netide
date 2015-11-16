@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.ErrorMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class ErrorMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 1;
     ErrorMessage message;
-    
+
     @Before
     public void startUp() throws Exception {
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
@@ -39,13 +38,12 @@ public class ErrorMessageFactoryTest {
         builder.setData(data);
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         ErrorMessageFactory serializer = new ErrorMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 28);

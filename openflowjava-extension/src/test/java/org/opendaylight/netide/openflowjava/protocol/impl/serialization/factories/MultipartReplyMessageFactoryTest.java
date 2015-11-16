@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.MultipartReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -186,7 +185,7 @@ public class MultipartReplyMessageFactoryTest {
     private static final byte PADDING = 4;
     MultipartReplyMessageFactory serializer;
     MultipartReplyMessageBuilder builder;
-    
+
     @Before
     public void startUp() throws Exception {
         serializer = new MultipartReplyMessageFactory();
@@ -197,7 +196,7 @@ public class MultipartReplyMessageFactoryTest {
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
     }
-    
+
     @Test
     public void testMultipartRequestTableFeaturesMessageFactory() throws Exception {
         builder.setType(MultipartType.forValue(12));
@@ -207,15 +206,14 @@ public class MultipartReplyMessageFactoryTest {
         TableFeaturesBuilder tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
-        tableFeaturesBuilder.setMetadataMatch(new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01});
-        tableFeaturesBuilder.setMetadataWrite(new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01});
+        tableFeaturesBuilder.setMetadataMatch(new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 });
+        tableFeaturesBuilder.setMetadataWrite(new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 });
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(65L);
         List<TableFeatureProperties> properties = new ArrayList<>();
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTNEXTTABLES);
-        NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder =
-                new NextTableRelatedTableFeaturePropertyBuilder();
+        NextTableRelatedTableFeaturePropertyBuilder nextPropBuilder = new NextTableRelatedTableFeaturePropertyBuilder();
         List<NextTableIds> nextIds = new ArrayList<>();
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 1).build());
         nextIds.add(new NextTableIdsBuilder().setTableId((short) 2).build());
@@ -231,8 +229,7 @@ public class MultipartReplyMessageFactoryTest {
         properties.add(propBuilder.build());
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTINSTRUCTIONS);
-        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder =
-                new InstructionRelatedTableFeaturePropertyBuilder();
+        InstructionRelatedTableFeaturePropertyBuilder insPropBuilder = new InstructionRelatedTableFeaturePropertyBuilder();
         List<Instruction> insIds = new ArrayList<>();
         InstructionBuilder insBuilder = new InstructionBuilder();
         insBuilder.setInstructionChoice(new WriteActionsCaseBuilder().build());
@@ -270,9 +267,9 @@ public class MultipartReplyMessageFactoryTest {
         tableFeaturesBuilder = new TableFeaturesBuilder();
         tableFeaturesBuilder.setTableId((short) 8);
         tableFeaturesBuilder.setName("AAAABBBBCCCCDDDDEEEEFFFFGGGG");
-        byte[] metadataMatch = new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01};
+        byte[] metadataMatch = new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 };
         tableFeaturesBuilder.setMetadataMatch(metadataMatch);
-        byte[] metadataWrite = new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01};
+        byte[] metadataWrite = new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 };
         tableFeaturesBuilder.setMetadataWrite(metadataWrite);
         tableFeaturesBuilder.setConfig(new TableConfig(true));
         tableFeaturesBuilder.setMaxEntries(67L);
@@ -380,9 +377,10 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 520);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPTABLEFEATURES.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
-        
+
         Assert.assertEquals("Wrong length", 232, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong registry-id", 8, serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(5);
@@ -390,13 +388,13 @@ public class MultipartReplyMessageFactoryTest {
                 ByteBufUtils.decodeNullTerminatedString(serializedBuffer, 32));
         byte[] metadataMatchOutput = new byte[metadataMatch.length];
         serializedBuffer.readBytes(metadataMatchOutput);
-        Assert.assertArrayEquals("Wrong metadata-match",
-                new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}, metadataMatchOutput);
+        Assert.assertArrayEquals("Wrong metadata-match", new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 },
+                metadataMatchOutput);
         serializedBuffer.skipBytes(64 - metadataMatch.length);
         byte[] metadataWriteOutput = new byte[metadataWrite.length];
         serializedBuffer.readBytes(metadataWriteOutput);
-        Assert.assertArrayEquals("Wrong metadata-write",
-                new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWriteOutput);
+        Assert.assertArrayEquals("Wrong metadata-write", new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 },
+                metadataWriteOutput);
         serializedBuffer.skipBytes(64 - metadataWrite.length);
         Assert.assertEquals("Wrong config", 1, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong max-entries", 65, serializedBuffer.readUnsignedInt());
@@ -435,13 +433,13 @@ public class MultipartReplyMessageFactoryTest {
         metadataMatchOutput = new byte[metadataMatch.length];
         serializedBuffer.readBytes(metadataMatchOutput);
         serializedBuffer.skipBytes(64 - metadataMatch.length);
-        Assert.assertArrayEquals("Wrong metadata-match",
-                new byte[] {0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01}, metadataMatchOutput);
+        Assert.assertArrayEquals("Wrong metadata-match", new byte[] { 0x00, 0x01, 0x02, 0x03, 0x01, 0x04, 0x08, 0x01 },
+                metadataMatchOutput);
         metadataWriteOutput = new byte[metadataWrite.length];
         serializedBuffer.readBytes(metadataWriteOutput);
         serializedBuffer.skipBytes(64 - metadataWrite.length);
-        Assert.assertArrayEquals("Wrong metadata-write",
-                new byte[] {0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01}, metadataWriteOutput);
+        Assert.assertArrayEquals("Wrong metadata-write", new byte[] { 0x00, 0x07, 0x01, 0x05, 0x01, 0x00, 0x03, 0x01 },
+                metadataWriteOutput);
         Assert.assertEquals("Wrong config", 1, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong max-entries", 67, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong property type", 4, serializedBuffer.readUnsignedShort());
@@ -489,7 +487,7 @@ public class MultipartReplyMessageFactoryTest {
         serializedBuffer.skipBytes(4);
         Assert.assertTrue("Unread data", serializedBuffer.readableBytes() == 0);
     }
-    
+
     @Test
     public void testPortDescSerialize() {
         builder.setType(MultipartType.forValue(13));
@@ -503,7 +501,8 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 80);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPPORTDESC.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyPortDescCase body = (MultipartReplyPortDescCase) message.getMultipartReplyBody();
         MultipartReplyPortDesc messageOutput = body.getMultipartReplyPortDesc();
@@ -521,13 +520,15 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong config", port.getConfig(), createPortConfig(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong state", port.getState(), createPortState(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong current", port.getCurrentFeatures(), createPortFeatures(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong advertised", port.getAdvertisedFeatures(), createPortFeatures(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong supported", port.getSupportedFeatures(), createPortFeatures(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong advertised", port.getAdvertisedFeatures(),
+                createPortFeatures(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong supported", port.getSupportedFeatures(),
+                createPortFeatures(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong peer", port.getPeerFeatures(), createPortFeatures(serializedBuffer.readInt()));
         Assert.assertEquals("Wrong Current speed", port.getCurrSpeed().longValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong Max speed", port.getMaxSpeed().longValue(), serializedBuffer.readInt());
     }
-    
+
     @Test
     public void testMeterFeaturesSerialize() {
         builder.setType(MultipartType.forValue(11));
@@ -536,8 +537,8 @@ public class MultipartReplyMessageFactoryTest {
         meterFeatures.setMaxMeter(1L);
         meterFeatures.setBandTypes(new MeterBandTypeBitmap(true, false));
         meterFeatures.setCapabilities(new MeterFlags(true, false, true, false));
-        meterFeatures.setMaxBands((short)1);
-        meterFeatures.setMaxColor((short)1);
+        meterFeatures.setMaxBands((short) 1);
+        meterFeatures.setMaxColor((short) 1);
         meterFeaturesCase.setMultipartReplyMeterFeatures(meterFeatures.build());
         builder.setMultipartReplyBody(meterFeaturesCase.build());
         message = builder.build();
@@ -545,18 +546,23 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 30);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPMETERFEATURES.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyMeterFeaturesCase body = (MultipartReplyMeterFeaturesCase) message.getMultipartReplyBody();
         MultipartReplyMeterFeatures messageOutput = body.getMultipartReplyMeterFeatures();
         Assert.assertEquals("Wrong max meter", messageOutput.getMaxMeter().intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong band type", messageOutput.getBandTypes(), createMeterBandTypeBitmap(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong capabilities", messageOutput.getCapabilities(), createMeterFlags(serializedBuffer.readShort()));
-        Assert.assertEquals("Wrong max bands", messageOutput.getMaxBands().shortValue(), serializedBuffer.readUnsignedByte());
-        Assert.assertEquals("Wrong max color", messageOutput.getMaxColor().shortValue(), serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong band type", messageOutput.getBandTypes(),
+                createMeterBandTypeBitmap(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong capabilities", messageOutput.getCapabilities(),
+                createMeterFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong max bands", messageOutput.getMaxBands().shortValue(),
+                serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong max color", messageOutput.getMaxColor().shortValue(),
+                serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(2);
     }
-    
+
     @Test
     public void testMeterConfigSerialize() {
         builder.setType(MultipartType.forValue(10));
@@ -570,17 +576,19 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 48);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPMETERCONFIG.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyMeterConfigCase body = (MultipartReplyMeterConfigCase) message.getMultipartReplyBody();
         MultipartReplyMeterConfig messageOutput = body.getMultipartReplyMeterConfig();
         MeterConfig meterConfig = messageOutput.getMeterConfig().get(0);
         Assert.assertEquals("Wrong len", 32, serializedBuffer.readShort());
         Assert.assertEquals("Wrong flags", meterConfig.getFlags(), createMeterFlags(serializedBuffer.readShort()));
-        Assert.assertEquals("Wrong meterId", meterConfig.getMeterId().getValue().intValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong meterId", meterConfig.getMeterId().getValue().intValue(),
+                serializedBuffer.readInt());
         Assert.assertEquals("Wrong bands", meterConfig.getBands(), decodeBandsList(serializedBuffer));
     }
-    
+
     @Test
     public void testMeterSerialize() {
         builder.setType(MultipartType.forValue(9));
@@ -594,7 +602,8 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 74);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPMETER.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyMeterCase body = (MultipartReplyMeterCase) message.getMultipartReplyBody();
         MultipartReplyMeter messageOutput = body.getMultipartReplyMeter();
@@ -603,15 +612,19 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong len", 58, serializedBuffer.readInt());
         serializedBuffer.skipBytes(6);
         Assert.assertEquals("Wrong flow count", meterStats.getFlowCount().intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong packet in count", meterStats.getPacketInCount().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong byte in count", meterStats.getByteInCount().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong packet in count", meterStats.getPacketInCount().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong byte in count", meterStats.getByteInCount().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong duration sec", meterStats.getDurationSec().intValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong duration nsec", meterStats.getDurationNsec().intValue(), serializedBuffer.readInt());
         MeterBandStats meterBandStats = meterStats.getMeterBandStats().get(0);
-        Assert.assertEquals("Wrong packet in count", meterBandStats.getPacketBandCount().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong byte in count", meterBandStats.getByteBandCount().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong packet in count", meterBandStats.getPacketBandCount().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong byte in count", meterBandStats.getByteBandCount().longValue(),
+                serializedBuffer.readLong());
     }
-    
+
     @Test
     public void testGroupFeaturesSerialize() {
         builder.setType(MultipartType.forValue(8));
@@ -633,22 +646,32 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 56);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPGROUPFEATURES.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyGroupFeaturesCase body = (MultipartReplyGroupFeaturesCase) message.getMultipartReplyBody();
         MultipartReplyGroupFeatures messageOutput = body.getMultipartReplyGroupFeatures();
         Assert.assertEquals("Wrong type", messageOutput.getTypes(), createGroupTypes(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong capabilities", messageOutput.getCapabilities(), createGroupCapabilities(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(0).intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(1).intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(2).intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(3).intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(0), createActionType(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(1), createActionType(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(2), createActionType(serializedBuffer.readInt()));
-        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(3), createActionType(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong capabilities", messageOutput.getCapabilities(),
+                createGroupCapabilities(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(0).intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(1).intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(2).intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong max groups", messageOutput.getMaxGroups().get(3).intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(0),
+                createActionType(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(1),
+                createActionType(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(2),
+                createActionType(serializedBuffer.readInt()));
+        Assert.assertEquals("Wrong actions", messageOutput.getActionsBitmap().get(3),
+                createActionType(serializedBuffer.readInt()));
     }
-    
+
     @Test
     public void testGroupDescSerialize() {
         builder.setType(MultipartType.forValue(7));
@@ -662,22 +685,24 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 64);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPGROUPDESC.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
-        MultipartReplyGroupDescCase body = (MultipartReplyGroupDescCase)message.getMultipartReplyBody();
+        MultipartReplyGroupDescCase body = (MultipartReplyGroupDescCase) message.getMultipartReplyBody();
         MultipartReplyGroupDesc messageOutput = body.getMultipartReplyGroupDesc();
         GroupDesc groupDesc = messageOutput.getGroupDesc().get(0);
         Assert.assertEquals("Wrong length", 48, serializedBuffer.readShort());
         Assert.assertEquals("Wrong type", groupDesc.getType().getIntValue(), serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(1);
-        Assert.assertEquals("Wrong group id",groupDesc.getGroupId().getValue().intValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong group id", groupDesc.getGroupId().getValue().intValue(), serializedBuffer.readInt());
         BucketsList bucketList = groupDesc.getBucketsList().get(0);
         Assert.assertEquals("Wrong length", 40, serializedBuffer.readShort());
         Assert.assertEquals("Wrong weight", bucketList.getWeight().intValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong watch port", bucketList.getWatchPort().getValue().intValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong watch port", bucketList.getWatchPort().getValue().intValue(),
+                serializedBuffer.readInt());
         Assert.assertEquals("Wrong watch group", bucketList.getWatchGroup().intValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(4);
-        
+
         Assert.assertEquals("Wrong action type", 0, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong action length", 16, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong action type", 45, serializedBuffer.readUnsignedInt());
@@ -689,7 +714,7 @@ public class MultipartReplyMessageFactoryTest {
         serializedBuffer.skipBytes(3);
         Assert.assertTrue("Not all data were read", serializedBuffer.readableBytes() == 0);
     }
-    
+
     @Test
     public void testGroupSerialize() {
         builder.setType(MultipartType.forValue(6));
@@ -703,29 +728,32 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 72);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPGROUP.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
-        MultipartReplyGroupCase body = (MultipartReplyGroupCase)message.getMultipartReplyBody();
+        MultipartReplyGroupCase body = (MultipartReplyGroupCase) message.getMultipartReplyBody();
         MultipartReplyGroup messageOutput = body.getMultipartReplyGroup();
         GroupStats groupStats = messageOutput.getGroupStats().get(0);
-        Assert.assertEquals("Wrong length",56, serializedBuffer.readShort());
+        Assert.assertEquals("Wrong length", 56, serializedBuffer.readShort());
         serializedBuffer.skipBytes(2);
-        Assert.assertEquals("Wrong group id",groupStats.getGroupId().getValue().intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong ref count",groupStats.getRefCount().intValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong group id", groupStats.getGroupId().getValue().intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong ref count", groupStats.getRefCount().intValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(4);
         Assert.assertEquals("Wrong Packet count", groupStats.getPacketCount().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong Byte count", groupStats.getByteCount().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong duration sec", groupStats.getDurationSec().intValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong duration nsec", groupStats.getDurationNsec().intValue(), serializedBuffer.readInt());
         BucketStats bucketStats = groupStats.getBucketStats().get(0);
-        Assert.assertEquals("Wrong Packet count", bucketStats.getPacketCount().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong Packet count", bucketStats.getPacketCount().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong Byte count", bucketStats.getByteCount().longValue(), serializedBuffer.readLong());
     }
-    
+
     @Test
     public void testQueueSerialize() {
         builder.setType(MultipartType.forValue(5));
-        MultipartReplyQueueCaseBuilder queueCase = new  MultipartReplyQueueCaseBuilder();
+        MultipartReplyQueueCaseBuilder queueCase = new MultipartReplyQueueCaseBuilder();
         MultipartReplyQueueBuilder queue = new MultipartReplyQueueBuilder();
         queue.setQueueStats(createQueueStats());
         queueCase.setMultipartReplyQueue(queue.build());
@@ -735,7 +763,8 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 56);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPQUEUE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyQueueCase body = (MultipartReplyQueueCase) message.getMultipartReplyBody();
         MultipartReplyQueue messageOutput = body.getMultipartReplyQueue();
@@ -748,7 +777,7 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong duration sec", queueStats.getDurationSec().intValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong duration nsec", queueStats.getDurationNsec().intValue(), serializedBuffer.readInt());
     }
-    
+
     @Test
     public void testPortStatsSerialize() {
         builder.setType(MultipartType.forValue(4));
@@ -762,29 +791,39 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 128);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPPORTSTATS.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
-        MultipartReplyPortStatsCase body = (MultipartReplyPortStatsCase)message.getMultipartReplyBody();
+        MultipartReplyPortStatsCase body = (MultipartReplyPortStatsCase) message.getMultipartReplyBody();
         MultipartReplyPortStats messageOutput = body.getMultipartReplyPortStats();
         PortStats portStatsOutput = messageOutput.getPortStats().get(0);
         Assert.assertEquals("Wrong port no", portStatsOutput.getPortNo().intValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(4);
-        Assert.assertEquals("Wrong rx packets", portStatsOutput.getRxPackets().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong tx packets", portStatsOutput.getTxPackets().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx packets", portStatsOutput.getRxPackets().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong tx packets", portStatsOutput.getTxPackets().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx bytes", portStatsOutput.getRxBytes().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong tx bytes", portStatsOutput.getTxBytes().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx dropped", portStatsOutput.getRxDropped().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong tx dropped", portStatsOutput.getTxDropped().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx dropped", portStatsOutput.getRxDropped().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong tx dropped", portStatsOutput.getTxDropped().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx errors", portStatsOutput.getRxErrors().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong tx errors", portStatsOutput.getTxErrors().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx frame err", portStatsOutput.getRxFrameErr().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx over err", portStatsOutput.getRxOverErr().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx frame err", portStatsOutput.getRxFrameErr().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx over err", portStatsOutput.getRxOverErr().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx crc err", portStatsOutput.getRxCrcErr().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong collisions", portStatsOutput.getCollisions().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong duration sec", portStatsOutput.getDurationSec().intValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong duration nsec", portStatsOutput.getDurationNsec().intValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong collisions", portStatsOutput.getCollisions().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong duration sec", portStatsOutput.getDurationSec().intValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong duration nsec", portStatsOutput.getDurationNsec().intValue(),
+                serializedBuffer.readInt());
     }
-    
+
     @Test
     public void testTableSerialize() {
         builder.setType(MultipartType.forValue(3));
@@ -798,7 +837,8 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 40);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPTABLE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyTableCase body = (MultipartReplyTableCase) message.getMultipartReplyBody();
         MultipartReplyTable messageOutput = body.getMultipartReplyTable();
@@ -807,9 +847,10 @@ public class MultipartReplyMessageFactoryTest {
         serializedBuffer.skipBytes(3);
         Assert.assertEquals("Wrong active count", tableStats.getActiveCount().longValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong lookup count", tableStats.getLookupCount().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong matched count", tableStats.getMatchedCount().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong matched count", tableStats.getMatchedCount().longValue(),
+                serializedBuffer.readLong());
     }
-    
+
     @Test
     public void testAggregateSerialize() {
         builder.setType(MultipartType.forValue(2));
@@ -825,16 +866,18 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 40);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPAGGREGATE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         MultipartReplyAggregateCase body = (MultipartReplyAggregateCase) message.getMultipartReplyBody();
         MultipartReplyAggregate messageOutput = body.getMultipartReplyAggregate();
-        Assert.assertEquals("Wrong Packet count", messageOutput.getPacketCount().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong Packet count", messageOutput.getPacketCount().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong Byte count", messageOutput.getByteCount().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong Flow count", messageOutput.getFlowCount().longValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(4);
     }
-    
+
     @Test
     public void testFlowSerialize() {
         builder.setType(MultipartType.forValue(1));
@@ -848,16 +891,17 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 192);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPFLOW.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         testFlowBody(message.getMultipartReplyBody(), serializedBuffer);
     }
-    
-    private static void testFlowBody(MultipartReplyBody body, ByteBuf output){
+
+    private static void testFlowBody(MultipartReplyBody body, ByteBuf output) {
         MultipartReplyFlowCase flowCase = (MultipartReplyFlowCase) body;
         MultipartReplyFlow flow = flowCase.getMultipartReplyFlow();
         FlowStats flowStats = flow.getFlowStats().get(0);
-        Assert.assertEquals("Wrong length",176, output.readShort());
+        Assert.assertEquals("Wrong length", 176, output.readShort());
         Assert.assertEquals("Wrong Table ID", flowStats.getTableId().intValue(), output.readUnsignedByte());
         output.skipBytes(1);
         Assert.assertEquals("Wrong duration sec", flowStats.getDurationSec().intValue(), output.readInt());
@@ -929,85 +973,81 @@ public class MultipartReplyMessageFactoryTest {
         output.skipBytes(4);
         Assert.assertTrue("Not all data were read", output.readableBytes() == 0);
     }
-    
-    private static List<Ports> createPortList(){
+
+    private static List<Ports> createPortList() {
         PortsBuilder builder = new PortsBuilder();
         builder.setPortNo(1L);
         builder.setHwAddr(new MacAddress("94:de:80:a6:61:40"));
         builder.setName("Port name");
         builder.setConfig(new PortConfig(true, false, true, false));
         builder.setState(new PortState(true, false, true));
-        builder.setCurrentFeatures(new PortFeatures(true,
-                false, true, false, true, false, true, false,
-                true, false, true, false, true, false, true, false));
-        builder.setAdvertisedFeatures(new PortFeatures(true,
-                false, true, false, true, false, true, false,
-                true, false, true, false, true, false, true, false));
-        builder.setSupportedFeatures(new PortFeatures(true,
-                false, true, false, true, false, true, false,
-                true, false, true, false, true, false, true, false));
-        builder.setPeerFeatures(new PortFeatures(true,
-                false, true, false, true, false, true, false,
-                true, false, true, false, true, false, true, false));
+        builder.setCurrentFeatures(new PortFeatures(true, false, true, false, true, false, true, false, true, false,
+                true, false, true, false, true, false));
+        builder.setAdvertisedFeatures(new PortFeatures(true, false, true, false, true, false, true, false, true, false,
+                true, false, true, false, true, false));
+        builder.setSupportedFeatures(new PortFeatures(true, false, true, false, true, false, true, false, true, false,
+                true, false, true, false, true, false));
+        builder.setPeerFeatures(new PortFeatures(true, false, true, false, true, false, true, false, true, false, true,
+                false, true, false, true, false));
         builder.setCurrSpeed(1234L);
         builder.setMaxSpeed(1234L);
         List<Ports> list = new ArrayList<>();
         list.add(builder.build());
         return list;
     }
-    
-    private static PortConfig createPortConfig(long input){
-        final Boolean _portDown   = ((input) & (1<<0)) > 0;
-        final Boolean _noRecv    = ((input) & (1<<2)) > 0;
-        final Boolean _noFwd       = ((input) & (1<<5)) > 0;
-        final Boolean _noPacketIn = ((input) & (1<<6)) > 0;
+
+    private static PortConfig createPortConfig(long input) {
+        final Boolean _portDown = ((input) & (1 << 0)) > 0;
+        final Boolean _noRecv = ((input) & (1 << 2)) > 0;
+        final Boolean _noFwd = ((input) & (1 << 5)) > 0;
+        final Boolean _noPacketIn = ((input) & (1 << 6)) > 0;
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
-    
-    private static PortFeatures createPortFeatures(long input){
-        final Boolean _10mbHd = ((input) & (1<<0)) > 0;
-        final Boolean _10mbFd = ((input) & (1<<1)) > 0;
-        final Boolean _100mbHd = ((input) & (1<<2)) > 0;
-        final Boolean _100mbFd = ((input) & (1<<3)) > 0;
-        final Boolean _1gbHd = ((input) & (1<<4)) > 0;
-        final Boolean _1gbFd = ((input) & (1<<5)) > 0;
-        final Boolean _10gbFd = ((input) & (1<<6)) > 0;
-        final Boolean _40gbFd = ((input) & (1<<7)) > 0;
-        final Boolean _100gbFd = ((input) & (1<<8)) > 0;
-        final Boolean _1tbFd = ((input) & (1<<9)) > 0;
-        final Boolean _other = ((input) & (1<<10)) > 0;
-        final Boolean _copper = ((input) & (1<<11)) > 0;
-        final Boolean _fiber = ((input) & (1<<12)) > 0;
-        final Boolean _autoneg = ((input) & (1<<13)) > 0;
-        final Boolean _pause = ((input) & (1<<14)) > 0;
-        final Boolean _pauseAsym = ((input) & (1<<15)) > 0;
-        return new PortFeatures(_100gbFd, _100mbFd,  _100mbHd, _10gbFd, _10mbFd, _10mbHd,
-                _1gbFd, _1gbHd, _1tbFd, _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
+
+    private static PortFeatures createPortFeatures(long input) {
+        final Boolean _10mbHd = ((input) & (1 << 0)) > 0;
+        final Boolean _10mbFd = ((input) & (1 << 1)) > 0;
+        final Boolean _100mbHd = ((input) & (1 << 2)) > 0;
+        final Boolean _100mbFd = ((input) & (1 << 3)) > 0;
+        final Boolean _1gbHd = ((input) & (1 << 4)) > 0;
+        final Boolean _1gbFd = ((input) & (1 << 5)) > 0;
+        final Boolean _10gbFd = ((input) & (1 << 6)) > 0;
+        final Boolean _40gbFd = ((input) & (1 << 7)) > 0;
+        final Boolean _100gbFd = ((input) & (1 << 8)) > 0;
+        final Boolean _1tbFd = ((input) & (1 << 9)) > 0;
+        final Boolean _other = ((input) & (1 << 10)) > 0;
+        final Boolean _copper = ((input) & (1 << 11)) > 0;
+        final Boolean _fiber = ((input) & (1 << 12)) > 0;
+        final Boolean _autoneg = ((input) & (1 << 13)) > 0;
+        final Boolean _pause = ((input) & (1 << 14)) > 0;
+        final Boolean _pauseAsym = ((input) & (1 << 15)) > 0;
+        return new PortFeatures(_100gbFd, _100mbFd, _100mbHd, _10gbFd, _10mbFd, _10mbHd, _1gbFd, _1gbHd, _1tbFd,
+                _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
-    
-    private static PortState createPortState(long input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
-        final Boolean three = ((input) & (1<<2)) > 0;
+
+    private static PortState createPortState(long input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean three = ((input) & (1 << 2)) > 0;
         return new PortState(two, one, three);
     }
-    
-    private static List<Bands> decodeBandsList(ByteBuf input){
+
+    private static List<Bands> decodeBandsList(ByteBuf input) {
         List<Bands> bandsList = new ArrayList<>();
         BandsBuilder bandsBuilder = new BandsBuilder();
         MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
         MeterBandDropBuilder dropBand = new MeterBandDropBuilder();
         dropBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE/Byte.SIZE);
+        input.skipBytes(Short.SIZE / Byte.SIZE);
         dropBand.setRate(input.readUnsignedInt());
         dropBand.setBurstSize(input.readUnsignedInt());
-        
+
         dropCaseBuilder.setMeterBandDrop(dropBand.build());
         bandsList.add(bandsBuilder.setMeterBand(dropCaseBuilder.build()).build());
         MeterBandDscpRemarkCaseBuilder dscpCaseBuilder = new MeterBandDscpRemarkCaseBuilder();
         MeterBandDscpRemarkBuilder dscpRemarkBand = new MeterBandDscpRemarkBuilder();
         dscpRemarkBand.setType(MeterBandType.forValue(input.readUnsignedShort()));
-        input.skipBytes(Short.SIZE/Byte.SIZE);
+        input.skipBytes(Short.SIZE / Byte.SIZE);
         dscpRemarkBand.setRate(input.readUnsignedInt());
         dscpRemarkBand.setBurstSize(input.readUnsignedInt());
         dscpRemarkBand.setPrecLevel((short) 3);
@@ -1015,8 +1055,8 @@ public class MultipartReplyMessageFactoryTest {
         bandsList.add(bandsBuilder.setMeterBand(dscpCaseBuilder.build()).build());
         return bandsList;
     }
-    
-    private static List<MeterConfig> createMeterConfig(){
+
+    private static List<MeterConfig> createMeterConfig() {
         MeterConfigBuilder builder = new MeterConfigBuilder();
         builder.setFlags(new MeterFlags(true, false, true, false));
         builder.setMeterId(new MeterId(1L));
@@ -1025,13 +1065,14 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    private static MeterBandTypeBitmap createMeterBandTypeBitmap(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
+
+    private static MeterBandTypeBitmap createMeterBandTypeBitmap(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
         return new MeterBandTypeBitmap(one, two);
     }
-    
-    private static List<Bands> createBandsList(){
+
+    private static List<Bands> createBandsList() {
         List<Bands> bandsList = new ArrayList<>();
         BandsBuilder bandsBuilder = new BandsBuilder();
         MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
@@ -1051,16 +1092,16 @@ public class MultipartReplyMessageFactoryTest {
         bandsList.add(bandsBuilder.setMeterBand(dscpCaseBuilder.build()).build());
         return bandsList;
     }
-    
-    private static MeterFlags createMeterFlags(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
-        final Boolean three = ((input) & (1<<2)) > 0;
-        final Boolean four = ((input) & (1<<3)) > 0;
+
+    private static MeterFlags createMeterFlags(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean four = ((input) & (1 << 3)) > 0;
         return new MeterFlags(three, one, two, four);
     }
-    
-    private static List<MeterStats> createMeterStats(){
+
+    private static List<MeterStats> createMeterStats() {
         MeterStatsBuilder builder = new MeterStatsBuilder();
         builder.setMeterId(new MeterId(1L));
         builder.setFlowCount(1L);
@@ -1073,8 +1114,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<MeterBandStats> createMeterBandStats(){
+
+    private static List<MeterBandStats> createMeterBandStats() {
         MeterBandStatsBuilder builder = new MeterBandStatsBuilder();
         builder.setPacketBandCount(BigInteger.valueOf(1L));
         builder.setByteBandCount(BigInteger.valueOf(1L));
@@ -1082,64 +1123,64 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static ActionType createActionType(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
-        final Boolean three = ((input) & (1<<2)) > 0;
-        final Boolean four = ((input) & (1<<3)) > 0;
-        final Boolean five = ((input) & (1<<4)) > 0;
-        final Boolean six = ((input) & (1<<5)) > 0;
-        final Boolean seven = ((input) & (1<<6)) > 0;
-        final Boolean eight = ((input) & (1<<7)) > 0;
-        final Boolean nine = ((input) & (1<<8)) > 0;
-        final Boolean ten = ((input) & (1<<9)) > 0;
-        final Boolean eleven = ((input) & (1<<10)) > 0;
-        final Boolean twelve = ((input) & (1<<11)) > 0;
-        final Boolean thirteen = ((input) & (1<<12)) > 0;
-        final Boolean fourteen = ((input) & (1<<13)) > 0;
-        final Boolean fifthteen = ((input) & (1<<14)) > 0;
-        final Boolean sixteen = ((input) & (1<<15)) > 0;
-        final Boolean seventeen = ((input) & (1<<16)) > 0;
-        return new ActionType(three, two, five, thirteen, seventeen, eleven, one, nine, sixteen, seven, eight, fifthteen, 
-                six, fourteen, four, twelve, ten);
+
+    private static ActionType createActionType(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean four = ((input) & (1 << 3)) > 0;
+        final Boolean five = ((input) & (1 << 4)) > 0;
+        final Boolean six = ((input) & (1 << 5)) > 0;
+        final Boolean seven = ((input) & (1 << 6)) > 0;
+        final Boolean eight = ((input) & (1 << 7)) > 0;
+        final Boolean nine = ((input) & (1 << 8)) > 0;
+        final Boolean ten = ((input) & (1 << 9)) > 0;
+        final Boolean eleven = ((input) & (1 << 10)) > 0;
+        final Boolean twelve = ((input) & (1 << 11)) > 0;
+        final Boolean thirteen = ((input) & (1 << 12)) > 0;
+        final Boolean fourteen = ((input) & (1 << 13)) > 0;
+        final Boolean fifthteen = ((input) & (1 << 14)) > 0;
+        final Boolean sixteen = ((input) & (1 << 15)) > 0;
+        final Boolean seventeen = ((input) & (1 << 16)) > 0;
+        return new ActionType(three, two, five, thirteen, seventeen, eleven, one, nine, sixteen, seven, eight,
+                fifthteen, six, fourteen, four, twelve, ten);
     }
-    
-    private static GroupCapabilities createGroupCapabilities(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
-        final Boolean three = ((input) & (1<<2)) > 0;
-        final Boolean four = ((input) & (1<<3)) > 0;
+
+    private static GroupCapabilities createGroupCapabilities(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean four = ((input) & (1 << 3)) > 0;
         return new GroupCapabilities(three, four, two, one);
     }
-    
-    private static GroupTypes createGroupTypes(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
-        final Boolean two = ((input) & (1<<1)) > 0;
-        final Boolean three = ((input) & (1<<2)) > 0;
-        final Boolean four = ((input) & (1<<3)) > 0;
+
+    private static GroupTypes createGroupTypes(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
+        final Boolean two = ((input) & (1 << 1)) > 0;
+        final Boolean three = ((input) & (1 << 2)) > 0;
+        final Boolean four = ((input) & (1 << 3)) > 0;
         return new GroupTypes(one, four, three, two);
     }
-    
-    private static List<ActionType> createActionType(){
-        ActionType actionType1 = new ActionType(true, false, true, false, true, false, true, false, true, false, 
-                true, false, true, false, true, false, true);
-        ActionType actionType2 = new ActionType(true, false,false, false, true, false, true, false, true, false, 
-                true, false, true, false, true, true, true);
-        ActionType actionType3 = new ActionType(true, false, true, false, true, false, true, false, true, false, 
-                true, false, true, false, true, false, true);
-        ActionType actionType4 = new ActionType(true, false, true, false, true, false, true, false, true, false, 
-                true, false, true, false, true, false, true);
+
+    private static List<ActionType> createActionType() {
+        ActionType actionType1 = new ActionType(true, false, true, false, true, false, true, false, true, false, true,
+                false, true, false, true, false, true);
+        ActionType actionType2 = new ActionType(true, false, false, false, true, false, true, false, true, false, true,
+                false, true, false, true, true, true);
+        ActionType actionType3 = new ActionType(true, false, true, false, true, false, true, false, true, false, true,
+                false, true, false, true, false, true);
+        ActionType actionType4 = new ActionType(true, false, true, false, true, false, true, false, true, false, true,
+                false, true, false, true, false, true);
         List<ActionType> list = new ArrayList<>();
         list.add(actionType1);
         list.add(actionType2);
         list.add(actionType3);
         list.add(actionType4);
         return list;
-        
+
     }
-    
-    private static List<GroupDesc> createGroupDesc(){
+
+    private static List<GroupDesc> createGroupDesc() {
         GroupDescBuilder builder = new GroupDescBuilder();
         builder.setType(GroupType.forValue(1));
         builder.setGroupId(new GroupId(1L));
@@ -1148,8 +1189,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<GroupStats> createGroupStats(){
+
+    private static List<GroupStats> createGroupStats() {
         GroupStatsBuilder builder = new GroupStatsBuilder();
         builder.setGroupId(new GroupId(1L));
         builder.setRefCount(1L);
@@ -1162,8 +1203,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<BucketsList> createBucketsList(){
+
+    private static List<BucketsList> createBucketsList() {
         BucketsListBuilder builder = new BucketsListBuilder();
         builder.setWeight(1);
         builder.setWatchPort(new PortNumber(1L));
@@ -1173,8 +1214,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<Action> createActionList(){
+
+    private static List<Action> createActionList() {
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
@@ -1193,8 +1234,8 @@ public class MultipartReplyMessageFactoryTest {
         actions.add(actionBuilder.build());
         return actions;
     }
-    
-    private static List<BucketStats> createBucketStats(){
+
+    private static List<BucketStats> createBucketStats() {
         BucketStatsBuilder builder = new BucketStatsBuilder();
         builder.setPacketCount(BigInteger.valueOf(1L));
         builder.setByteCount(BigInteger.valueOf(1L));
@@ -1202,8 +1243,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<QueueStats> createQueueStats(){
+
+    private static List<QueueStats> createQueueStats() {
         QueueStatsBuilder builder = new QueueStatsBuilder();
         builder.setPortNo(1L);
         builder.setQueueId(1L);
@@ -1216,8 +1257,8 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<PortStats> createPortStats(){
+
+    private static List<PortStats> createPortStats() {
         PortStatsBuilder builder = new PortStatsBuilder();
         builder.setPortNo(1L);
         builder.setRxPackets(BigInteger.valueOf(1L));
@@ -1238,10 +1279,10 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<TableStats> createTableStats(){
+
+    private static List<TableStats> createTableStats() {
         TableStatsBuilder builder = new TableStatsBuilder();
-        builder.setTableId((short)1);
+        builder.setTableId((short) 1);
         builder.setActiveCount(1L);
         builder.setLookupCount(BigInteger.valueOf(1L));
         builder.setMatchedCount(BigInteger.valueOf(1L));
@@ -1249,10 +1290,10 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<FlowStats> createFlowStats(){
+
+    private static List<FlowStats> createFlowStats() {
         FlowStatsBuilder builder = new FlowStatsBuilder();
-        builder.setTableId((short)1);
+        builder.setTableId((short) 1);
         builder.setDurationSec(1L);
         builder.setDurationNsec(1L);
         builder.setPriority(1);
@@ -1363,7 +1404,7 @@ public class MultipartReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
+
     @Test
     public void testDescSerialize() {
         builder.setType(MultipartType.forValue(0));
@@ -1381,17 +1422,18 @@ public class MultipartReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 1072);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPDESC.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         serializedBuffer.skipBytes(PADDING);
         Assert.assertEquals("Wrong desc body", message.getMultipartReplyBody(), decodeDescBody(serializedBuffer));
     }
-    
-    private static MultipartRequestFlags createMultipartRequestFlags(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
+
+    private static MultipartRequestFlags createMultipartRequestFlags(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
         return new MultipartRequestFlags(one);
     }
-    
-    private static MultipartReplyDescCase decodeDescBody(ByteBuf output){
+
+    private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
         MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];

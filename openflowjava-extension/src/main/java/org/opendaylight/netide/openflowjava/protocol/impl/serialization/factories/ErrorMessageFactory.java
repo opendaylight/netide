@@ -9,8 +9,6 @@ package org.opendaylight.netide.openflowjava.protocol.impl.serialization.factori
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -19,15 +17,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class ErrorMessageFactory implements OFSerializer<ErrorMessage>, SerializerRegistryInjector{
-    
-    private SerializerRegistry registry;
+public class ErrorMessageFactory implements OFSerializer<ErrorMessage> {
+
     private static final byte MESSAGE_TYPE = 1;
-    
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
 
     @Override
     public void serialize(ErrorMessage message, ByteBuf outBuffer) {
@@ -39,7 +31,7 @@ public class ErrorMessageFactory implements OFSerializer<ErrorMessage>, Serializ
         if (data != null) {
             outBuffer.writeBytes(data);
         }
-        
+
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

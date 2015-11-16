@@ -9,8 +9,6 @@ package org.opendaylight.netide.openflowjava.protocol.impl.serialization.factori
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
@@ -19,19 +17,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class HelloMessageFactory implements OFSerializer<HelloMessage>, SerializerRegistryInjector{
-    private SerializerRegistry registry;
+public class HelloMessageFactory implements OFSerializer<HelloMessage> {
     private static final byte MESSAGE_TYPE = 0;
-    
+
     @Override
     public void serialize(HelloMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         ByteBufUtils.updateOFHeaderLength(outBuffer);
-    }
-
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
     }
 
 }

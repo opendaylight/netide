@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.FlowRemovedMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -44,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class FlowRemovedMessageFactoryTest {
     FlowRemovedMessage message;
     private static final byte MESSAGE_TYPE = 11;
-    
+
     @Before
     public void startUp() throws Exception {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
@@ -85,7 +84,7 @@ public class FlowRemovedMessageFactoryTest {
         builder.setMatch(matchBuilder.build());
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         FlowRemovedMessageFactory serializer = new FlowRemovedMessageFactory();
@@ -96,9 +95,10 @@ public class FlowRemovedMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 72);
         Assert.assertEquals("Wrong cookie", message.getCookie().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong priority",  message.getPriority().intValue(), serializedBuffer.readShort());
+        Assert.assertEquals("Wrong priority", message.getPriority().intValue(), serializedBuffer.readShort());
         Assert.assertEquals("Wrong reason", message.getReason().getIntValue(), serializedBuffer.readByte());
-        Assert.assertEquals("Wrong Table ID", message.getTableId().getValue().intValue(), serializedBuffer.readUnsignedByte());
+        Assert.assertEquals("Wrong Table ID", message.getTableId().getValue().intValue(),
+                serializedBuffer.readUnsignedByte());
         Assert.assertEquals("Wrong duration sec", message.getDurationSec().intValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong duration nsec", message.getDurationNsec().intValue(), serializedBuffer.readInt());
         Assert.assertEquals("Wrong Idle timeout", message.getIdleTimeout().intValue(), serializedBuffer.readShort());

@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.get.config.reply.QueuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueuePropertyBuilder;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
@@ -34,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10QueueGetConfigReplyMessageFactoryTest {
     GetQueueConfigOutput message;
     private static final byte MESSAGE_TYPE = 21;
-    
+
     @Before
     public void startUp() throws Exception {
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
@@ -43,7 +44,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         builder.setQueues(createQueues());
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         OF10QueueGetConfigReplyMessageFactory serializer = new OF10QueueGetConfigReplyMessageFactory();
@@ -52,19 +53,21 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 40);
         Assert.assertEquals("Wrong port", message.getPort().getValue().longValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(6);
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(0).getQueueId().getValue().longValue(), serializedBuffer.readInt());
+        Assert.assertEquals("Wrong queue Id", message.getQueues().get(0).getQueueId().getValue().longValue(),
+                serializedBuffer.readInt());
         Assert.assertEquals("Wrong length", 24, serializedBuffer.readShort());
         serializedBuffer.skipBytes(2);
-        List<QueueProperty> properties =  message.getQueues().get(0).getQueueProperty();
-        Assert.assertEquals("Wrong property", properties.get(0).getProperty().getIntValue(), serializedBuffer.readShort());
+        List<QueueProperty> properties = message.getQueues().get(0).getQueueProperty();
+        Assert.assertEquals("Wrong property", properties.get(0).getProperty().getIntValue(),
+                serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(4);
         RateQueueProperty rateQueueProperty = properties.get(0).getAugmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueueProperty.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(6);
     }
-    
-    private List<Queues> createQueues(){
+
+    private List<Queues> createQueues() {
         List<Queues> list = new ArrayList<>();
         QueuesBuilder builder = new QueuesBuilder();
         builder.setQueueId(new QueueId(1L));
@@ -72,7 +75,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
+
     private static List<QueueProperty> createPropertiesList() {
         List<QueueProperty> propertiesList = new ArrayList<>();
         QueuePropertyBuilder pb = new QueuePropertyBuilder();

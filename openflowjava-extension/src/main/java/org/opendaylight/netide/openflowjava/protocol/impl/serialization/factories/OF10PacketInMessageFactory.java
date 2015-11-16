@@ -17,10 +17,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10PacketInMessageFactory implements OFSerializer<PacketInMessage>{
+public class OF10PacketInMessageFactory implements OFSerializer<PacketInMessage> {
     private static final byte MESSAGE_TYPE = 10;
     private static final byte PADDING = 1;
-    
+
     @Override
     public void serialize(PacketInMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);

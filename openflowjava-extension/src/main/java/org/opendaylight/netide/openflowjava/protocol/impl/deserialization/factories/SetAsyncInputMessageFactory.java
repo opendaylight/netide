@@ -10,8 +10,6 @@ package org.opendaylight.netide.openflowjava.protocol.impl.deserialization.facto
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
@@ -30,15 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput>, DeserializerRegistryInjector{
+public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput> {
 
-    private DeserializerRegistry registry;
     private static final byte SEPARATE_ROLES = 2;
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
 
     @Override
     public SetAsyncInput deserialize(ByteBuf rawMessage) {
@@ -50,7 +42,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         builder.setFlowRemovedMask(decodeFlowRemovedMask(rawMessage));
         return builder.build();
     }
-    
+
     private static List<PacketInMask> decodePacketInMask(ByteBuf input) {
         List<PacketInMask> inMasks = new ArrayList<>();
         PacketInMaskBuilder maskBuilder;
@@ -61,7 +53,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         }
         return inMasks;
     }
-    
+
     private static List<PacketInReason> decodePacketInReasons(long input) {
         List<PacketInReason> reasons = new ArrayList<>();
         if ((input & (1 << 0)) != 0) {
@@ -75,7 +67,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         }
         return reasons;
     }
-    
+
     private static List<PortStatusMask> decodePortStatusMask(ByteBuf input) {
         List<PortStatusMask> inMasks = new ArrayList<>();
         PortStatusMaskBuilder maskBuilder;
@@ -86,7 +78,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         }
         return inMasks;
     }
-    
+
     private static List<PortReason> decodePortReasons(long input) {
         List<PortReason> reasons = new ArrayList<>();
         if ((input & (1 << 0)) != 0) {
@@ -100,7 +92,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         }
         return reasons;
     }
-    
+
     private static List<FlowRemovedMask> decodeFlowRemovedMask(ByteBuf input) {
         List<FlowRemovedMask> inMasks = new ArrayList<>();
         FlowRemovedMaskBuilder maskBuilder;
@@ -111,7 +103,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         }
         return inMasks;
     }
-    
+
     private static List<FlowRemovedReason> decodeFlowRemovedReasons(long input) {
         List<FlowRemovedReason> reasons = new ArrayList<>();
         if ((input & (1 << 0)) != 0) {

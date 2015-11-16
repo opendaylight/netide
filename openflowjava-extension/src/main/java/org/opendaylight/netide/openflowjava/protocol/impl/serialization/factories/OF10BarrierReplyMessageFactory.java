@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public class OF10BarrierReplyMessageFactory implements OFSerializer<BarrierOutput> {
-    
+
     private static final byte MESSAGE_TYPE = 19;
 
     @Override

@@ -12,7 +12,6 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.BarrierReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -26,20 +25,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class BarrierReplyMessageFactoryTest {
     BarrierOutput message;
     private static final byte MESSAGE_TYPE = 21;
-    
+
     @Before
     public void startUp() throws Exception {
         BarrierOutputBuilder builder = new BarrierOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF13_VERSION_ID);
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         BarrierReplyMessageFactory serializer = new BarrierReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 8);

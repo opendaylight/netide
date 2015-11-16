@@ -23,14 +23,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10BarrierReplyMessageFactoryTest {
     BarrierOutput message;
     private static final byte MESSAGE_TYPE = 19;
-    
+
     @Before
     public void startUp() throws Exception {
         BarrierOutputBuilder builder = new BarrierOutputBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         OF10BarrierReplyMessageFactory serializer = new OF10BarrierReplyMessageFactory();

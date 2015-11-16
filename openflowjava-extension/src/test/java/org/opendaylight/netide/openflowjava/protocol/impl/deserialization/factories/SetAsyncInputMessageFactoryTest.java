@@ -34,34 +34,40 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public class SetAsyncInputMessageFactoryTest {
-    ByteBuf bb = BufferHelper.buildBuffer("00 00 00 07 00 00 00 00 00 00 00 "
-            + "07 00 00 00 00 00 00 00 0f 00 00 00 00");
-    
-    SetAsyncInput deserializedMessage; 
-    
+    ByteBuf bb = BufferHelper
+            .buildBuffer("00 00 00 07 00 00 00 00 00 00 00 " + "07 00 00 00 00 00 00 00 0f 00 00 00 00");
+
+    SetAsyncInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         SetAsyncInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 28, SetAsyncInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
-        Assert.assertEquals("Wrong packet in mask ", createPacketInMask().get(0), deserializedMessage.getPacketInMask().get(0) );
-        Assert.assertEquals("Wrong packet in mask ", createPacketInMask().get(1), deserializedMessage.getPacketInMask().get(1) );
-        Assert.assertEquals("Wrong port status mask ", createPortStatusMask().get(0), deserializedMessage.getPortStatusMask().get(0));
-        Assert.assertEquals("Wrong port status mask ", createPortStatusMask().get(1), deserializedMessage.getPortStatusMask().get(1));
-        Assert.assertEquals("Wrong flow removed mask ", createFlowRemowedMask().get(0), deserializedMessage.getFlowRemovedMask().get(0));
-        Assert.assertEquals("Wrong flow removed mask ", createFlowRemowedMask().get(1), deserializedMessage.getFlowRemovedMask().get(1));
-        
+
+        Assert.assertEquals("Wrong packet in mask ", createPacketInMask().get(0),
+                deserializedMessage.getPacketInMask().get(0));
+        Assert.assertEquals("Wrong packet in mask ", createPacketInMask().get(1),
+                deserializedMessage.getPacketInMask().get(1));
+        Assert.assertEquals("Wrong port status mask ", createPortStatusMask().get(0),
+                deserializedMessage.getPortStatusMask().get(0));
+        Assert.assertEquals("Wrong port status mask ", createPortStatusMask().get(1),
+                deserializedMessage.getPortStatusMask().get(1));
+        Assert.assertEquals("Wrong flow removed mask ", createFlowRemowedMask().get(0),
+                deserializedMessage.getFlowRemovedMask().get(0));
+        Assert.assertEquals("Wrong flow removed mask ", createFlowRemowedMask().get(1),
+                deserializedMessage.getFlowRemovedMask().get(1));
+
     }
-    
+
     private static List<PacketInMask> createPacketInMask() {
         List<PacketInMask> masks = new ArrayList<>();
         PacketInMaskBuilder builder;
@@ -80,7 +86,7 @@ public class SetAsyncInputMessageFactoryTest {
         masks.add(builder.build());
         return masks;
     }
-    
+
     private static List<PortStatusMask> createPortStatusMask() {
         List<PortStatusMask> masks = new ArrayList<>();
         PortStatusMaskBuilder builder;
@@ -99,7 +105,7 @@ public class SetAsyncInputMessageFactoryTest {
         masks.add(builder.build());
         return masks;
     }
-    
+
     private static List<FlowRemovedMask> createFlowRemowedMask() {
         List<FlowRemovedMask> masks = new ArrayList<>();
         FlowRemovedMaskBuilder builder;

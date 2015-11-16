@@ -30,28 +30,29 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartRequestMeterConfigInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 0a 00 01 00 00 00 00 00 00 04 6d 00 00 00 00");
-    
-    MultipartRequestInput deserializedMessage; 
-    
+
+    MultipartRequestInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         MultipartRequestInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong type", MultipartType.forValue(10), deserializedMessage.getType());
         Assert.assertEquals("Wrong flags", new MultipartRequestFlags(true), deserializedMessage.getFlags());
-        Assert.assertEquals("Wrong aggregate", createRequestMeterConfig(), deserializedMessage.getMultipartRequestBody());
+        Assert.assertEquals("Wrong aggregate", createRequestMeterConfig(),
+                deserializedMessage.getMultipartRequestBody());
     }
-    
+
     private static MultipartRequestMeterConfigCase createRequestMeterConfig() {
         MultipartRequestMeterConfigCaseBuilder caseBuilder = new MultipartRequestMeterConfigCaseBuilder();
         MultipartRequestMeterConfigBuilder builder = new MultipartRequestMeterConfigBuilder();

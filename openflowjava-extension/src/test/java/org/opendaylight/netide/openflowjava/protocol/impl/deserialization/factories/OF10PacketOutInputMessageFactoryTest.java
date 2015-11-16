@@ -34,19 +34,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10PacketOutInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 00 01 00 01 01 00 10 00 00 00 08 "
             + "00 2a 00 32 00 03 00 08 00 00 00 00 00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14");
-    
-    PacketOutInput deserializedMessage; 
-    
+
+    PacketOutInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         OF10PacketOutInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 13, PacketOutInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);
@@ -54,12 +54,12 @@ public class OF10PacketOutInputMessageFactoryTest {
         Assert.assertEquals("Wrong inPort ", new PortNumber(257L), deserializedMessage.getInPort());
         Assert.assertEquals("Wrong action ", createActionList().get(0), deserializedMessage.getAction().get(0));
         Assert.assertEquals("Wrong action ", createActionList().get(1), deserializedMessage.getAction().get(1));
-        System.out.println(deserializedMessage.getData());
-        Assert.assertArrayEquals("Wrong data ", ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14")
-                , deserializedMessage.getData());
+        Assert.assertArrayEquals("Wrong data ",
+                ByteBufUtils.hexStringToBytes("00 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14"),
+                deserializedMessage.getData());
     }
-    
-    private static List<Action> createActionList(){
+
+    private static List<Action> createActionList() {
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();

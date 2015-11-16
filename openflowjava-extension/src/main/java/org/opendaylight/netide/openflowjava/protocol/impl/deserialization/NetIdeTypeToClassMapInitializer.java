@@ -44,19 +44,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public final class NetIdeTypeToClassMapInitializer {
-    
+
     private NetIdeTypeToClassMapInitializer() {
         throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
     }
 
     /**
      * Initializes type to class map
+     *
      * @param messageClassMap
      */
     public static void initializeTypeToClassMap(Map<TypeToClassKey, Class<?>> messageClassMap) {
         // init OF v1.0 mapping
-        TypeToClassInitHelper helper =
-                new TypeToClassInitHelper(EncodeConstants.OF10_VERSION_ID, messageClassMap);
+        TypeToClassInitHelper helper = new TypeToClassInitHelper(EncodeConstants.OF10_VERSION_ID, messageClassMap);
         helper.registerTypeToClass((short) 0, HelloMessage.class);
         helper.registerTypeToClass((short) 1, ErrorMessage.class);
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);

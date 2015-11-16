@@ -44,24 +44,24 @@ public class OF10FlowModInputMessageFactoryTest {
             + "ff ff ff ff ff 00 12 05 00 00 2a 04 07 00 00 08 08 08 08 10 10 10 10 "
             + "19 fd 19 e9 ff 01 04 01 06 00 07 01 00 00 00 0c 00 10 00 01 00 00 00 02 "
             + "11 46 00 03 00 07 00 08 02 02 02 02 00 09 00 08 00 2a 00 00 ");
-    
-    FlowModInput deserializedMessage; 
-    
+
+    FlowModInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         OF10FlowModInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 14, FlowModInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);
         Assert.assertEquals("Wrong Match", createMatch(), deserializedMessage.getMatchV10());
-        byte[] cookie = new byte[]{(byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01};
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x06, 0x00, 0x07, 0x01 };
         Assert.assertEquals("Wrong cookie", new BigInteger(1, cookie), deserializedMessage.getCookie());
         Assert.assertEquals("Wrong command", FlowModCommand.forValue(0), deserializedMessage.getCommand());
         Assert.assertEquals("Idle Timeout", 12, deserializedMessage.getIdleTimeout().intValue());
@@ -72,8 +72,8 @@ public class OF10FlowModInputMessageFactoryTest {
         Assert.assertEquals("Wrong flags", new FlowModFlagsV10(true, false, true), deserializedMessage.getFlagsV10());
         Assert.assertEquals("Wrong actions", createAction(), deserializedMessage.getAction());
     }
-    
-    private static List<Action> createAction(){
+
+    private static List<Action> createAction() {
         List<Action> actions = new ArrayList<>();
         ActionBuilder actionBuilder = new ActionBuilder();
         SetNwDstCaseBuilder nwDstCaseBuilder = new SetNwDstCaseBuilder();
@@ -91,8 +91,8 @@ public class OF10FlowModInputMessageFactoryTest {
         actions.add(actionBuilder.build());
         return actions;
     }
-    
-    private static MatchV10 createMatch(){
+
+    private static MatchV10 createMatch() {
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
         matchBuilder.setNwSrcMask((short) 0);

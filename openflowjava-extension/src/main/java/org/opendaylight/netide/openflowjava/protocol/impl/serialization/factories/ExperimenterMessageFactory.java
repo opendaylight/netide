@@ -9,8 +9,6 @@ package org.opendaylight.netide.openflowjava.protocol.impl.serialization.factori
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -19,27 +17,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class ExperimenterMessageFactory implements OFSerializer<ExperimenterMessage>, SerializerRegistryInjector{
+public class ExperimenterMessageFactory implements OFSerializer<ExperimenterMessage> {
 
     private static final byte MESSAGE_TYPE = 4;
-    private SerializerRegistry registry;
-    
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
 
     @Override
     public void serialize(ExperimenterMessage message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getExperimenter().getValue().intValue());
         outBuffer.writeInt(message.getExpType().intValue());
-        //TODO: Serializer for data field is vendor specific.
+        // TODO: Serializer for data field is vendor specific.
         byte[] data = null;
 
         if (data != null) {
             outBuffer.writeBytes(data);
-        }   
+        }
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

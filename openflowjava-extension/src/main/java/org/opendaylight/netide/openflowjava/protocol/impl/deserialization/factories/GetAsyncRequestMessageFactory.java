@@ -8,8 +8,6 @@
 package org.opendaylight.netide.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
@@ -19,14 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class GetAsyncRequestMessageFactory implements OFDeserializer<GetAsyncInput>, DeserializerRegistryInjector{
-
-    private DeserializerRegistry registry;
-
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
+public class GetAsyncRequestMessageFactory implements OFDeserializer<GetAsyncInput> {
 
     @Override
     public GetAsyncInput deserialize(ByteBuf rawMessage) {

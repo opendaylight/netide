@@ -26,23 +26,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class TableModInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("09 00 00 00 00 00 00 01");
-    
+
     TableModInput deserializedMessage;
-    
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         TableModInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 17, TableModInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         // Test Message
         Assert.assertEquals("Wrong table id ", new TableId(9L), deserializedMessage.getTableId());
         Assert.assertEquals("Wrong config ", new TableConfig(true), deserializedMessage.getConfig());

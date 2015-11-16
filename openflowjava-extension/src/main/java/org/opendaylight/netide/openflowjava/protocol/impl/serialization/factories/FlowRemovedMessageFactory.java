@@ -15,7 +15,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 
 /**
@@ -26,7 +25,7 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
 
     private static final byte MESSAGE_TYPE = 11;
     private SerializerRegistry registry;
-    
+
     @Override
     public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
@@ -45,8 +44,8 @@ public class FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMessag
         outBuffer.writeShort(message.getHardTimeout());
         outBuffer.writeLong(message.getPacketCount().longValue());
         outBuffer.writeLong(message.getByteCount().longValue());
-        OFSerializer<Match> matchSerializer =  registry.<Match, 
-                OFSerializer<Match>>getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
+        OFSerializer<Match> matchSerializer = registry
+                .<Match, OFSerializer<Match>> getSerializer(new MessageTypeKey<>(message.getVersion(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }

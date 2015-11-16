@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.RoleReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,7 +29,7 @@ public class RoleReplyMessageFactoryTest {
     RoleRequestOutput message;
     private static final byte MESSAGE_TYPE = 25;
     private static final byte PADDING = 4;
-    
+
     @Before
     public void startUp() throws Exception {
         RoleRequestOutputBuilder builder = new RoleRequestOutputBuilder();
@@ -39,17 +38,17 @@ public class RoleReplyMessageFactoryTest {
         builder.setGenerationId(BigInteger.valueOf(1L));
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         RoleReplyMessageFactory serializer = new RoleReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 24);
-        Assert.assertEquals("Wrong role", message.getRole().getIntValue(), ControllerRole.forValue((int) serializedBuffer.readUnsignedInt()).getIntValue());
+        Assert.assertEquals("Wrong role", message.getRole().getIntValue(),
+                ControllerRole.forValue((int) serializedBuffer.readUnsignedInt()).getIntValue());
         serializedBuffer.skipBytes(PADDING);
         byte[] genId = new byte[EncodeConstants.SIZE_OF_LONG_IN_BYTES];
         serializedBuffer.readBytes(genId);

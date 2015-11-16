@@ -67,16 +67,14 @@ public class OF10StatsReplyMessageFactoryTest {
     MultipartReplyMessage message;
     private static final byte MESSAGE_TYPE = 17;
     MultipartReplyMessageBuilder builder;
-    
+
     @Before
     public void startUp() throws Exception {
         builder = new MultipartReplyMessageBuilder();
         BufferHelper.setupHeader(builder, EncodeConstants.OF10_VERSION_ID);
         builder.setFlags(new MultipartRequestFlags(true));
     }
-    
-   
-    
+
     @Test
     public void testDescBodySerialize() {
         builder.setType(MultipartType.forValue(0));
@@ -98,12 +96,13 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 1068);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPDESC.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         Assert.assertEquals("Wrong desc body", message.getMultipartReplyBody(), decodeDescBody(serializedBuffer));
     }
-    
+
     @Test
-    public void testFlowBodySerialize(){
+    public void testFlowBodySerialize() {
         builder.setType(MultipartType.forValue(1));
         MultipartReplyFlowCaseBuilder flowCase = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder flow = new MultipartReplyFlowBuilder();
@@ -119,9 +118,10 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 108);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPFLOW.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         FlowStats flowStats = flow.getFlowStats().get(0);
-        Assert.assertEquals("Wrong length",96, serializedBuffer.readShort());
+        Assert.assertEquals("Wrong length", 96, serializedBuffer.readShort());
         Assert.assertEquals("Wrong Table ID", flowStats.getTableId().intValue(), serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(1);
         Assert.assertEquals("Wrong wildcards", 3678463, serializedBuffer.readUnsignedInt());
@@ -157,9 +157,9 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong port", 42, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong maxlength", 50, serializedBuffer.readUnsignedShort());
     }
-    
+
     @Test
-    public void testAggregateBodySerialize(){
+    public void testAggregateBodySerialize() {
         builder.setType(MultipartType.forValue(2));
         MultipartReplyAggregateCaseBuilder aggregateCase = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder aggregate = new MultipartReplyAggregateBuilder();
@@ -177,15 +177,16 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 36);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPAGGREGATE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         Assert.assertEquals("Wrong Packet count", 1234L, serializedBuffer.readLong());
         Assert.assertEquals("Wrong Byte count", 1234L, serializedBuffer.readLong());
         Assert.assertEquals("Wrong flow count", 1L, serializedBuffer.readInt());
         serializedBuffer.skipBytes(4);
     }
-    
+
     @Test
-    public void testTableBodySerialize(){
+    public void testTableBodySerialize() {
         builder.setType(MultipartType.forValue(3));
         MultipartReplyTableCaseBuilder tableCase = new MultipartReplyTableCaseBuilder();
         MultipartReplyTableBuilder table = new MultipartReplyTableBuilder();
@@ -201,19 +202,20 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 60);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPTABLE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         Assert.assertEquals("Wrong table id", 1, serializedBuffer.readUnsignedByte());
         serializedBuffer.skipBytes(3);
-        Assert.assertEquals("Wrong name", "Table name",  ByteBufUtils.decodeNullTerminatedString(serializedBuffer, 16));
+        Assert.assertEquals("Wrong name", "Table name", ByteBufUtils.decodeNullTerminatedString(serializedBuffer, 16));
         Assert.assertEquals("Wrong wildcards", 3145983, serializedBuffer.readUnsignedInt());
-        Assert.assertEquals("Wrong max entries", 1L, serializedBuffer.readUnsignedInt() );
-        Assert.assertEquals("Wrong active count", 1L, serializedBuffer.readUnsignedInt() );
-        Assert.assertEquals("Wrong lookup count", 1234L, serializedBuffer.readLong() );
-        Assert.assertEquals("Wrong matched count", 1234L, serializedBuffer.readLong() );
+        Assert.assertEquals("Wrong max entries", 1L, serializedBuffer.readUnsignedInt());
+        Assert.assertEquals("Wrong active count", 1L, serializedBuffer.readUnsignedInt());
+        Assert.assertEquals("Wrong lookup count", 1234L, serializedBuffer.readLong());
+        Assert.assertEquals("Wrong matched count", 1234L, serializedBuffer.readLong());
     }
-    
+
     @Test
-    public void testPortStatsBodySerialize(){
+    public void testPortStatsBodySerialize() {
         builder.setType(MultipartType.forValue(4));
         MultipartReplyPortStatsCaseBuilder portStatsCase = new MultipartReplyPortStatsCaseBuilder();
         MultipartReplyPortStatsBuilder portStats = new MultipartReplyPortStatsBuilder();
@@ -229,30 +231,38 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 118);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPPORTSTATS.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         MultipartReplyPortStatsCase body = (MultipartReplyPortStatsCase) message.getMultipartReplyBody();
         MultipartReplyPortStats messageOutput = body.getMultipartReplyPortStats();
         PortStats portStatsOutput = messageOutput.getPortStats().get(0);
         Assert.assertEquals("Wrong port no", portStatsOutput.getPortNo().intValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(6);
-        Assert.assertEquals("Wrong rx packets", portStatsOutput.getRxPackets().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong tx packets", portStatsOutput.getTxPackets().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx packets", portStatsOutput.getRxPackets().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong tx packets", portStatsOutput.getTxPackets().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx bytes", portStatsOutput.getRxBytes().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong tx bytes", portStatsOutput.getTxBytes().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx dropped", portStatsOutput.getRxDropped().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong tx dropped", portStatsOutput.getTxDropped().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx dropped", portStatsOutput.getRxDropped().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong tx dropped", portStatsOutput.getTxDropped().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx errors", portStatsOutput.getRxErrors().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong tx errors", portStatsOutput.getTxErrors().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx frame err", portStatsOutput.getRxFrameErr().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong rx over err", portStatsOutput.getRxOverErr().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx frame err", portStatsOutput.getRxFrameErr().longValue(),
+                serializedBuffer.readLong());
+        Assert.assertEquals("Wrong rx over err", portStatsOutput.getRxOverErr().longValue(),
+                serializedBuffer.readLong());
         Assert.assertEquals("Wrong rx crc err", portStatsOutput.getRxCrcErr().longValue(), serializedBuffer.readLong());
-        Assert.assertEquals("Wrong collisions", portStatsOutput.getCollisions().longValue(), serializedBuffer.readLong());
+        Assert.assertEquals("Wrong collisions", portStatsOutput.getCollisions().longValue(),
+                serializedBuffer.readLong());
     }
-    
+
     @Test
-    public void testQueueBodySerialize(){
+    public void testQueueBodySerialize() {
         builder.setType(MultipartType.forValue(5));
-        MultipartReplyQueueCaseBuilder queueCase = new  MultipartReplyQueueCaseBuilder();
+        MultipartReplyQueueCaseBuilder queueCase = new MultipartReplyQueueCaseBuilder();
         MultipartReplyQueueBuilder queue = new MultipartReplyQueueBuilder();
         queue.setQueueStats(createQueueStats());
         queueCase.setMultipartReplyQueue(queue.build());
@@ -266,7 +276,8 @@ public class OF10StatsReplyMessageFactoryTest {
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 44);
         Assert.assertEquals("Wrong type", MultipartType.OFPMPQUEUE.getIntValue(), serializedBuffer.readShort());
-        Assert.assertEquals("Wrong flags", message.getFlags(), createMultipartRequestFlags(serializedBuffer.readShort()));
+        Assert.assertEquals("Wrong flags", message.getFlags(),
+                createMultipartRequestFlags(serializedBuffer.readShort()));
         MultipartReplyQueueCase body = (MultipartReplyQueueCase) message.getMultipartReplyBody();
         MultipartReplyQueue messageOutput = body.getMultipartReplyQueue();
         QueueStats queueStats = messageOutput.getQueueStats().get(0);
@@ -277,8 +288,8 @@ public class OF10StatsReplyMessageFactoryTest {
         Assert.assertEquals("Wrong tx packets", queueStats.getTxPackets().longValue(), serializedBuffer.readLong());
         Assert.assertEquals("Wrong tx errors", queueStats.getTxErrors().longValue(), serializedBuffer.readLong());
     }
-    
-    private static List<QueueStats> createQueueStats(){
+
+    private static List<QueueStats> createQueueStats() {
         QueueStatsBuilder builder = new QueueStatsBuilder();
         builder.setQueueId(1L);
         builder.setTxBytes(BigInteger.valueOf(1L));
@@ -288,8 +299,8 @@ public class OF10StatsReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<PortStats> createPortStats(){
+
+    private static List<PortStats> createPortStats() {
         PortStatsBuilder builder = new PortStatsBuilder();
         builder.setPortNo(1L);
         builder.setRxPackets(BigInteger.valueOf(1L));
@@ -308,10 +319,10 @@ public class OF10StatsReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<TableStats> createTableStats(){
+
+    private static List<TableStats> createTableStats() {
         TableStatsBuilder builder = new TableStatsBuilder();
-        builder.setTableId((short)1);
+        builder.setTableId((short) 1);
         builder.setName("Table name");
         builder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
         builder.setMaxEntries(1L);
@@ -322,10 +333,10 @@ public class OF10StatsReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static List<FlowStats> createFlowStats(){
+
+    private static List<FlowStats> createFlowStats() {
         FlowStatsBuilder builder = new FlowStatsBuilder();
-        builder.setTableId((short)1);
+        builder.setTableId((short) 1);
         MatchV10Builder matchBuilder = new MatchV10Builder();
         matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
         matchBuilder.setNwSrcMask((short) 0);
@@ -365,13 +376,13 @@ public class OF10StatsReplyMessageFactoryTest {
         list.add(builder.build());
         return list;
     }
-    
-    private static MultipartRequestFlags createMultipartRequestFlags(int input){
-        final Boolean one = ((input) & (1<<0)) > 0;
+
+    private static MultipartRequestFlags createMultipartRequestFlags(int input) {
+        final Boolean one = ((input) & (1 << 0)) > 0;
         return new MultipartRequestFlags(one);
     }
-    
-    private static MultipartReplyDescCase decodeDescBody(ByteBuf output){
+
+    private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
         MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];

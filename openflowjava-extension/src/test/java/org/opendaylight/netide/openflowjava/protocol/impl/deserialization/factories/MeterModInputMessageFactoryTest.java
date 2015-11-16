@@ -18,6 +18,10 @@ import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCaseBuilder;
@@ -25,43 +29,39 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.dscp.remark._case.MeterBandDscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
 public class MeterModInputMessageFactoryTest {
-    ByteBuf bb = BufferHelper.buildBuffer("00 01 00 03 00 00 08 c8 00 "
-            + "01 00 10 00 00 00 01 00 00 00 02 00 00 00 "
+    ByteBuf bb = BufferHelper.buildBuffer("00 01 00 03 00 00 08 c8 00 " + "01 00 10 00 00 00 01 00 00 00 02 00 00 00 "
             + "00 00 02 00 10 00 00 00 01 00 00 00 02 03 00 00 00");
-    
-    MeterModInput deserializedMessage; 
-    
+
+    MeterModInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         MeterModInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 29, MeterModInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong command", MeterModCommand.forValue(1), deserializedMessage.getCommand());
         Assert.assertEquals("Wrong flags", new MeterFlags(false, true, true, false), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong meter id", new MeterId(2248L), deserializedMessage.getMeterId());
         Assert.assertEquals("Wrong band", createBandsList().get(0), deserializedMessage.getBands().get(0));
         Assert.assertEquals("Wrong band", createBandsList().get(1), deserializedMessage.getBands().get(1));
     }
-    
-    private static List<Bands> createBandsList(){
+
+    private static List<Bands> createBandsList() {
         List<Bands> bandsList = new ArrayList<>();
         BandsBuilder bandsBuilder = new BandsBuilder();
         MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();

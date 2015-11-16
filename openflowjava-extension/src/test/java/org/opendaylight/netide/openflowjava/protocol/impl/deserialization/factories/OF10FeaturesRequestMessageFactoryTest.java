@@ -23,19 +23,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class OF10FeaturesRequestMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer();
-    
-    GetFeaturesInput deserializedMessage; 
-    
+
+    GetFeaturesInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         OF10FeaturesRequestMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 5, GetFeaturesInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);

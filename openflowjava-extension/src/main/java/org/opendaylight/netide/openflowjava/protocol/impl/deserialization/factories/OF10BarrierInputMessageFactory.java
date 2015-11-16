@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10BarrierInputMessageFactory implements OFDeserializer<BarrierInput>{
+public class OF10BarrierInputMessageFactory implements OFDeserializer<BarrierInput> {
 
     @Override
     public BarrierInput deserialize(ByteBuf rawMessage) {

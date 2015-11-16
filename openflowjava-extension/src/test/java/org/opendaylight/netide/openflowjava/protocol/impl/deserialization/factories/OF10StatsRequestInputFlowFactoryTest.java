@@ -34,34 +34,33 @@ public class OF10StatsRequestInputFlowFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 01 00 00 00 34 18 ff 00 33 00 01 02 03 04 "
             + "05 05 04 03 02 01 00 00 34 35 00 00 36 37 38 00 00 0a 00 00 01 0a 00 00 02 "
             + "00 39 00 3a 01 00 00 2a ");
-    
-    MultipartRequestInput deserializedMessage; 
-    
+
+    MultipartRequestInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         OF10StatsRequestInputFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 16, MultipartRequestInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong type", 1, deserializedMessage.getType().getIntValue());
         Assert.assertEquals("Wrong flags", new MultipartRequestFlags(false), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong body", createMultipartRequestBody(), deserializedMessage.getMultipartRequestBody());
     }
-    
-    private static MultipartRequestBody createMultipartRequestBody(){
+
+    private static MultipartRequestBody createMultipartRequestBody() {
         MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         MatchV10Builder matchBuilder = new MatchV10Builder();
-        matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true,
-                true, true, true, true));
+        matchBuilder.setWildcards(new FlowWildcardsV10(true, true, true, true, true, true, true, true, true, true));
         matchBuilder.setNwSrcMask((short) 8);
         matchBuilder.setNwDstMask((short) 16);
         matchBuilder.setInPort(51);

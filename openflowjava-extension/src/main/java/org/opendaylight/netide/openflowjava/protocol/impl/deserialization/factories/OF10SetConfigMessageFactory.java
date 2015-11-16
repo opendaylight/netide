@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10SetConfigMessageFactory implements OFDeserializer<SetConfigInput>{
-    
+public class OF10SetConfigMessageFactory implements OFDeserializer<SetConfigInput> {
+
     @Override
     public SetConfigInput deserialize(ByteBuf rawMessage) {
         SetConfigInputBuilder builder = new SetConfigInputBuilder();

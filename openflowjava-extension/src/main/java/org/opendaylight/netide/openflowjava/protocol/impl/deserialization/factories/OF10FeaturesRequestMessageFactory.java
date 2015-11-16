@@ -17,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10FeaturesRequestMessageFactory implements OFDeserializer<GetFeaturesInput>{
-    
+public class OF10FeaturesRequestMessageFactory implements OFDeserializer<GetFeaturesInput> {
+
     @Override
     public GetFeaturesInput deserialize(ByteBuf rawMessage) {
         GetFeaturesInputBuilder builder = new GetFeaturesInputBuilder();

@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInput>, DeserializerRegistryInjector {
     private DeserializerRegistry registry;
     private final byte PADDING = 6;
-    
 
     @Override
     public PacketOutInput deserialize(ByteBuf rawMessage) {

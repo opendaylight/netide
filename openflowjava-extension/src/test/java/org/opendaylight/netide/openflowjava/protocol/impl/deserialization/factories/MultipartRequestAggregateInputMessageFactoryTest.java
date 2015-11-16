@@ -30,39 +30,38 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class MultipartRequestAggregateInputMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 02 00 01 00 00 00 00 08 00 "
-            + "00 00 00 00 00 55 00 00 00 5f 00 00 00 00 00 01 01 01 01 01 "
-            + "01 01 00 01 01 01 01 01 01 01");
-    
-    MultipartRequestInput deserializedMessage; 
-    
+            + "00 00 00 00 00 55 00 00 00 5f 00 00 00 00 00 01 01 01 01 01 " + "01 01 00 01 01 01 01 01 01 01");
+
+    MultipartRequestInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         MultipartRequestInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         Assert.assertEquals("Wrong type", MultipartType.forValue(2), deserializedMessage.getType());
         Assert.assertEquals("Wrong flags", new MultipartRequestFlags(true), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong aggregate", createRequestAggregate(), deserializedMessage.getMultipartRequestBody());
     }
-    
+
     private static MultipartRequestAggregateCase createRequestAggregate() {
         MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder builder = new MultipartRequestAggregateBuilder();
         builder.setTableId((short) 8);
         builder.setOutPort(85L);
         builder.setOutGroup(95L);
-        byte[] cookie = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+        byte[] cookie = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
-        byte[] cookieMask = new byte[]{0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01};
+        byte[] cookieMask = new byte[] { 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 };
         builder.setCookieMask(new BigInteger(1, cookieMask));
         caseBuilder.setMultipartRequestAggregate(builder.build());
         return caseBuilder.build();

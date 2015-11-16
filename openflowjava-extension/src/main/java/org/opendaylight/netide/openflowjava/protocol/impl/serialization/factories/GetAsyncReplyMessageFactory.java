@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
@@ -29,14 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 
-public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>, SerializerRegistryInjector{
+public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput> {
     private static final byte MESSAGE_TYPE = 27;
-    private SerializerRegistry registry;
-    
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
 
     @Override
     public void serialize(GetAsyncOutput message, ByteBuf outBuffer) {
@@ -46,13 +38,12 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         serializeFlowRemovedMask(message.getFlowRemovedMask(), outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-    
-    
+
     private static void serializePacketInMask(List<PacketInMask> packetInMask, ByteBuf outBuffer) {
         if (packetInMask != null) {
             for (PacketInMask currentPacketMask : packetInMask) {
                 List<PacketInReason> mask = currentPacketMask.getMask();
-                if (mask != null)  {
+                if (mask != null) {
                     Map<Integer, Boolean> packetInReasonMap = new HashMap<>();
                     for (PacketInReason packetInReason : mask) {
                         if (PacketInReason.OFPRNOMATCH.equals(packetInReason)) {
@@ -73,7 +64,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         if (portStatusMask != null) {
             for (PortStatusMask currentPortStatusMask : portStatusMask) {
                 List<PortReason> mask = currentPortStatusMask.getMask();
-                if (mask != null)  {
+                if (mask != null) {
                     Map<Integer, Boolean> portStatusReasonMap = new HashMap<>();
                     for (PortReason packetInReason : mask) {
                         if (PortReason.OFPPRADD.equals(packetInReason)) {
@@ -94,7 +85,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         if (flowRemovedMask != null) {
             for (FlowRemovedMask currentFlowRemovedMask : flowRemovedMask) {
                 List<FlowRemovedReason> mask = currentFlowRemovedMask.getMask();
-                if (mask != null)  {
+                if (mask != null) {
                     Map<Integer, Boolean> flowRemovedReasonMap = new HashMap<>();
                     for (FlowRemovedReason packetInReason : mask) {
                         if (FlowRemovedReason.OFPRRIDLETIMEOUT.equals(packetInReason)) {

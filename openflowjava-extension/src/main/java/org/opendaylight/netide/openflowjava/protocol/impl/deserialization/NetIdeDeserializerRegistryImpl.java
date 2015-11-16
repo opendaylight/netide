@@ -11,6 +11,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerR
 import org.opendaylight.openflowjava.protocol.impl.deserialization.InstructionDeserializerInitializer;
 
 public class NetIdeDeserializerRegistryImpl extends DeserializerRegistryImpl {
+
     @Override
     public void init() {
         super.init();

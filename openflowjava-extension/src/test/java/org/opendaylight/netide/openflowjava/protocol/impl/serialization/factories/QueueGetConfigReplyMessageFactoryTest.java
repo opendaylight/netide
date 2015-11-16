@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.QueueGetConfigReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -42,7 +41,7 @@ public class QueueGetConfigReplyMessageFactoryTest {
     private static final byte QUEUE_PADDING = 6;
     private static final byte PROPERTY_HEADER_PADDING = 4;
     private static final byte PROPERTY_RATE_PADDING = 6;
-    
+
     @Before
     public void startUp() throws Exception {
         GetQueueConfigOutputBuilder builder = new GetQueueConfigOutputBuilder();
@@ -51,46 +50,50 @@ public class QueueGetConfigReplyMessageFactoryTest {
         builder.setQueues(createQueuesList());
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         QueueGetConfigReplyMessageFactory serializer = new QueueGetConfigReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 80);
         Assert.assertEquals("Wrong port", message.getPort().getValue().longValue(), serializedBuffer.readInt());
         serializedBuffer.skipBytes(PADDING);
-        
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(0).getQueueId().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong port", message.getQueues().get(0).getPort().getValue().longValue(), serializedBuffer.readInt());
+
+        Assert.assertEquals("Wrong queue Id", message.getQueues().get(0).getQueueId().getValue().longValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong port", message.getQueues().get(0).getPort().getValue().longValue(),
+                serializedBuffer.readInt());
         Assert.assertEquals("Wrong length", 32, serializedBuffer.readShort());
         serializedBuffer.skipBytes(QUEUE_PADDING);
-        List<QueueProperty> properties =  message.getQueues().get(0).getQueueProperty();
-        Assert.assertEquals("Wrong property", properties.get(0).getProperty().getIntValue(), serializedBuffer.readShort());
+        List<QueueProperty> properties = message.getQueues().get(0).getQueueProperty();
+        Assert.assertEquals("Wrong property", properties.get(0).getProperty().getIntValue(),
+                serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
         RateQueueProperty rateQueueProperty = properties.get(0).getAugmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueueProperty.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
-        
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getQueueId().getValue().longValue(), serializedBuffer.readInt());
-        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getPort().getValue().longValue(), serializedBuffer.readInt());
+
+        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getQueueId().getValue().longValue(),
+                serializedBuffer.readInt());
+        Assert.assertEquals("Wrong queue Id", message.getQueues().get(1).getPort().getValue().longValue(),
+                serializedBuffer.readInt());
         Assert.assertEquals("Wrong length", 32, serializedBuffer.readShort());
         serializedBuffer.skipBytes(QUEUE_PADDING);
-        List<QueueProperty> propertiesTwo =  message.getQueues().get(1).getQueueProperty();
-        Assert.assertEquals("Wrong property", propertiesTwo.get(0).getProperty().getIntValue(), serializedBuffer.readShort());
+        List<QueueProperty> propertiesTwo = message.getQueues().get(1).getQueueProperty();
+        Assert.assertEquals("Wrong property", propertiesTwo.get(0).getProperty().getIntValue(),
+                serializedBuffer.readShort());
         Assert.assertEquals("Wrong property length", 16, serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_HEADER_PADDING);
         RateQueueProperty rateQueuePropertyTwo = propertiesTwo.get(0).getAugmentation(RateQueueProperty.class);
         Assert.assertEquals("Wrong rate", rateQueuePropertyTwo.getRate().intValue(), serializedBuffer.readShort());
         serializedBuffer.skipBytes(PROPERTY_RATE_PADDING);
-        
-        
+
     }
-    
+
     private static List<Queues> createQueuesList() {
         List<Queues> queuesList = new ArrayList<>();
         for (int i = 1; i < 3; i++) {

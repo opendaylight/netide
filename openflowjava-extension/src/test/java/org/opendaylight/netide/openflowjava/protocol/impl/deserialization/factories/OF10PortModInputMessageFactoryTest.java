@@ -27,29 +27,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  */
 public class OF10PortModInputMessageFactoryTest {
-    ByteBuf bb = BufferHelper.buildBuffer("19 e9 08 00 27 00 b0 eb "
-            + "00 00 00 15 00 00 00 62 00 00 02 8c 00 00 00 00 ");
-    
-    PortModInput deserializedMessage; 
-    
+    ByteBuf bb = BufferHelper
+            .buildBuffer("19 e9 08 00 27 00 b0 eb " + "00 00 00 15 00 00 00 62 00 00 02 8c 00 00 00 00 ");
+
+    PortModInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         OF10PortModInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 15, PortModInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);
         Assert.assertEquals("Wrong port", new PortNumber(6633L), deserializedMessage.getPortNo());
         Assert.assertEquals("Wrong hwAddr", new MacAddress("08:00:27:00:B0:EB"), deserializedMessage.getHwAddress());
-        Assert.assertEquals("Wrong config", new PortConfigV10(true, false, false, true, false, false, true), deserializedMessage.getConfigV10());
-        Assert.assertEquals("Wrong mask", new PortConfigV10(false, true, true, false, false, true, false), deserializedMessage.getMaskV10());
-        Assert.assertEquals("Wrong advertise", new PortFeaturesV10(true, true, false, false, false, false,
-                false, true, true, false, false, false), deserializedMessage.getAdvertiseV10());
+        Assert.assertEquals("Wrong config", new PortConfigV10(true, false, false, true, false, false, true),
+                deserializedMessage.getConfigV10());
+        Assert.assertEquals("Wrong mask", new PortConfigV10(false, true, true, false, false, true, false),
+                deserializedMessage.getMaskV10());
+        Assert.assertEquals("Wrong advertise",
+                new PortFeaturesV10(true, true, false, false, false, false, false, true, true, false, false, false),
+                deserializedMessage.getAdvertiseV10());
     }
 }

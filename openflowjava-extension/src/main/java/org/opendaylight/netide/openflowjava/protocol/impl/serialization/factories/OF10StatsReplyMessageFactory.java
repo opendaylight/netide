@@ -49,21 +49,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector{
+public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReplyMessage>, SerializerRegistryInjector {
 
     private SerializerRegistry registry;
     private static final byte MESSAGE_TYPE = 17;
     private static final byte FLOW_STATS_PADDING_1 = 1;
     private static final byte FLOW_STATS_PADDING_2 = 6;
-    private static final TypeKeyMaker<Action> ACTION_KEY_MAKER =
-            TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF10_VERSION_ID);
+    private static final TypeKeyMaker<Action> ACTION_KEY_MAKER = TypeKeyMakerFactory
+            .createActionKeyMaker(EncodeConstants.OF10_VERSION_ID);
     private static final int FLOW_STATS_LENGTH_INDEX = 0;
     private static final int QUEUE_STATS_LENGTH_INDEX = 0;
     private static final byte AGGREGATE_PADDING = 4;
     private static final byte TABLE_PADDING = 3;
     private static final byte QUEUE_PADDING = 2;
     private static final byte PORT_STATS_PADDING = 6;
-    
+
     @Override
     public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
@@ -74,37 +74,44 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getType().getIntValue());
         writeFlags(message.getFlags(), outBuffer);
-        switch (message.getType()){
-        case OFPMPDESC: serializeDescBody(message.getMultipartReplyBody(), outBuffer);
+        switch (message.getType()) {
+        case OFPMPDESC:
+            serializeDescBody(message.getMultipartReplyBody(), outBuffer);
             break;
-        case OFPMPFLOW: serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
+        case OFPMPFLOW:
+            serializeFlowBody(message.getMultipartReplyBody(), outBuffer, message);
             break;
-        case OFPMPAGGREGATE: serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
+        case OFPMPAGGREGATE:
+            serializeAggregateBody(message.getMultipartReplyBody(), outBuffer);
             break;
-        case OFPMPTABLE: serializeTableBody(message.getMultipartReplyBody(), outBuffer);
+        case OFPMPTABLE:
+            serializeTableBody(message.getMultipartReplyBody(), outBuffer);
             break;
-        case OFPMPPORTSTATS: serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
+        case OFPMPPORTSTATS:
+            serializePortStatsBody(message.getMultipartReplyBody(), outBuffer);
             break;
-        case OFPMPQUEUE: serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
+        case OFPMPQUEUE:
+            serializeQueueBody(message.getMultipartReplyBody(), outBuffer);
             break;
-        case OFPMPEXPERIMENTER: serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
+        case OFPMPEXPERIMENTER:
+            serializeExperimenterBody(message.getMultipartReplyBody(), outBuffer);
             break;
         default:
             break;
         }
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-    
+
     private void serializeExperimenterBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyExperimenterCase experimenterCase = (MultipartReplyExperimenterCase) body;
         MultipartReplyExperimenter experimenterBody = experimenterCase.getMultipartReplyExperimenter();
-        //TODO: experimenterBody does not have get methods
+        // TODO: experimenterBody does not have get methods
     }
-    
-    private void serializeQueueBody(MultipartReplyBody body, ByteBuf outBuffer){
+
+    private void serializeQueueBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyQueueCase queueCase = (MultipartReplyQueueCase) body;
         MultipartReplyQueue queue = queueCase.getMultipartReplyQueue();
-        for (QueueStats queueStats : queue.getQueueStats()){
+        for (QueueStats queueStats : queue.getQueueStats()) {
             ByteBuf queueStatsBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             queueStatsBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
             queueStatsBuff.writeZero(QUEUE_PADDING);
@@ -116,11 +123,11 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             outBuffer.writeBytes(queueStatsBuff);
         }
     }
-    
-    private void serializePortStatsBody(MultipartReplyBody body, ByteBuf outBuffer){
+
+    private void serializePortStatsBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyPortStatsCase portStatsCase = (MultipartReplyPortStatsCase) body;
         MultipartReplyPortStats portStats = portStatsCase.getMultipartReplyPortStats();
-        for (PortStats portStat : portStats.getPortStats()){
+        for (PortStats portStat : portStats.getPortStats()) {
             outBuffer.writeInt(portStat.getPortNo().intValue());
             outBuffer.writeZero(PORT_STATS_PADDING);
             outBuffer.writeLong(portStat.getRxPackets().longValue());
@@ -137,11 +144,11 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             outBuffer.writeLong(portStat.getCollisions().longValue());
         }
     }
-    
-    private void serializeTableBody(MultipartReplyBody body, ByteBuf outBuffer){
+
+    private void serializeTableBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyTableCase tableCase = (MultipartReplyTableCase) body;
         MultipartReplyTable table = tableCase.getMultipartReplyTable();
-        for (TableStats tableStats : table.getTableStats()){
+        for (TableStats tableStats : table.getTableStats()) {
             outBuffer.writeByte(tableStats.getTableId());
             outBuffer.writeZero(TABLE_PADDING);
             write16String(tableStats.getName(), outBuffer);
@@ -152,8 +159,8 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             outBuffer.writeLong(tableStats.getMatchedCount().longValue());
         }
     }
-    
-    private void writeFlowWildcardsV10(FlowWildcardsV10 feature, ByteBuf outBuffer){
+
+    private void writeFlowWildcardsV10(FlowWildcardsV10 feature, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, feature.isINPORT());
         map.put(1, feature.isDLVLAN());
@@ -168,8 +175,8 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void serializeAggregateBody(MultipartReplyBody body, ByteBuf outBuffer){
+
+    private void serializeAggregateBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyAggregateCase aggregateCase = (MultipartReplyAggregateCase) body;
         MultipartReplyAggregate aggregate = aggregateCase.getMultipartReplyAggregate();
         outBuffer.writeLong(aggregate.getPacketCount().longValue());
@@ -177,11 +184,11 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         outBuffer.writeInt(aggregate.getFlowCount().intValue());
         outBuffer.writeZero(AGGREGATE_PADDING);
     }
-    
-    private void serializeFlowBody(MultipartReplyBody body, ByteBuf outBuffer, MultipartReplyMessage message){
+
+    private void serializeFlowBody(MultipartReplyBody body, ByteBuf outBuffer, MultipartReplyMessage message) {
         MultipartReplyFlowCase flowCase = (MultipartReplyFlowCase) body;
         MultipartReplyFlow flow = flowCase.getMultipartReplyFlow();
-        for (FlowStats flowStats : flow.getFlowStats()){
+        for (FlowStats flowStats : flow.getFlowStats()) {
             ByteBuf flowStatsBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             flowStatsBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
             flowStatsBuff.writeByte(new Long(flowStats.getTableId()).byteValue());
@@ -203,15 +210,15 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             outBuffer.writeBytes(flowStatsBuff);
         }
     }
-    
-    private void writeFlags(MultipartRequestFlags flags, ByteBuf outBuffer){
+
+    private void writeFlags(MultipartRequestFlags flags, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, flags.isOFPMPFREQMORE());
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeShort(bitmap);
     }
-    
-    private void serializeDescBody(MultipartReplyBody body, ByteBuf outBuffer){
+
+    private void serializeDescBody(MultipartReplyBody body, ByteBuf outBuffer) {
         MultipartReplyDescCase descCase = (MultipartReplyDescCase) body;
         MultipartReplyDesc desc = descCase.getMultipartReplyDesc();
         write256String(desc.getMfrDesc(), outBuffer);
@@ -220,57 +227,57 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
         write32String(desc.getSerialNum(), outBuffer);
         write256String(desc.getDpDesc(), outBuffer);
     }
-    
-    private void write256String(String toWrite, ByteBuf outBuffer){
+
+    private void write256String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes();
-        if (nameBytes.length < 256){
+        if (nameBytes.length < 256) {
             byte[] nameBytesPadding = new byte[256];
             int i = 0;
-            for (byte b : nameBytes){
+            for (byte b : nameBytes) {
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 256; i++){
+            for (; i < 256; i++) {
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
-        }else{
+        } else {
             outBuffer.writeBytes(nameBytes);
         }
     }
-    
-    private void write16String(String toWrite, ByteBuf outBuffer){
+
+    private void write16String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes();
-        if (nameBytes.length < 16){
+        if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
             int i = 0;
-            for (byte b : nameBytes){
+            for (byte b : nameBytes) {
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 16; i++){
+            for (; i < 16; i++) {
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
-        }else{
+        } else {
             outBuffer.writeBytes(nameBytes);
         }
     }
-    
-    private void write32String(String toWrite, ByteBuf outBuffer){
+
+    private void write32String(String toWrite, ByteBuf outBuffer) {
         byte[] nameBytes = toWrite.getBytes();
-        if (nameBytes.length < 32){
+        if (nameBytes.length < 32) {
             byte[] nameBytesPadding = new byte[32];
             int i = 0;
-            for (byte b : nameBytes){
+            for (byte b : nameBytes) {
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 32; i++){
+            for (; i < 32; i++) {
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
-        }else{
+        } else {
             outBuffer.writeBytes(nameBytes);
         }
     }

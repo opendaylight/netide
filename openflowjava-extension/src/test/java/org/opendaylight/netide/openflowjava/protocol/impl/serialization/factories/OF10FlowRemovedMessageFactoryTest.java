@@ -33,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class OF10FlowRemovedMessageFactoryTest {
     FlowRemovedMessage message;
     private static final byte MESSAGE_TYPE = 11;
-    
+
     @Before
     public void startUp() throws Exception {
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder();
@@ -55,7 +55,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         matchBuilder.setTpSrc(6653);
         matchBuilder.setTpDst(6633);
         builder.setMatchV10(matchBuilder.build());
-        byte[] cookie = new byte[]{(byte) 0xFF, 0x01, 0x04, 0x01};
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
         builder.setPriority(1);
         builder.setReason(FlowRemovedReason.forValue(1));
@@ -66,7 +66,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         builder.setByteCount(BigInteger.valueOf(2L));
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
@@ -95,7 +95,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         Assert.assertEquals("Wrong nwDst", 269488144, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong tpSrc", 6653, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong tpDst", 6633, serializedBuffer.readUnsignedShort());
-        byte[] cookie = new byte[]{(byte) 0xFF, 0x01, 0x04, 0x01};
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01 };
         byte[] cookieRead = new byte[4];
         serializedBuffer.readBytes(cookieRead);
         Assert.assertArrayEquals("Wrong cookie", cookie, cookieRead);
@@ -106,7 +106,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         Assert.assertEquals("Wrong duration nsec", 1L, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong idle timeout", 12, serializedBuffer.readUnsignedShort());
         serializedBuffer.skipBytes(2);
-        Assert.assertEquals("Wrong packet count",1L, serializedBuffer.readLong());
-        Assert.assertEquals("Wrong byte count",2L, serializedBuffer.readLong());
+        Assert.assertEquals("Wrong packet count", 1L, serializedBuffer.readLong());
+        Assert.assertEquals("Wrong byte count", 2L, serializedBuffer.readLong());
     }
 }

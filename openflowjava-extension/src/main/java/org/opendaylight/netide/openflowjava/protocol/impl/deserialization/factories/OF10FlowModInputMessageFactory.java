@@ -21,10 +21,10 @@ import org.opendaylight.openflowjava.protocol.impl.util.ListDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 
 /**
  * @author giuseppex.petralia@intel.com
@@ -33,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInput>, DeserializerRegistryInjector {
 
     private DeserializerRegistry registry;
-    
+
     @Override
     public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
@@ -51,20 +51,20 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
         rawMessage.readBytes(cookie);
         builder.setCookie(new BigInteger(1, cookie));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedShort()));
-        builder.setIdleTimeout((int)rawMessage.readUnsignedShort());
-        builder.setHardTimeout((int)rawMessage.readUnsignedShort());
-        builder.setPriority((int)rawMessage.readUnsignedShort());
+        builder.setIdleTimeout(rawMessage.readUnsignedShort());
+        builder.setHardTimeout(rawMessage.readUnsignedShort());
+        builder.setPriority(rawMessage.readUnsignedShort());
         builder.setBufferId(rawMessage.readUnsignedInt());
-        builder.setOutPort(new PortNumber((long)rawMessage.readUnsignedShort()));
+        builder.setOutPort(new PortNumber((long) rawMessage.readUnsignedShort()));
         builder.setFlagsV10(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
-        
-        List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID, rawMessage.readableBytes(),
-                rawMessage, keyMaker, registry);
+
+        List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID,
+                rawMessage.readableBytes(), rawMessage, keyMaker, registry);
         builder.setAction(actions);
         return builder.build();
     }
-    
+
     private static FlowModFlagsV10 createFlowModFlagsFromBitmap(int input) {
         final Boolean _oFPFFSENDFLOWREM = (input & (1 << 0)) > 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & (1 << 1)) > 0;

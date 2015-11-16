@@ -25,26 +25,26 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class SetConfigMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 02 " + "00 0a");
-    
+
     SetConfigInput deserializedMessage;
-    
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
         desRegistry.init();
         SetConfigInputMessageFactory factory = desRegistry
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 9, SetConfigInput.class));
-        
+
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV13(deserializedMessage);
-        
+
         // Test Message
         Assert.assertEquals("Wrong flags ", SwitchConfigFlag.forValue(2), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong Miss Send len ", 10, deserializedMessage.getMissSendLen().intValue());
     }
-    
+
 }

@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueConfigOutput>{
+public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQueueConfigOutput> {
 
     private static final byte MESSAGE_TYPE = 21;
     private static final byte PADDING = 6;
@@ -30,23 +30,23 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQu
     private static final byte QUEUE_PADDING = 2;
     private static final byte QUEUE_PROPERTY_PADDING = 6;
     private static final int QUEUE_PROPERTY_LENGTH_INDEX = 2;
-    
+
     @Override
     public void serialize(GetQueueConfigOutput message, ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getPort().getValue().intValue());
         outBuffer.writeZero(PADDING);
-        for (Queues queue : message.getQueues()){
+        for (Queues queue : message.getQueues()) {
             ByteBuf queueBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
             queueBuff.writeInt(queue.getQueueId().getValue().intValue());
             queueBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
             queueBuff.writeZero(QUEUE_PADDING);
-            for(QueueProperty queueProperty : queue.getQueueProperty()){
+            for (QueueProperty queueProperty : queue.getQueueProperty()) {
                 ByteBuf queuePropertyBuff = UnpooledByteBufAllocator.DEFAULT.buffer();
                 queuePropertyBuff.writeShort(queueProperty.getProperty().getIntValue());
                 queuePropertyBuff.writeShort(EncodeConstants.EMPTY_LENGTH);
                 queuePropertyBuff.writeZero(4);
-                if (queueProperty.getProperty() == QueueProperties.OFPQTMINRATE){
+                if (queueProperty.getProperty() == QueueProperties.OFPQTMINRATE) {
                     RateQueueProperty body = queueProperty.getAugmentation(RateQueueProperty.class);
                     queuePropertyBuff.writeShort(body.getRate().intValue());
                     queuePropertyBuff.writeZero(QUEUE_PROPERTY_PADDING);
@@ -57,7 +57,7 @@ public class OF10QueueGetConfigReplyMessageFactory implements OFSerializer<GetQu
             queueBuff.setShort(QUEUE_LENGTH_INDEX, queueBuff.readableBytes());
             outBuffer.writeBytes(queueBuff);
         }
-        
+
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 }

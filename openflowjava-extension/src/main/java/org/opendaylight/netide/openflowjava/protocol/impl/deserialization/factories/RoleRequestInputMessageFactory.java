@@ -9,8 +9,6 @@ package org.opendaylight.netide.openflowjava.protocol.impl.deserialization.facto
 
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ControllerRole;
@@ -21,15 +19,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class RoleRequestInputMessageFactory implements OFDeserializer<RoleRequestInput>, DeserializerRegistryInjector{
+public class RoleRequestInputMessageFactory implements OFDeserializer<RoleRequestInput> {
 
-    private DeserializerRegistry registry;
     private static final byte PADDING = 4;
-    
-    @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
-    }
 
     @Override
     public RoleRequestInput deserialize(ByteBuf rawMessage) {

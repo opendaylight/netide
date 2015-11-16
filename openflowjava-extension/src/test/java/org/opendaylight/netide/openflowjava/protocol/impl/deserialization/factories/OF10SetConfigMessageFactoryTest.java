@@ -24,9 +24,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class OF10SetConfigMessageFactoryTest {
     ByteBuf bb = BufferHelper.buildBuffer("00 01 00 03");
-    
-    SetConfigInput deserializedMessage; 
-    
+
+    SetConfigInput deserializedMessage;
+
     @Before
     public void startUp() throws Exception {
         DeserializerRegistry desRegistry = new NetIdeDeserializerRegistryImpl();
@@ -35,7 +35,7 @@ public class OF10SetConfigMessageFactoryTest {
                 .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 9, SetConfigInput.class));
         deserializedMessage = BufferHelper.deserialize(factory, bb);
     }
-    
+
     @Test
     public void test() throws Exception {
         BufferHelper.checkHeaderV10(deserializedMessage);

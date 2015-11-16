@@ -13,7 +13,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.EchoRequestMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class EchoRequestMessageFactoryTest {
     private static final byte MESSAGE_TYPE = 2;
     EchoRequestMessage message;
-    
+
     @Before
     public void startUp() throws Exception {
         EchoRequestMessageBuilder builder = new EchoRequestMessageBuilder();
@@ -37,13 +36,12 @@ public class EchoRequestMessageFactoryTest {
         builder.setData(data);
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         EchoRequestMessageFactory serializer = new EchoRequestMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 24);

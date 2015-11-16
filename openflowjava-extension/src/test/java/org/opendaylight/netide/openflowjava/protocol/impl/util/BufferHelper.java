@@ -95,7 +95,7 @@ public abstract class BufferHelper {
     private static void checkHeader(ByteBuf input, byte msgType, int length, Short version) {
         Assert.assertEquals("Wrong version", version, Short.valueOf(input.readByte()));
         Assert.assertEquals("Wrong type", msgType, input.readByte());
-        Assert.assertEquals("Wrong length", length , input.readUnsignedShort());
+        Assert.assertEquals("Wrong length", length, input.readUnsignedShort());
         Assert.assertEquals("Wrong Xid", DEFAULT_XID, Long.valueOf(input.readUnsignedInt()));
     }
 

@@ -11,8 +11,6 @@ import io.netty.buffer.ByteBuf;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
-import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
@@ -24,19 +22,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  *
  */
-public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>, SerializerRegistryInjector{
+public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage> {
 
     private static final byte MESSAGE_TYPE = 12;
     private static final byte PADDING = 7;
     private static final byte PORT_PADDING_1 = 4;
     private static final byte PORT_PADDING_2 = 2;
-    
-    private SerializerRegistry registry;
-    
-    @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
-    }
 
     @Override
     public void serialize(PortStatusMessage message, ByteBuf outBuffer) {
@@ -58,8 +49,8 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         outBuffer.writeInt(message.getMaxSpeed().intValue());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-    
-    private void writePortConfig(PortConfig config, ByteBuf outBuffer){
+
+    private void writePortConfig(PortConfig config, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, config.isPortDown());
         map.put(2, config.isNoRecv());
@@ -68,37 +59,37 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void writeMacAddress(String macAddress, ByteBuf outBuffer){
+
+    private void writeMacAddress(String macAddress, ByteBuf outBuffer) {
         String[] macAddressParts = macAddress.split(":");
         byte[] macAddressBytes = new byte[6];
-        for(int i=0; i<6; i++){
+        for (int i = 0; i < 6; i++) {
             Integer hex = Integer.parseInt(macAddressParts[i], 16);
             macAddressBytes[i] = hex.byteValue();
         }
         outBuffer.writeBytes(macAddressBytes);
     }
-    
-    private void writeName(String name, ByteBuf outBuffer){
+
+    private void writeName(String name, ByteBuf outBuffer) {
         byte[] nameBytes = name.getBytes();
-        if (nameBytes.length < 16){
+        if (nameBytes.length < 16) {
             byte[] nameBytesPadding = new byte[16];
             int i = 0;
-            for (byte b : nameBytes){
+            for (byte b : nameBytes) {
                 nameBytesPadding[i] = b;
                 i++;
             }
-            for (; i< 16; i++){
+            for (; i < 16; i++) {
                 nameBytesPadding[i] = 0x0;
             }
             outBuffer.writeBytes(nameBytesPadding);
-        }else{
+        } else {
             outBuffer.writeBytes(nameBytes);
         }
-            
+
     }
-    
-    private void writePortState(PortState state, ByteBuf outBuffer){
+
+    private void writePortState(PortState state, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, state.isLinkDown());
         map.put(1, state.isBlocked());
@@ -106,8 +97,8 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
         int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
         outBuffer.writeInt(bitmap);
     }
-    
-    private void writePortFeatures(PortFeatures features, ByteBuf outBuffer){
+
+    private void writePortFeatures(PortFeatures features, ByteBuf outBuffer) {
         Map<Integer, Boolean> map = new HashMap<>();
         map.put(0, features.is_10mbHd());
         map.put(1, features.is_10mbFd());

@@ -15,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.GetAsyncReplyMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -30,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PacketInMaskBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMaskBuilder;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class GetAsyncReplyMessageFactoryTest {
     GetAsyncOutput message;
     private static final byte MESSAGE_TYPE = 27;
-    
+
     @Before
     public void startUp() throws Exception {
         GetAsyncOutputBuilder builder = new GetAsyncOutputBuilder();
@@ -47,13 +47,12 @@ public class GetAsyncReplyMessageFactoryTest {
         builder.setFlowRemovedMask(createFlowRemowedMask());
         message = builder.build();
     }
-    
+
     @Test
     public void testSerialize() {
         GetAsyncReplyMessageFactory serializer = new GetAsyncReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 32);
@@ -64,8 +63,7 @@ public class GetAsyncReplyMessageFactoryTest {
         Assert.assertEquals("Wrong flowRemovedMask", 15, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong flowRemovedMask", 0, serializedBuffer.readUnsignedInt());
     }
-    
-    
+
     private static List<PacketInMask> createPacketInMask() {
         List<PacketInMask> masks = new ArrayList<>();
         PacketInMaskBuilder builder;
@@ -123,7 +121,7 @@ public class GetAsyncReplyMessageFactoryTest {
         masks.add(builder.build());
         return masks;
     }
-    
+
     @Test
     public void testSetAsyncInputWithNullMasks() throws Exception {
         GetAsyncOutputBuilder builder = new GetAsyncOutputBuilder();
@@ -135,11 +133,9 @@ public class GetAsyncReplyMessageFactoryTest {
         GetAsyncReplyMessageFactory serializer = new GetAsyncReplyMessageFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
-        serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-
-        BufferHelper.checkHeaderV13(serializedBuffer,MESSAGE_TYPE, 8);
+        BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 8);
         Assert.assertTrue("Unexpected data", serializedBuffer.readableBytes() == 0);
     }
 
