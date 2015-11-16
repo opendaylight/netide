@@ -10,9 +10,9 @@ package org.opendaylight.netide.netiplib;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.javatuples.Pair;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
+import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +22,16 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NetIPUtils {
     private static final Logger LOG = LoggerFactory.getLogger(NetIPUtils.class);
+
     /**
-     * Gets a stub header from the given payload with the length correctly set and protocol version set to 1.1.
+     * Gets a stub header from the given payload with the length correctly set
+     * and protocol version set to 1.1.
      *
-     * @param payload the payload
+     * @param payload
+     *            the payload
      * @return the message header
      */
+
     public static MessageHeader StubHeaderFromPayload(byte[] payload) {
         MessageHeader h = new MessageHeader();
         h.setPayloadLength((short) payload.length);
@@ -38,32 +42,34 @@ public abstract class NetIPUtils {
     /**
      * Concretizes the given message to the corresponding convenience class.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the concretized message (e.g. an instance of OpenFlowMessage)
      */
+
     public static Message ConcretizeMessage(Message message) {
         try {
             switch (message.getHeader().getMessageType()) {
-                case HELLO:
-                    return toHelloMessage(message);
-                case ERROR:
-                    return toErrorMessage(message);
-                case OPENFLOW:
-                    return toOpenFlowMessage(message);
-                case NETCONF:
-                    return toNetconfMessage(message);
-                case OPFLEX:
-                    return toOpFlexMessage(message);
-                case MANAGEMENT:
-                    return toManagementMessage(message);
-                case MODULE_ANNOUNCEMENT:
-                    return toModuleAnnouncementMessage(message);
-                case MODULE_ACKNOWLEDGE:
-                    return toModuleAcknowledgeMessage(message);
-                case TOPOLOGY_UPDATE:
-                    return toTopologyUpdateMessage(message);
-                default:
-                    throw new IllegalArgumentException("Unknown message type.");
+            case HELLO:
+                return toHelloMessage(message);
+            case ERROR:
+                return toErrorMessage(message);
+            case OPENFLOW:
+                return toOpenFlowMessage(message);
+            case NETCONF:
+                return toNetconfMessage(message);
+            case OPFLEX:
+                return toOpFlexMessage(message);
+            case MANAGEMENT:
+                return toManagementMessage(message);
+            case MODULE_ANNOUNCEMENT:
+                return toModuleAnnouncementMessage(message);
+            case MODULE_ACKNOWLEDGE:
+                return toModuleAcknowledgeMessage(message);
+            case TOPOLOGY_UPDATE:
+                return toTopologyUpdateMessage(message);
+            default:
+                throw new IllegalArgumentException("Unknown message type.");
             }
         } catch (Exception ex) {
             throw new IllegalArgumentException("Could not decode message. ", ex);
@@ -73,7 +79,8 @@ public abstract class NetIPUtils {
     /**
      * To hello message.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the hello message
      */
     private static HelloMessage toHelloMessage(Message message) {
@@ -83,7 +90,8 @@ public abstract class NetIPUtils {
         hm.setHeader(message.header);
         for (int i = 0; i < message.getPayload().length; i += 2) {
             Protocol protocol = Protocol.parse(message.getPayload()[i]);
-            hm.getSupportedProtocols().add(new Pair<>(protocol, ProtocolVersions.parse(protocol, message.getPayload()[i + 1])));
+            hm.getSupportedProtocols()
+                    .add(new Pair<>(protocol, ProtocolVersions.parse(protocol, message.getPayload()[i + 1])));
         }
         return hm;
     }
@@ -91,7 +99,8 @@ public abstract class NetIPUtils {
     /**
      * To error message.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the error message
      */
     private static ErrorMessage toErrorMessage(Message message) {
@@ -101,7 +110,8 @@ public abstract class NetIPUtils {
         em.setHeader(message.header);
         for (int i = 0; i < message.getPayload().length; i += 2) {
             Protocol protocol = Protocol.parse(message.getPayload()[i]);
-            em.getSupportedProtocols().add(new Pair<>(protocol, ProtocolVersions.parse(protocol, message.getPayload()[i + 1])));
+            em.getSupportedProtocols()
+                    .add(new Pair<>(protocol, ProtocolVersions.parse(protocol, message.getPayload()[i + 1])));
         }
         return em;
     }
@@ -109,29 +119,26 @@ public abstract class NetIPUtils {
     /**
      * To openflow message.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the openflow message
      */
     private static OpenFlowMessage toOpenFlowMessage(Message message) {
         if (message.getHeader().getMessageType() != MessageType.OPENFLOW)
             throw new IllegalArgumentException("Can only convert OPENFLOW messages");
-        OpenFlowMessage ofm = new OpenFlowMessage();
+        ByteBuf buffer = Unpooled.wrappedBuffer(message.getPayload());
+        short ofVersion = buffer.readUnsignedByte();
+        OpenFlowMessage ofm = new OpenFlowMessage(ofVersion);
         ofm.setPayload(message.getPayload());
         ofm.setHeader(message.header);
-        //INIT SERIALIZATION
+
+        // DESERIALIZATION
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
         NetIdeDeserializationFactory factory = new NetIdeDeserializationFactory();
         factory.setRegistry(registry);
-        
-        //BUFFER
-        ByteBuf buffer = Unpooled.wrappedBuffer(message.getPayload());
-        //buffer.writeBytes(message.getPayload());
-        //buffer.setBytes(0, message.getPayload());
-        //OF VERSION
-        short ofVersion = buffer.readUnsignedByte();
+
         DataObject dObj = factory.deserialize(buffer, ofVersion);
-        
         ofm.setOfMessage(dObj);
         return ofm;
     }
@@ -139,7 +146,8 @@ public abstract class NetIPUtils {
     /**
      * To netconf message.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the netconf message
      */
     private static NetconfMessage toNetconfMessage(Message message) {
@@ -154,7 +162,8 @@ public abstract class NetIPUtils {
     /**
      * To op flex message.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the op flex message
      */
     private static OpFlexMessage toOpFlexMessage(Message message) {
@@ -169,7 +178,8 @@ public abstract class NetIPUtils {
     /**
      * To ManagementMessage.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the management message
      */
     private static ManagementMessage toManagementMessage(Message message) {
@@ -184,7 +194,8 @@ public abstract class NetIPUtils {
     /**
      * To ModuleAnnouncementMessage.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the ModuleAnnouncement message
      */
     private static ModuleAnnouncementMessage toModuleAnnouncementMessage(Message message) {
@@ -199,7 +210,8 @@ public abstract class NetIPUtils {
     /**
      * To ModuleAcknowledgeMessage.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the ModuleAcknowledge message
      */
     private static ModuleAcknowledgeMessage toModuleAcknowledgeMessage(Message message) {
@@ -214,7 +226,8 @@ public abstract class NetIPUtils {
     /**
      * To TopologyUpdateMessage.
      *
-     * @param message the message
+     * @param message
+     *            the message
      * @return the TopologyUpdate message
      */
     private static TopologyUpdateMessage toTopologyUpdateMessage(Message message) {

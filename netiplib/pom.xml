@@ -8,13 +8,19 @@
         <version>0.1.0-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
-
-	<groupId>org.opendaylight.netide</groupId>
+    <groupId>org.opendaylight.netide</groupId>
     <artifactId>netiplib</artifactId>
     <packaging>jar</packaging>
     <name>NetIDE-NetIP Library</name>
     <description>Java Library for handling the NetIDE intermediate protocol.</description>
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -35,25 +41,11 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.0.30.Final</version>
+            </dependency>
+        <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18.1</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 </project>
