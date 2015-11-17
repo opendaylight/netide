@@ -18,7 +18,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
         <module>
           <type xmlns:prefix="urn:opendaylight:params:xml:ns:yang:netide:netide-impl">prefix:netide-impl</type>
           <name>netide-impl</name>
+          <core-address>127.0.0.1</core-address>
           <core-port>5555</core-port>
+          <address>127.0.0.1</address>
+          <port>6644</port>
+          <transport-protocol>TCP</transport-protocol>
+          <switch-idle-timeout>15000</switch-idle-timeout>
+          <threads>
+            <boss-threads>2</boss-threads>
+            <worker-threads>8</worker-threads>
+          </threads>
           <broker>
             <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-broker-osgi-registry</type>
             <name>binding-osgi-broker</name>
