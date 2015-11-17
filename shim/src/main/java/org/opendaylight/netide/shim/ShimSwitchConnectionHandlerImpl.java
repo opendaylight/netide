@@ -29,7 +29,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.netide.netiplib.HelloMessage;
-import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.javatuples.Pair;
@@ -142,7 +141,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                     && requested.getValue1().getValue() == supportedProtocol.getValue1().getValue()){
                 LOG.info("SHIM: OF version matched");
                 HelloMessage msg = new HelloMessage();
-                
                 msg.getSupportedProtocols().add(supportedProtocol);
                 msg.getHeader().setPayloadLength((short)2);
                 msg.getHeader().setModuleId(moduleId);

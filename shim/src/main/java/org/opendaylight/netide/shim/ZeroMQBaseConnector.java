@@ -23,7 +23,7 @@ public class ZeroMQBaseConnector implements Runnable {
     private static final String CONTROL_ADDRESS = "inproc://ShimControllerQueue";
 
     private static final Logger LOG = LoggerFactory.getLogger(ZeroMQBaseConnector.class);
-
+    private String address;
     private int port;
     private ZMQ.Context context;
     private Thread thread;
@@ -63,9 +63,9 @@ public class ZeroMQBaseConnector implements Runnable {
 
     public boolean SendData(byte[] data) {
         ZMsg msg = new ZMsg();
-        
-        //msg.add("core");
-        //msg.add("");
+
+        // msg.add("core");
+        // msg.add("");
         msg.add(data);
         // relayed via control socket to prevent threading issues
         ZMQ.Socket sendSocket = context.socket(ZMQ.PUSH);
@@ -81,8 +81,8 @@ public class ZeroMQBaseConnector implements Runnable {
         LOG.info("ZeroMQBasedConnector started.");
         ZMQ.Socket socket = context.socket(ZMQ.DEALER);
         socket.setIdentity("shim".getBytes());
-        socket.connect("tcp://localhost:" + port);
-        LOG.info("Listening on port " + port);
+        socket.connect("tcp://" + getAddress() + ":" + getPort());
+        LOG.info("Trying to connect to core on address tcp://" + getAddress() + ":" + getPort());
 
         ZMQ.Socket controlSocket = context.socket(ZMQ.PULL);
         controlSocket.bind(CONTROL_ADDRESS);
@@ -100,15 +100,18 @@ public class ZeroMQBaseConnector implements Runnable {
                     LOG.info("Core Message received: {}", data);
                     Message msg = NetIPConverter.parseConcreteMessage(data);
                     LOG.info("Core Message parsed");
-                    if (msg instanceof HelloMessage){
+                    if (msg instanceof HelloMessage) {
                         LOG.info("Core Hello Message received");
-                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),((HelloMessage) msg).getHeader().getModuleId());
-                    }else if (msg instanceof OpenFlowMessage){
+                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
+                                ((HelloMessage) msg).getHeader().getModuleId());
+                    } else if (msg instanceof OpenFlowMessage) {
                         LOG.info("Core OpenFlow Message received");
-                        byte[] payload = ((Message)msg).getPayload();
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(), Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
-                    }else {
-                        LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(), msg.getHeader().getMessageType());
+                        byte[] payload = msg.getPayload();
+                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
+                                Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
+                    } else {
+                        LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(),
+                                msg.getHeader().getMessageType());
                     }
                 }
             }
@@ -131,5 +134,13 @@ public class ZeroMQBaseConnector implements Runnable {
 
     public int getPort() {
         return port;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
     }
 }

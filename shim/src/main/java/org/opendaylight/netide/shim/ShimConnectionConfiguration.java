@@ -8,68 +8,62 @@
 package org.opendaylight.netide.shim;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ShimConnectionConfiguration implements ConnectionConfiguration {
-    
-    private static final Logger LOG = LoggerFactory.getLogger(ShimConnectionConfiguration.class);
-    
-    private int port = 6644;
+    private InetAddress _inetAddress;
+    private int _port;
+    private long _switchIdleTimeout;
+    private ThreadConfiguration _threads;
+    private TlsConfiguration _tlsConfiguration;
+    private TransportProtocol _transportProtocol;
+
+    public ShimConnectionConfiguration(InetAddress address, int port, long switchIdleTimeout,
+            ThreadConfiguration threads, TlsConfiguration tlsConfiguration, TransportProtocol transportProtocol) {
+        _inetAddress = address;
+        _port = port;
+        _switchIdleTimeout = switchIdleTimeout;
+        _threads = threads;
+        _tlsConfiguration = tlsConfiguration;
+        _transportProtocol = transportProtocol;
+    }
 
     @Override
     public InetAddress getAddress() {
-        // TODO Auto-generated method stub
-        InetAddress addr = null;
-
-        try {
-            addr = InetAddress.getByName("127.0.0.1");
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            LOG.error(e.getMessage());
-        }
-
-        return addr;
+        return _inetAddress;
     }
 
     @Override
     public int getPort() {
-        return port;
+        return _port;
     }
 
     @Override
     public Object getSslContext() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public long getSwitchIdleTimeout() {
-        // TODO Auto-generated method stub
-        return 0;
+        return _switchIdleTimeout;
     }
 
     @Override
     public ThreadConfiguration getThreadConfiguration() {
-        // TODO Auto-generated method stub
-        return null;
+        return _threads;
     }
 
     @Override
     public TlsConfiguration getTlsConfiguration() {
-        // TODO Auto-generated method stub
-        return null;
+        return _tlsConfiguration;
     }
 
     @Override
     public Object getTransferProtocol() {
-        // TODO Auto-generated method stub
-        return TransportProtocol.TCP;
+        return _transportProtocol;
     }
 
 }
