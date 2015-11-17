@@ -8,6 +8,7 @@
 package org.opendaylight.netide.openflowjava.protocol.impl.serialization;
 
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.BarrierReplyMessageFactory;
+import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.EchoOutputMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.EchoRequestMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.ErrorMessageFactory;
 import org.opendaylight.netide.openflowjava.protocol.impl.serialization.factories.ExperimenterMessageFactory;
@@ -33,6 +34,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.CommonMessageRegistryHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -63,6 +65,7 @@ public final class NetIdeMessageSerializerInitializer {
         CommonMessageRegistryHelper registryHelper = new CommonMessageRegistryHelper(version, registry);
         registryHelper.registerSerializer(ErrorMessage.class, new ErrorMessageFactory());
         registryHelper.registerSerializer(EchoRequestMessage.class, new EchoRequestMessageFactory());
+        registryHelper.registerSerializer(EchoOutput.class, new EchoOutputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesOutput.class, new OF10FeaturesReplyMessageFactory());
         registryHelper.registerSerializer(GetConfigOutput.class, new GetConfigReplyMessageFactory());
         registryHelper.registerSerializer(PacketInMessage.class, new OF10PacketInMessageFactory());
@@ -74,6 +77,7 @@ public final class NetIdeMessageSerializerInitializer {
 
         version = EncodeConstants.OF13_VERSION_ID;
         registryHelper = new CommonMessageRegistryHelper(version, registry);
+        registryHelper.registerSerializer(EchoOutput.class, new EchoOutputMessageFactory());
         registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory());
         registryHelper.registerSerializer(PacketOutInput.class, new NetIdePacketOutInputMessageFactory());
         registryHelper.registerSerializer(GetFeaturesOutput.class, new GetFeaturesOutputFactory());
