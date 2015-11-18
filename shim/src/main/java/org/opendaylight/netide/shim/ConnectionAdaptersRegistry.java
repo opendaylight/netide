@@ -18,38 +18,38 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
  *
  */
 public class ConnectionAdaptersRegistry {
-    
+
     private static HashMap<ConnectionAdapter, BigInteger> connectionAdapterMap;
-    
-    public void init(){
+
+    public void init() {
         connectionAdapterMap = new LinkedHashMap<ConnectionAdapter, BigInteger>();
     }
-    
-    public synchronized void setConnectionAdapterMap(HashMap<ConnectionAdapter, BigInteger> map){
+
+    public synchronized void setConnectionAdapterMap(HashMap<ConnectionAdapter, BigInteger> map) {
         connectionAdapterMap = map;
     }
-    
-    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter, BigInteger datapathID){
+
+    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter, BigInteger datapathID) {
         connectionAdapterMap.put(connectionAdapter, datapathID);
     }
-    
-    public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter){
+
+    public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter) {
         return connectionAdapterMap.get(connectionAdapter);
     }
-    
-    public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId){
-        for(ConnectionAdapter conn : connectionAdapterMap.keySet()){
+
+    public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId) {
+        for (ConnectionAdapter conn : connectionAdapterMap.keySet()) {
             if (connectionAdapterMap.get(conn).longValue() == datapathId)
                 return conn;
         }
         return null;
     }
-    
-    public Set<ConnectionAdapter> getConnectionAdapters(){
+
+    public Set<ConnectionAdapter> getConnectionAdapters() {
         return connectionAdapterMap.keySet();
     }
-    
-    public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn){
+
+    public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn) {
         BigInteger datapathID = connectionAdapterMap.remove(conn);
         if (datapathID != null)
             return true;

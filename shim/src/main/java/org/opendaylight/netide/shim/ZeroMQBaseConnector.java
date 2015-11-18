@@ -63,11 +63,7 @@ public class ZeroMQBaseConnector implements Runnable {
 
     public boolean SendData(byte[] data) {
         ZMsg msg = new ZMsg();
-
-        // msg.add("core");
-        // msg.add("");
         msg.add(data);
-        // relayed via control socket to prevent threading issues
         ZMQ.Socket sendSocket = context.socket(ZMQ.PUSH);
         sendSocket.setIdentity("shim".getBytes());
         sendSocket.connect(CONTROL_ADDRESS);
@@ -78,7 +74,6 @@ public class ZeroMQBaseConnector implements Runnable {
 
     @Override
     public void run() {
-        LOG.info("ZeroMQBasedConnector started.");
         ZMQ.Socket socket = context.socket(ZMQ.DEALER);
         socket.setIdentity("shim".getBytes());
         socket.connect("tcp://" + getAddress() + ":" + getPort());
@@ -97,9 +92,7 @@ public class ZeroMQBaseConnector implements Runnable {
                 ZMsg message = ZMsg.recvMsg(socket);
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
-                    LOG.info("Core Message received: {}", data);
                     Message msg = NetIPConverter.parseConcreteMessage(data);
-                    LOG.info("Core Message parsed");
                     if (msg instanceof HelloMessage) {
                         LOG.info("Core Hello Message received");
                         coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),

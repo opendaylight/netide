@@ -9,13 +9,13 @@ package org.opendaylight.netide.shim;
 
 import io.netty.buffer.ByteBuf;
 import java.util.List;
+import org.javatuples.Pair;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.javatuples.Pair;
 
 public interface ICoreListener {
 
     void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg, int moduleId);
+
     void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requiredVersion, int moduleId);
 }
