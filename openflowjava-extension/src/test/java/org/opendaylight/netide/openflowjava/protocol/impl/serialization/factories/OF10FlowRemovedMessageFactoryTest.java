@@ -55,7 +55,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         matchBuilder.setTpSrc(6653);
         matchBuilder.setTpDst(6633);
         builder.setMatchV10(matchBuilder.build());
-        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01 };
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x01, 0x01, 0x04, 0x01 };
         builder.setCookie(new BigInteger(1, cookie));
         builder.setPriority(1);
         builder.setReason(FlowRemovedReason.forValue(1));
@@ -75,7 +75,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         serializer.injectSerializerRegistry(registry);
         ByteBuf serializedBuffer = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serialize(message, serializedBuffer);
-        BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 84);
+        BufferHelper.checkHeaderV10(serializedBuffer, MESSAGE_TYPE, 88);
         Assert.assertEquals("Wrong wildcards", 3678463, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong inPort", 58, serializedBuffer.readUnsignedShort());
         byte[] dlSrc = new byte[6];
@@ -95,8 +95,8 @@ public class OF10FlowRemovedMessageFactoryTest {
         Assert.assertEquals("Wrong nwDst", 269488144, serializedBuffer.readUnsignedInt());
         Assert.assertEquals("Wrong tpSrc", 6653, serializedBuffer.readUnsignedShort());
         Assert.assertEquals("Wrong tpDst", 6633, serializedBuffer.readUnsignedShort());
-        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01 };
-        byte[] cookieRead = new byte[4];
+        byte[] cookie = new byte[] { (byte) 0xFF, 0x01, 0x04, 0x01, 0x01, 0x01, 0x04, 0x01 };
+        byte[] cookieRead = new byte[8];
         serializedBuffer.readBytes(cookieRead);
         Assert.assertArrayEquals("Wrong cookie", cookie, cookieRead);
         Assert.assertEquals("Wrong priority", 1, serializedBuffer.readUnsignedShort());
