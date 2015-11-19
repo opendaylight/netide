@@ -43,6 +43,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     List<Pair<Protocol, ProtocolVersions>> supportedProtocols;
     private DeserializationFactory deserializationFactory;
     private DeserializerRegistry registry;
+    private ShimRelay shimRelay;
 
     public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
         coreConnector = connector;
@@ -55,6 +56,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         deserializationFactory.setRegistry(registry);
         connectionRegistry = new ConnectionAdaptersRegistry();
         connectionRegistry.init();
+        shimRelay = new ShimRelay();
     }
 
     @Override
@@ -122,7 +124,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         ConnectionAdapter conn = connectionRegistry.getConnectionAdapter(datapathId);
         if (conn != null) {
             short ofVersion = msg.readUnsignedByte();
-            ShimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId, moduleId);
+            shimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId, moduleId);
         }
     }
 
@@ -167,7 +169,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                             connectionRegistry.registerConnectionAdapter(connectionAdapter,
                                     featureOutput.getDatapathId());
                             // Send Feature reply to Core
-                            ShimRelay.sendOpenFlowMessageToCore(ShimSwitchConnectionHandlerImpl.coreConnector,
+                            shimRelay.sendOpenFlowMessageToCore(ShimSwitchConnectionHandlerImpl.coreConnector,
                                     featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue(),
                                     moduleId);
 
