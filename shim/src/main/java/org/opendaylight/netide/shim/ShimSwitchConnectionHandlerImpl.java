@@ -19,11 +19,8 @@ import org.javatuples.Pair;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
-import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
@@ -41,22 +38,28 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     private ConnectionAdaptersRegistry connectionRegistry;
     private Pair<Protocol, ProtocolVersions> supportedProtocol;
     List<Pair<Protocol, ProtocolVersions>> supportedProtocols;
-    private DeserializationFactory deserializationFactory;
-    private DeserializerRegistry registry;
     private ShimRelay shimRelay;
 
     public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
         coreConnector = connector;
         supportedProtocol = null;
         supportedProtocols = new ArrayList<>();
+    }
+
+    public void init() {
         supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_0));
         supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_3));
-        deserializationFactory = new DeserializationFactory();
-        registry = new NetIdeDeserializerRegistryImpl();
-        deserializationFactory.setRegistry(registry);
-        connectionRegistry = new ConnectionAdaptersRegistry();
+        connectionRegistry = createConnectionAdaptersRegistry();
         connectionRegistry.init();
-        shimRelay = new ShimRelay();
+        shimRelay = createShimRelay();
+    }
+
+    public ShimRelay createShimRelay() {
+        return new ShimRelay();
+    }
+
+    public ConnectionAdaptersRegistry createConnectionAdaptersRegistry() {
+        return new ConnectionAdaptersRegistry();
     }
 
     @Override
@@ -113,6 +116,10 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         return max;
     }
 
+    public Pair<Protocol, ProtocolVersions> getSupportedProtocol() {
+        return this.supportedProtocol;
+    }
+
     public void setSupportedProtocol(byte version) {
         this.supportedProtocol = new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW,
                 ProtocolVersions.parse(Protocol.OPENFLOW, version));
@@ -132,31 +139,26 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols, int moduleId) {
         LOG.info("SHIM: Hello Core message received. Pair0: {}", requestedProtocols.get(0));
         for (Pair<Protocol, ProtocolVersions> requested : requestedProtocols) {
-            if (requested.getValue0().getValue() == supportedProtocol.getValue0().getValue()
-                    && requested.getValue1().getValue() == supportedProtocol.getValue1().getValue()) {
+            if (requested.getValue0().getValue() == getSupportedProtocol().getValue0().getValue()
+                    && requested.getValue1().getValue() == getSupportedProtocol().getValue1().getValue()) {
                 LOG.info("SHIM: OF version matched");
                 HelloMessage msg = new HelloMessage();
-                msg.getSupportedProtocols().add(supportedProtocol);
+                msg.getSupportedProtocols().add(getSupportedProtocol());
                 msg.getHeader().setPayloadLength((short) 2);
                 msg.getHeader().setModuleId(moduleId);
                 coreConnector.SendData(msg.toByteRepresentation());
                 for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()) {
                     LOG.info("SHIM: SendFeatures To core for switch: {}", conn.getRemoteAddress());
-                    sendFeaturesToCore((short) supportedProtocol.getValue1().getValue(), 0L, conn, moduleId);
+                    sendGetFeaturesToSwitch((short) getSupportedProtocol().getValue1().getValue(), DEFAULT_XID, conn,
+                            moduleId);
                 }
             }
         }
     }
 
-    private void sendFeaturesToCore(final Short proposedVersion, final Long xid,
-            final ConnectionAdapter connectionAdapter, final int moduleId) {
-
-        GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
-        featuresBuilder.setVersion(proposedVersion).setXid(xid);
-
-        Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(featuresBuilder.build());
-
-        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(featuresFuture),
+    public void sendGetFeaturesOuputToCore(Future<RpcResult<GetFeaturesOutput>> switchReply,
+            final Short proposedVersion, final int moduleId, final ConnectionAdapter connectionAdapter) {
+        Futures.addCallback(JdkFutureAdapters.listenInPoolThread(switchReply),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
                     public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
@@ -170,15 +172,14 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                                     featureOutput.getDatapathId());
                             // Send Feature reply to Core
                             shimRelay.sendOpenFlowMessageToCore(ShimSwitchConnectionHandlerImpl.coreConnector,
-                                    featureOutput, proposedVersion, xid, featureOutput.getDatapathId().shortValue(),
-                                    moduleId);
+                                    featureOutput, proposedVersion, featureOutput.getXid(),
+                                    featureOutput.getDatapathId().shortValue(), moduleId);
 
                         } else {
                             // Handshake failed
                             for (RpcError rpcError : rpcFeatures.getErrors()) {
-                                LOG.info("handshake - features failure [{}]: i:{} | m:{} | s:{}", xid,
-                                        rpcError.getInfo(), rpcError.getMessage(), rpcError.getSeverity(),
-                                        rpcError.getCause());
+                                LOG.info("handshake - features failure [{}]: i:{} | m:{} | s:{}", rpcError.getInfo(),
+                                        rpcError.getMessage(), rpcError.getSeverity(), rpcError.getCause());
                             }
                         }
 
@@ -187,11 +188,21 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
                     @Override
                     public void onFailure(Throwable t) {
-                        LOG.info("getting feature failed seriously [{}, addr:{}]: {}", xid,
-                                connectionAdapter.getRemoteAddress(), t.getMessage());
+                        LOG.info("getting feature failed seriously [addr:{}]: {}", connectionAdapter.getRemoteAddress(),
+                                t.getMessage());
                     }
                 });
+    }
 
+    public void sendGetFeaturesToSwitch(final Short proposedVersion, final Long xid,
+            final ConnectionAdapter connectionAdapter, final int moduleId) {
+
+        GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
+        featuresBuilder.setVersion(proposedVersion).setXid(xid);
+
+        Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(featuresBuilder.build());
+
+        sendGetFeaturesOuputToCore(featuresFuture, proposedVersion, moduleId, connectionAdapter);
         LOG.info("future features [{}] hooked ..", xid);
     }
 

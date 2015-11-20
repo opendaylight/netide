@@ -196,30 +196,6 @@ public class ShimRelay {
         return message.getImplementedInterface().getName();
     }
 
-    public <E extends DataObject> FutureCallback<RpcResult<E>> getCallBack(final ZeroMQBaseConnector coreConnector,
-            final short ofVersion, final long xId, final long datapathId, final int moduleId) {
-        return new FutureCallback<RpcResult<E>>() {
-            @Override
-            public void onSuccess(RpcResult<E> rpcReply) {
-                if (rpcReply.isSuccessful()) {
-                    E result = rpcReply.getResult();
-                    LOG.info("SHIM RELAY: sending Response to switch. Class: {}", result.getClass());
-                    sendOpenFlowMessageToCore(coreConnector, result, ofVersion, xId, datapathId, moduleId);
-                } else {
-                    for (RpcError rpcError : rpcReply.getErrors()) {
-                        LOG.info("SHIM RELAY: error in communication with switch: {}", rpcError.getMessage());
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOG.info("SHIM RELAY: failure on communication with switch");
-            }
-        };
-
-    }
-
     public <E extends DataObject> void sendResponseToCore(Future<RpcResult<E>> switchReply,
             final ZeroMQBaseConnector coreConnector, final short ofVersion, final long xId, final long datapathId,
             final int moduleId) {
