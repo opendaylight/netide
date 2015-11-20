@@ -42,6 +42,8 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
         coreConnector = new ZeroMQBaseConnector();
 
         ShimSwitchConnectionHandlerImpl handler = new ShimSwitchConnectionHandlerImpl(coreConnector);
+        handler.init();
+
         coreConnector.RegisterCoreListener(handler);
         coreConnector.setAddress(coreAddress);
         coreConnector.setPort(corePort);
