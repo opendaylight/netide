@@ -101,18 +101,18 @@ public class ShimRelay {
     public void sendDataObjectToSwitch(ConnectionAdapter connectionAdapter, DataObject msg, short ofVersion,
             ZeroMQBaseConnector coreConnector, long datapathId, int moduleId) {
 
-        LOG.info("SHIM RELAY: sending dataObject to switch {}", msg.getClass());
+        LOG.info("SHIM RELAY: sending dataObject to switch");
 
-        if (msg.getImplementedInterface().getClass().getName().equals(BarrierInput.class.getName())) {
+        if (getImplementedInterface(msg).equals(BarrierInput.class.getName())) {
             Future<RpcResult<BarrierOutput>> reply = connectionAdapter.barrier((BarrierInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((BarrierInput) msg).getXid(), datapathId, moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(EchoInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(EchoInput.class.getName())) {
 
             Future<RpcResult<EchoOutput>> reply = connectionAdapter.echo((EchoInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((EchoInput) msg).getXid(), datapathId, moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(EchoOutput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(EchoOutput.class.getName())) {
 
             EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
             builder.setVersion(((EchoOutput) msg).getVersion());
@@ -120,74 +120,103 @@ public class ShimRelay {
             builder.setData(((EchoOutput) msg).getData());
             connectionAdapter.echoReply(builder.build());
 
-        } else if (msg.getImplementedInterface().getName().equals(ExperimenterInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(ExperimenterInput.class.getName())) {
 
             connectionAdapter.experimenter((ExperimenterInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(FlowModInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(FlowModInput.class.getName())) {
 
             connectionAdapter.flowMod((FlowModInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(GetAsyncInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(GetAsyncInput.class.getName())) {
 
             Future<RpcResult<GetAsyncOutput>> reply = connectionAdapter.getAsync((GetAsyncInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((GetAsyncInput) msg).getXid(), datapathId, moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(GetConfigInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(GetConfigInput.class.getName())) {
 
             Future<RpcResult<GetConfigOutput>> reply = connectionAdapter.getConfig((GetConfigInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((GetConfigInput) msg).getXid(), datapathId, moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(GetFeaturesInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(GetFeaturesInput.class.getName())) {
 
             Future<RpcResult<GetFeaturesOutput>> reply = connectionAdapter.getFeatures((GetFeaturesInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((GetFeaturesInput) msg).getXid(), datapathId,
                     moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(GetQueueConfigInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(GetQueueConfigInput.class.getName())) {
 
             Future<RpcResult<GetQueueConfigOutput>> reply = connectionAdapter.getQueueConfig((GetQueueConfigInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((GetQueueConfigInput) msg).getXid(), datapathId,
                     moduleId);
 
-        } else if (msg.getImplementedInterface().getName().equals(GroupModInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(GroupModInput.class.getName())) {
 
             connectionAdapter.groupMod((GroupModInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(HelloInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(HelloInput.class.getName())) {
 
             connectionAdapter.hello((HelloInput) msg);
-        } else if (msg.getImplementedInterface().getName().equals(MeterModInput.class.getName())) {
+
+        } else if (getImplementedInterface(msg).equals(MeterModInput.class.getName())) {
 
             connectionAdapter.meterMod((MeterModInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(MultipartRequestInput.class.getName())) {
-
+        } else if (getImplementedInterface(msg).equals(MultipartRequestInput.class.getName())) {
+            // TODO: Check why no reply!
             connectionAdapter.multipartRequest((MultipartRequestInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(PacketOutInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(PacketOutInput.class.getName())) {
 
             connectionAdapter.packetOut((PacketOutInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(PortModInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(PortModInput.class.getName())) {
 
             connectionAdapter.portMod((PortModInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(SetAsyncInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(SetAsyncInput.class.getName())) {
 
             connectionAdapter.setAsync((SetAsyncInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(SetConfigInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(SetConfigInput.class.getName())) {
 
             connectionAdapter.setConfig((SetConfigInput) msg);
 
-        } else if (msg.getImplementedInterface().getName().equals(TableModInput.class.getName())) {
+        } else if (getImplementedInterface(msg).equals(TableModInput.class.getName())) {
 
             connectionAdapter.tableMod((TableModInput) msg);
 
         } else {
             LOG.info("SHIM RELAY: Dataobject not recognized");
         }
+
+    }
+
+    public String getImplementedInterface(DataObject message) {
+        return message.getImplementedInterface().getName();
+    }
+
+    public <E extends DataObject> FutureCallback<RpcResult<E>> getCallBack(final ZeroMQBaseConnector coreConnector,
+            final short ofVersion, final long xId, final long datapathId, final int moduleId) {
+        return new FutureCallback<RpcResult<E>>() {
+            @Override
+            public void onSuccess(RpcResult<E> rpcReply) {
+                if (rpcReply.isSuccessful()) {
+                    E result = rpcReply.getResult();
+                    LOG.info("SHIM RELAY: sending Response to switch. Class: {}", result.getClass());
+                    sendOpenFlowMessageToCore(coreConnector, result, ofVersion, xId, datapathId, moduleId);
+                } else {
+                    for (RpcError rpcError : rpcReply.getErrors()) {
+                        LOG.info("SHIM RELAY: error in communication with switch: {}", rpcError.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.info("SHIM RELAY: failure on communication with switch");
+            }
+        };
 
     }
 
