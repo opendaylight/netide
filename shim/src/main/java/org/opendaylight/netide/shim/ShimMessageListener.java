@@ -37,10 +37,11 @@ public class ShimMessageListener
     private IHandshakeListener handshakeListener;
     private ShimRelay shimRelay;
 
-    public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection) {
+    public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection,
+            ShimRelay _shimRelay) {
         this.coreConnector = connector;
         this.switchConnection = switchConnection;
-        this.shimRelay = new ShimRelay();
+        this.shimRelay = _shimRelay;
     }
 
     public void registerConnectionAdaptersRegistry(ConnectionAdaptersRegistry connectionRegistry) {

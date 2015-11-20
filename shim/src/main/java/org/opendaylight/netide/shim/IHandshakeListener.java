@@ -12,6 +12,6 @@ package org.opendaylight.netide.shim;
  *
  */
 public interface IHandshakeListener {
-    
+
     public void onSwitchHelloMessage(long xid, Short version);
 }
