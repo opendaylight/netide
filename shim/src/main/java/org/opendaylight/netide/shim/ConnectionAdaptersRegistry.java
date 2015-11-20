@@ -21,7 +21,7 @@ public class ConnectionAdaptersRegistry {
 
     private static HashMap<ConnectionAdapter, BigInteger> connectionAdapterMap;
 
-    public void init() {
+    public synchronized void init() {
         connectionAdapterMap = new LinkedHashMap<ConnectionAdapter, BigInteger>();
     }
 
@@ -29,15 +29,16 @@ public class ConnectionAdaptersRegistry {
         connectionAdapterMap = map;
     }
 
-    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter, BigInteger datapathID) {
+    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter, BigInteger datapathID)
+            throws NullPointerException {
         connectionAdapterMap.put(connectionAdapter, datapathID);
     }
 
-    public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter) {
+    public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter) throws NullPointerException {
         return connectionAdapterMap.get(connectionAdapter);
     }
 
-    public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId) {
+    public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId) throws NullPointerException {
         for (ConnectionAdapter conn : connectionAdapterMap.keySet()) {
             if (connectionAdapterMap.get(conn).longValue() == datapathId)
                 return conn;
@@ -45,11 +46,11 @@ public class ConnectionAdaptersRegistry {
         return null;
     }
 
-    public Set<ConnectionAdapter> getConnectionAdapters() {
+    public Set<ConnectionAdapter> getConnectionAdapters() throws NullPointerException {
         return connectionAdapterMap.keySet();
     }
 
-    public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn) {
+    public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn) throws NullPointerException {
         BigInteger datapathID = connectionAdapterMap.remove(conn);
         if (datapathID != null)
             return true;
