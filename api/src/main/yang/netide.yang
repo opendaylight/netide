@@ -19,6 +19,13 @@ module netide {
             leaf netip-version {
                 type int8;
             }
+            leaf-list of-versions {
+                type int8;
+            }
+            leaf connected-switches {
+                type int32;
+            }
+            
         }
     }
 }

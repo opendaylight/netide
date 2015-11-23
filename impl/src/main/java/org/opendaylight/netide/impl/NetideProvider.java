@@ -54,7 +54,7 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
         coreConnector.Start();
         connectionProvider.startup();
 
-        netideService = session.addRpcImplementation(NetideService.class, new StatusImpl());
+        netideService = session.addRpcImplementation(NetideService.class, new StatusImpl(handler));
     }
 
     @Override

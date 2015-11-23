@@ -116,6 +116,20 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         return max;
     }
 
+    public List<Byte> getSupportedOFProtocols() {
+        List<Byte> results = new ArrayList<>();
+        for (Pair<Protocol, ProtocolVersions> protocols : this.supportedProtocols) {
+            if (protocols.getValue0() == Protocol.OPENFLOW) {
+                results.add(protocols.getValue1().getValue());
+            }
+        }
+        return results;
+    }
+
+    public int getNumberOfSwitches() {
+        return this.connectionRegistry.getConnectionAdapters().size();
+    }
+
     public Pair<Protocol, ProtocolVersions> getSupportedProtocol() {
         return this.supportedProtocol;
     }
