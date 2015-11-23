@@ -70,7 +70,7 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
         LOG.info("SHIM: on Switch connected: {}", connectionAdapter.getRemoteAddress());
-        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter, shimRelay);
+        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter, shimRelay, this);
         listener.registerConnectionAdaptersRegistry(connectionRegistry);
         listener.registerHandshakeListener(this);
         connectionRegistry.registerConnectionAdapter(connectionAdapter, null);

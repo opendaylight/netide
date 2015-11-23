@@ -79,10 +79,13 @@ public class ShimMessageListenerTest {
 
     ConnectionAdaptersRegistry registry;
 
+    @Mock
+    ShimSwitchConnectionHandlerImpl handler;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        messageListener = new ShimMessageListener(connector, switchConnection, shimRelay);
+        messageListener = new ShimMessageListener(connector, switchConnection, shimRelay, handler);
         registry = new ConnectionAdaptersRegistry();
         registry.init();
         messageListener.registerConnectionAdaptersRegistry(registry);
@@ -93,6 +96,9 @@ public class ShimMessageListenerTest {
     public void testOnEchoRequestMessage1() {
         messageListener.onEchoRequestMessage(echo);
         Mockito.verify(switchConnection).echoReply(Matchers.any(EchoReplyInput.class));
+        Mockito.verify(handler).sendGetFeaturesToSwitch(echo.getVersion(), ShimSwitchConnectionHandlerImpl.DEFAULT_XID,
+                switchConnection, 0);
+
     }
 
     @Test

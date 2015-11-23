@@ -36,12 +36,14 @@ public class ShimMessageListener
     private ConnectionAdapter switchConnection;
     private IHandshakeListener handshakeListener;
     private ShimRelay shimRelay;
+    private ShimSwitchConnectionHandlerImpl connectionHandler;
 
-    public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection,
-            ShimRelay _shimRelay) {
+    public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection, ShimRelay _shimRelay,
+            ShimSwitchConnectionHandlerImpl handler) {
         this.coreConnector = connector;
         this.switchConnection = switchConnection;
         this.shimRelay = _shimRelay;
+        this.connectionHandler = handler;
     }
 
     public void registerConnectionAdaptersRegistry(ConnectionAdaptersRegistry connectionRegistry) {
@@ -64,6 +66,8 @@ public class ShimMessageListener
             builder.setXid(arg0.getXid() + 1L);
             builder.setData(arg0.getData());
             this.switchConnection.echoReply(builder.build());
+            connectionHandler.sendGetFeaturesToSwitch(arg0.getVersion(), ShimSwitchConnectionHandlerImpl.DEFAULT_XID,
+                    switchConnection, 0);
         } else {
             LOG.info("SHIM Echo request message received. Sent to core.");
             shimRelay.sendOpenFlowMessageToCore(coreConnector, arg0, arg0.getVersion(), arg0.getXid(),
