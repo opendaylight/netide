@@ -54,7 +54,6 @@ public class ZeroMQBaseConnector implements Runnable {
                 LOG.error("", e);
             }
         }
-        LOG.info("ZeroMQBasedConnector stopped.");
     }
 
     public void RegisterCoreListener(ICoreListener listener) {
@@ -94,17 +93,18 @@ public class ZeroMQBaseConnector implements Runnable {
                 if (coreListener != null) {
                     Message msg = NetIPConverter.parseConcreteMessage(data);
                     if (msg instanceof HelloMessage) {
-                        LOG.info("Core Hello Message received");
+
                         coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
                                 ((HelloMessage) msg).getHeader().getModuleId());
                     } else if (msg instanceof OpenFlowMessage) {
-                        LOG.info("Core OpenFlow Message received");
+
                         byte[] payload = msg.getPayload();
                         coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
                                 Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
                     } else {
-                        LOG.info("Core Unrecognized Message received class {}, header: {}", msg.getClass(),
-                                msg.getHeader().getMessageType());
+                        // LOG.info("Core Unrecognized Message received class
+                        // {}, header: {}", msg.getClass(),
+                        // msg.getHeader().getMessageType());
                     }
                 }
             }

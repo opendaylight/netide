@@ -14,7 +14,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.controller/features-mdsal/${controller.mdsal.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
   <repository>mvn:org.opendaylight.openflowjava/features-openflowjava/${openflowjava.version}/xml/features</repository>
-  
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features</repository>
   <feature name='odl-netide-api' version='${project.version}' description='OpenDaylight :: netide :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.netide/netide-api/${project.version}</bundle>
@@ -25,6 +25,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${project.version}'>odl-netide-api</feature>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>  
     <feature version="${openflowjava.version}">odl-openflowjava-protocol</feature>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-flow-services</feature>
     <bundle>mvn:org.opendaylight.netide/shim/${project.version}</bundle>
     <bundle>mvn:org.opendaylight.netide/netide-impl/${project.version}</bundle>
     <configfile finalname="${configfile.directory}/43-netide.xml">mvn:org.opendaylight.netide/shim-config/${project.version}/xml/config</configfile>

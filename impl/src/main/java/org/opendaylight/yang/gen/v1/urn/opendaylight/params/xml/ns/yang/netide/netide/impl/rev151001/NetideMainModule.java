@@ -38,7 +38,8 @@ public class NetideMainModule extends
             InetAddress coreAddress = extractIpAddressBin(getCoreAddress());
             int corePort = getCorePort();
             ConnectionConfiguration conf = createConnectionConfiguration();
-            provider = new NetideProvider(coreAddress.getHostAddress(), corePort, conf);
+            provider = new NetideProvider(coreAddress.getHostAddress(), corePort, conf,
+                    getNotificationPublishAdapterDependency());
             getBrokerDependency().registerProvider(provider);
         } catch (UnknownHostException e) {
             e.printStackTrace();

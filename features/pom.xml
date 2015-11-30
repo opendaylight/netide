@@ -30,6 +30,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
     <yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
     <configfile.directory>etc/opendaylight/karaf</configfile.directory>
     <openflowjava.version>0.7.0-SNAPSHOT</openflowjava.version>
+    <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
   </properties>
   
   <dependencyManagement>
@@ -129,6 +130,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <classifier>features</classifier>
       <type>xml</type>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>features-openflowplugin</artifactId>
+      <classifier>features</classifier>
+      <type>xml</type>
+      <scope>runtime</scope>
+      <version>${openflowplugin.version}</version>
     </dependency>
     <!-- bundle dependencies -->
     <dependency>

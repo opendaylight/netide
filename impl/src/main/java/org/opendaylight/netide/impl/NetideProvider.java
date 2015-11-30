@@ -7,6 +7,7 @@
  */
 package org.opendaylight.netide.impl;
 
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RpcRegistration;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
@@ -28,11 +29,14 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
     private int corePort;
     private String coreAddress;
     ConnectionConfiguration conf;
+    NotificationPublishService notificationProviderService;
 
-    public NetideProvider(String _coreAddress, int _corePort, ConnectionConfiguration connectionConfiguration) {
+    public NetideProvider(String _coreAddress, int _corePort, ConnectionConfiguration connectionConfiguration,
+            NotificationPublishService _notificationProviderService) {
         coreAddress = _coreAddress;
         corePort = _corePort;
         conf = connectionConfiguration;
+        notificationProviderService = _notificationProviderService;
     }
 
     @Override
@@ -41,7 +45,8 @@ public class NetideProvider implements BindingAwareProvider, AutoCloseable {
         connectionProvider = new SwitchConnectionProviderImpl();
         coreConnector = new ZeroMQBaseConnector();
 
-        ShimSwitchConnectionHandlerImpl handler = new ShimSwitchConnectionHandlerImpl(coreConnector);
+        ShimSwitchConnectionHandlerImpl handler = new ShimSwitchConnectionHandlerImpl(coreConnector,
+                notificationProviderService);
         handler.init();
 
         coreConnector.RegisterCoreListener(handler);

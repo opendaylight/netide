@@ -11,20 +11,43 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.JdkFutureAdapters;
 import io.netty.buffer.ByteBuf;
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Future;
 import org.javatuples.Pair;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemovedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
@@ -39,11 +62,20 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     private Pair<Protocol, ProtocolVersions> supportedProtocol;
     List<Pair<Protocol, ProtocolVersions>> supportedProtocols;
     private ShimRelay shimRelay;
+    private NotificationPublishService notificationProviderService;
+    HashMap<InetSocketAddress, ShimMessageListener> mapListeners;
+    HashMap<InetSocketAddress, GetFeaturesOutput> mapFeatures;
+    SwitchFeaturesUtil swFeaturesUtil;
 
-    public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector) {
+    public ShimSwitchConnectionHandlerImpl(ZeroMQBaseConnector connector,
+            NotificationPublishService _notificationProviderService) {
         coreConnector = connector;
         supportedProtocol = null;
         supportedProtocols = new ArrayList<>();
+        mapListeners = new HashMap<>();
+        mapFeatures = new HashMap<>();
+        notificationProviderService = _notificationProviderService;
+        swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
 
     public void init() {
@@ -69,8 +101,11 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
     @Override
     public void onSwitchConnected(ConnectionAdapter connectionAdapter) {
-        LOG.info("SHIM: on Switch connected: {}", connectionAdapter.getRemoteAddress());
-        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter, shimRelay, this);
+        LOG.info("CREATING NEW LISTENER FOR {}", connectionAdapter.getRemoteAddress());
+        ShimMessageListener listener = new ShimMessageListener(coreConnector, connectionAdapter, shimRelay, this,
+                notificationProviderService);
+
+        mapListeners.put(connectionAdapter.getRemoteAddress(), listener);
         listener.registerConnectionAdaptersRegistry(connectionRegistry);
         listener.registerHandshakeListener(this);
         connectionRegistry.registerConnectionAdapter(connectionAdapter, null);
@@ -81,7 +116,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
 
     public void handshake(ConnectionAdapter connectionAdapter) {
-        LOG.info("SHIM: OF Handshake Switch: {}", connectionAdapter.getRemoteAddress());
         HelloInputBuilder builder = new HelloInputBuilder();
         builder.setVersion((short) getMaxOFSupportedProtocol());
         builder.setXid(DEFAULT_XID);
@@ -91,19 +125,75 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
     }
 
     @Override
-    public void onSwitchHelloMessage(long xid, Short version) {
-        LOG.info("SHIM: OpenFlow hello message received. Xid: {}, OFVersion: {}", xid, version);
+    public void onSwitchHelloMessage(long xid, Short version, ConnectionAdapter connectionAdapter) {
         byte received = version.byteValue();
         if (xid >= DEFAULT_XID) {
             if (received <= getMaxOFSupportedProtocol()) {
-                LOG.info("SHIM: OpenFlow handshake agreed on version: {}", received);
                 setSupportedProtocol(received);
 
             } else {
-                LOG.info("SHIM: OpenFlow handshake agreed on version: {}", getMaxOFSupportedProtocol());
                 setSupportedProtocol(getMaxOFSupportedProtocol());
             }
         }
+        sendGetFeaturesToSwitch(version, (xid + 1), connectionAdapter);
+    }
+
+    public NodeUpdated nodeAdded(ConnectionAdapter connectionAdapter) {
+        NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+        BigInteger datapathId = this.connectionRegistry.getDatapathID(connectionAdapter);
+        builder.setId(nodeIdFromDatapathId(datapathId));
+        InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
+        builder.setNodeRef(new NodeRef(identifier));
+
+        FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        try {
+            builder2.setIpAddress(getIpAddressOf(connectionAdapter));
+        } catch (Exception e) {
+            LOG.warn("IP address of the node cannot be obtained.");
+        }
+        GetFeaturesOutput features = this.connectionRegistry.getFeaturesOutput(connectionAdapter);
+
+        builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
+        builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
+
+        return builder.build();
+    }
+
+    private static IpAddress getIpAddressOf(final ConnectionAdapter connectionAdapter) {
+
+        InetSocketAddress remoteAddress = connectionAdapter.getRemoteAddress();
+        if (remoteAddress == null) {
+            LOG.warn("IP address of the node cannot be obtained. No connection with switch.");
+            return null;
+        }
+        return resolveIpAddress(remoteAddress.getAddress());
+    }
+
+    private static IpAddress resolveIpAddress(final InetAddress address) {
+        String hostAddress = address.getHostAddress();
+        if (address instanceof Inet4Address) {
+            return new IpAddress(new Ipv4Address(hostAddress));
+        }
+        if (address instanceof Inet6Address) {
+            return new IpAddress(new Ipv6Address(hostAddress));
+        }
+        throw new IllegalArgumentException("Unsupported IP address type!");
+    }
+
+    public static InstanceIdentifier<Node> identifierFromDatapathId(final BigInteger datapathId) {
+        NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
+        InstanceIdentifierBuilder<Node> builder = InstanceIdentifier.builder(Nodes.class).child(Node.class, nodeKey);
+        return builder.build();
+    }
+
+    public static NodeKey nodeKeyFromDatapathId(final BigInteger datapathId) {
+        return new NodeKey(nodeIdFromDatapathId(datapathId));
+    }
+
+    public static NodeId nodeIdFromDatapathId(final BigInteger datapathId) {
+        // FIXME: Convert to textual representation of datapathID
+        String current = String.valueOf(datapathId);
+        return new NodeId("openflow:" + current);
     }
 
     public byte getMaxOFSupportedProtocol() {
@@ -141,8 +231,8 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
     @Override
     public void onOpenFlowCoreMessage(Long datapathId, ByteBuf msg, int moduleId) {
-        LOG.info("SHIM: OpenFlow Core message received");
         ConnectionAdapter conn = connectionRegistry.getConnectionAdapter(datapathId);
+
         if (conn != null) {
             short ofVersion = msg.readUnsignedByte();
             shimRelay.sendToSwitch(conn, msg, ofVersion, coreConnector, datapathId, moduleId);
@@ -151,43 +241,37 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
 
     @Override
     public void onHelloCoreMessage(List<Pair<Protocol, ProtocolVersions>> requestedProtocols, int moduleId) {
-        LOG.info("SHIM: Hello Core message received. Pair0: {}", requestedProtocols.get(0));
         for (Pair<Protocol, ProtocolVersions> requested : requestedProtocols) {
-            if (requested.getValue0().getValue() == getSupportedProtocol().getValue0().getValue()
-                    && requested.getValue1().getValue() == getSupportedProtocol().getValue1().getValue()) {
-                LOG.info("SHIM: OF version matched");
-                HelloMessage msg = new HelloMessage();
-                msg.getSupportedProtocols().add(getSupportedProtocol());
-                msg.getHeader().setPayloadLength((short) 2);
-                msg.getHeader().setModuleId(moduleId);
-                coreConnector.SendData(msg.toByteRepresentation());
-                for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()) {
-                    LOG.info("SHIM: SendFeatures To core for switch: {}", conn.getRemoteAddress());
-                    sendGetFeaturesToSwitch((short) getSupportedProtocol().getValue1().getValue(), DEFAULT_XID, conn,
-                            moduleId);
+            if (getSupportedProtocol() != null) {
+                if (requested.getValue0().getValue() == getSupportedProtocol().getValue0().getValue()
+                        && requested.getValue1().getValue() == getSupportedProtocol().getValue1().getValue()) {
+                    HelloMessage msg = new HelloMessage();
+                    msg.getSupportedProtocols().add(getSupportedProtocol());
+                    msg.getHeader().setPayloadLength((short) 2);
+                    msg.getHeader().setModuleId(moduleId);
+                    coreConnector.SendData(msg.toByteRepresentation());
+                    for (ConnectionAdapter conn : connectionRegistry.getConnectionAdapters()) {
+                        sendGetFeaturesOuputToCore((short) getSupportedProtocol().getValue1().getValue(), moduleId,
+                                conn);
+
+                    }
                 }
             }
         }
     }
 
-    public void sendGetFeaturesOuputToCore(Future<RpcResult<GetFeaturesOutput>> switchReply,
-            final Short proposedVersion, final int moduleId, final ConnectionAdapter connectionAdapter) {
+    public void collectGetFeaturesOuput(Future<RpcResult<GetFeaturesOutput>> switchReply,
+            final ConnectionAdapter connectionAdapter) {
         Futures.addCallback(JdkFutureAdapters.listenInPoolThread(switchReply),
                 new FutureCallback<RpcResult<GetFeaturesOutput>>() {
                     @Override
                     public void onSuccess(RpcResult<GetFeaturesOutput> rpcFeatures) {
                         if (rpcFeatures.isSuccessful()) {
                             GetFeaturesOutput featureOutput = rpcFeatures.getResult();
-
-                            LOG.info("obtained features: datapathId={}", featureOutput.getDatapathId());
-
                             // Register Switch connection/DatapathId to registry
-                            connectionRegistry.registerConnectionAdapter(connectionAdapter,
-                                    featureOutput.getDatapathId());
-                            // Send Feature reply to Core
-                            shimRelay.sendOpenFlowMessageToCore(ShimSwitchConnectionHandlerImpl.coreConnector,
-                                    featureOutput, proposedVersion, featureOutput.getXid(),
-                                    featureOutput.getDatapathId().shortValue(), moduleId);
+                            connectionRegistry.registerConnectionAdapter(connectionAdapter, featureOutput);
+                            NodeUpdated nodeUpdated = nodeAdded(connectionAdapter);
+                            notificationProviderService.offerNotification(nodeUpdated);
 
                         } else {
                             // Handshake failed
@@ -196,8 +280,6 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                                         rpcError.getMessage(), rpcError.getSeverity(), rpcError.getCause());
                             }
                         }
-
-                        LOG.info("postHandshake DONE");
                     }
 
                     @Override
@@ -208,16 +290,43 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
                 });
     }
 
+    public void sendGetFeaturesOuputToCore(final Short proposedVersion, final int moduleId,
+            final ConnectionAdapter connectionAdapter) {
+
+        GetFeaturesOutput featureOutput = getFeaturesFromRegistry(connectionAdapter);
+        shimRelay.sendOpenFlowMessageToCore(ShimSwitchConnectionHandlerImpl.coreConnector, featureOutput,
+                proposedVersion, featureOutput.getXid(), featureOutput.getDatapathId().shortValue(), moduleId);
+    }
+
     public void sendGetFeaturesToSwitch(final Short proposedVersion, final Long xid,
-            final ConnectionAdapter connectionAdapter, final int moduleId) {
+            final ConnectionAdapter connectionAdapter) {
 
         GetFeaturesInputBuilder featuresBuilder = new GetFeaturesInputBuilder();
         featuresBuilder.setVersion(proposedVersion).setXid(xid);
 
         Future<RpcResult<GetFeaturesOutput>> featuresFuture = connectionAdapter.getFeatures(featuresBuilder.build());
+        collectGetFeaturesOuput(featuresFuture, connectionAdapter);
+    }
 
-        sendGetFeaturesOuputToCore(featuresFuture, proposedVersion, moduleId, connectionAdapter);
-        LOG.info("future features [{}] hooked ..", xid);
+    private static NodeRemoved nodeRemoved(final NodeRef nodeRef) {
+        NodeRemovedBuilder builder = new NodeRemovedBuilder();
+        builder.setNodeRef(nodeRef);
+        return builder.build();
+    }
+
+    @Override
+    public void onSwitchDisconnected(ConnectionAdapter connectionAdapter) {
+        BigInteger datapathId = connectionRegistry.getDatapathID(connectionAdapter);
+        InstanceIdentifier<Node> identifier = identifierFromDatapathId(datapathId);
+        NodeRef nodeRef = new NodeRef(identifier);
+        NodeRemoved nodeRemoved = nodeRemoved(nodeRef);
+        notificationProviderService.offerNotification(nodeRemoved);
+
+        connectionRegistry.removeConnectionAdapter(connectionAdapter);
+    }
+
+    public GetFeaturesOutput getFeaturesFromRegistry(ConnectionAdapter conn) {
+        return this.connectionRegistry.getFeaturesOutput(conn);
     }
 
 }

@@ -7,6 +7,7 @@ module netide-impl {
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import openflow-configuration {prefix of-config; revision-date 2014-06-30; }
     import ietf-inet-types {prefix ietf-inet; revision-date 2010-09-24; }
+    import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
     
     description
         "Service definition for hello project";
@@ -109,6 +110,23 @@ module netide-impl {
                     refine type {
                         mandatory true;
                         config:required-identity md-sal-binding:binding-broker-osgi-registry;
+                    }
+                }
+            }
+            
+            container notification-adapter {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity sal-broker:binding-new-notification-service;
+                    }
+                }
+            }
+            container notification-publish-adapter {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity sal-broker:binding-new-notification-publish-service;
                     }
                 }
             }

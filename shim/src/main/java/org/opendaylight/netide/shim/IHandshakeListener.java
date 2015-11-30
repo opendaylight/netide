@@ -7,11 +7,15 @@
  */
 package org.opendaylight.netide.shim;
 
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
 public interface IHandshakeListener {
 
-    public void onSwitchHelloMessage(long xid, Short version);
+    public void onSwitchHelloMessage(long xid, Short version, ConnectionAdapter connectionAdapter);
+
+    public void onSwitchDisconnected(ConnectionAdapter connectionAdapter);
 }
