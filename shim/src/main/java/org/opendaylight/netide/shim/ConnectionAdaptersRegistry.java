@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author giuseppex.petralia@intel.com
@@ -19,28 +20,40 @@ import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
  */
 public class ConnectionAdaptersRegistry {
 
-    private static HashMap<ConnectionAdapter, BigInteger> connectionAdapterMap;
+    private static HashMap<ConnectionAdapter, GetFeaturesOutput> connectionAdapterMap;
 
     public synchronized void init() {
-        connectionAdapterMap = new LinkedHashMap<ConnectionAdapter, BigInteger>();
+        connectionAdapterMap = new LinkedHashMap<ConnectionAdapter, GetFeaturesOutput>();
     }
 
-    public synchronized void setConnectionAdapterMap(HashMap<ConnectionAdapter, BigInteger> map) {
+    public synchronized void setConnectionAdapterMap(HashMap<ConnectionAdapter, GetFeaturesOutput> map) {
         connectionAdapterMap = map;
     }
 
-    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter, BigInteger datapathID)
-            throws NullPointerException {
+    public synchronized void registerConnectionAdapter(ConnectionAdapter connectionAdapter,
+            GetFeaturesOutput datapathID) throws NullPointerException {
         connectionAdapterMap.put(connectionAdapter, datapathID);
     }
 
+    public synchronized GetFeaturesOutput getFeaturesOutput(ConnectionAdapter connectionAdapter)
+            throws NullPointerException {
+        if (connectionAdapterMap.containsKey(connectionAdapter))
+            return connectionAdapterMap.get(connectionAdapter);
+        return null;
+    }
+
     public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter) throws NullPointerException {
-        return connectionAdapterMap.get(connectionAdapter);
+        if (connectionAdapterMap.containsKey(connectionAdapter)) {
+            GetFeaturesOutput obj = connectionAdapterMap.get(connectionAdapter);
+            if (obj != null)
+                return obj.getDatapathId();
+        }
+        return null;
     }
 
     public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId) throws NullPointerException {
         for (ConnectionAdapter conn : connectionAdapterMap.keySet()) {
-            if (connectionAdapterMap.get(conn).longValue() == datapathId)
+            if (connectionAdapterMap.get(conn).getDatapathId().longValue() == datapathId)
                 return conn;
         }
         return null;
@@ -51,7 +64,7 @@ public class ConnectionAdaptersRegistry {
     }
 
     public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn) throws NullPointerException {
-        BigInteger datapathID = connectionAdapterMap.remove(conn);
+        GetFeaturesOutput datapathID = connectionAdapterMap.remove(conn);
         if (datapathID != null)
             return true;
         return false;

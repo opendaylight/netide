@@ -70,7 +70,7 @@ public class ShimRelay {
 
     public void sendOpenFlowMessageToCore(ZeroMQBaseConnector coreConnector, DataObject msg, short ofVersion, long xId,
             long datapathId, int moduleId) {
-        LOG.info("SHIM RELAY: sending message to core");
+
         SerializationFactory factory = createSerializationFactory();
         SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
         registry.init();
@@ -89,7 +89,7 @@ public class ShimRelay {
 
     public void sendToSwitch(ConnectionAdapter connectionAdapter, ByteBuf input, short ofVersion,
             ZeroMQBaseConnector coreConnector, long datapathId, int moduleId) {
-        LOG.info("SHIM RELAY: sending bytebuf to switch");
+
         NetIdeDeserializationFactory factory = createNetideDeserializationFactory();
         DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
         registry.init();
@@ -100,8 +100,6 @@ public class ShimRelay {
 
     public void sendDataObjectToSwitch(ConnectionAdapter connectionAdapter, DataObject msg, short ofVersion,
             ZeroMQBaseConnector coreConnector, long datapathId, int moduleId) {
-
-        LOG.info("SHIM RELAY: sending dataObject to switch");
 
         if (getImplementedInterface(msg).equals(BarrierInput.class.getName())) {
             Future<RpcResult<BarrierOutput>> reply = connectionAdapter.barrier((BarrierInput) msg);
@@ -205,7 +203,7 @@ public class ShimRelay {
             public void onSuccess(RpcResult<E> rpcReply) {
                 if (rpcReply.isSuccessful()) {
                     E result = rpcReply.getResult();
-                    LOG.info("SHIM RELAY: sending Response to switch. Class: {}", result.getClass());
+
                     sendOpenFlowMessageToCore(coreConnector, result, ofVersion, xId, datapathId, moduleId);
                 } else {
                     for (RpcError rpcError : rpcReply.getErrors()) {

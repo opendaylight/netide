@@ -16,24 +16,32 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterImpl;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 
 /**
  * @author giuseppex.petralia@intel.com
  *
  */
+
 public class ConnectionAdaptersRegistryTest {
+
     ConnectionAdaptersRegistry registry;
 
     @Mock
     ConnectionAdapterImpl conn;
 
+    @Mock
+    GetFeaturesOutput features;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         registry = new ConnectionAdaptersRegistry();
+        Mockito.when(features.getDatapathId()).thenReturn(new BigInteger("1"));
     }
 
     @Test
@@ -56,8 +64,8 @@ public class ConnectionAdaptersRegistryTest {
     @Test
     public void testSetConnectionAdapterMap() {
         registry.init();
-        HashMap<ConnectionAdapter, BigInteger> map = new LinkedHashMap<ConnectionAdapter, BigInteger>();
-        map.put(conn, new BigInteger("1"));
+        HashMap<ConnectionAdapter, GetFeaturesOutput> map = new LinkedHashMap<>();
+        map.put(conn, features);
         registry.setConnectionAdapterMap(map);
         Assert.assertEquals("Wrong map", conn, registry.getConnectionAdapter(1L));
     }
@@ -65,28 +73,28 @@ public class ConnectionAdaptersRegistryTest {
     @Test
     public void testRegisterConnectionAdapter() {
         registry.init();
-        registry.registerConnectionAdapter(conn, new BigInteger("1"));
+        registry.registerConnectionAdapter(conn, features);
         Assert.assertEquals("Wrong map", conn, registry.getConnectionAdapter(1L));
     }
 
     @Test
     public void testGetDatapathID() {
         registry.init();
-        registry.registerConnectionAdapter(conn, new BigInteger("1"));
+        registry.registerConnectionAdapter(conn, features);
         Assert.assertEquals("Wrong map", new BigInteger("1"), registry.getDatapathID(conn));
     }
 
     @Test
     public void testGetConnectionAdapter() {
         registry.init();
-        registry.registerConnectionAdapter(conn, new BigInteger("1"));
+        registry.registerConnectionAdapter(conn, features);
         Assert.assertEquals("Wrong map", conn, registry.getConnectionAdapter(1L));
     }
 
     @Test
     public void testGetConnectionAdapters() {
         registry.init();
-        registry.registerConnectionAdapter(conn, new BigInteger("1"));
+        registry.registerConnectionAdapter(conn, features);
         Set<ConnectionAdapter> result = new HashSet<ConnectionAdapter>();
         result.add(conn);
         Assert.assertEquals("Wrong key set", result, registry.getConnectionAdapters());
@@ -96,7 +104,7 @@ public class ConnectionAdaptersRegistryTest {
     public void testRemoveConnectionAdapter() {
         registry.init();
         Assert.assertEquals(false, registry.removeConnectionAdapter(conn));
-        registry.registerConnectionAdapter(conn, new BigInteger("1"));
+        registry.registerConnectionAdapter(conn, features);
         Assert.assertEquals(true, registry.removeConnectionAdapter(conn));
         Assert.assertNull(registry.getConnectionAdapter(1L));
     }

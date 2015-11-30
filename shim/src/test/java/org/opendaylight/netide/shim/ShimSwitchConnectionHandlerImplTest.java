@@ -24,11 +24,15 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
+import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
@@ -43,6 +47,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class ShimSwitchConnectionHandlerImplTest {
 
     ShimSwitchConnectionHandlerImpl connectionHandler;
+
+    @Mock
+    NodeUpdated nodeUpdated;
 
     @Mock
     ZeroMQBaseConnector coreConnector;
@@ -62,12 +69,20 @@ public class ShimSwitchConnectionHandlerImplTest {
     @Mock
     ByteBuf msg;
 
+    @Mock
+    NotificationPublishService notificationProviderService;
+
+    @Mock
+    GetFeaturesOutput features;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        connectionHandler = Mockito.spy(new ShimSwitchConnectionHandlerImpl(coreConnector));
+        connectionHandler = Mockito
+                .spy(new ShimSwitchConnectionHandlerImpl(coreConnector, notificationProviderService));
         Mockito.stub(connectionHandler.createShimRelay()).toReturn(shimRelay);
         Mockito.stub(connectionHandler.createConnectionAdaptersRegistry()).toReturn(registry);
+
         connectionHandler.init();
     }
 
@@ -102,14 +117,19 @@ public class ShimSwitchConnectionHandlerImplTest {
     @Test
     public void testOnSwitchHelloMessage1() {
         Mockito.stub(connectionHandler.getMaxOFSupportedProtocol()).toReturn(EncodeConstants.OF13_VERSION_ID);
-        connectionHandler.onSwitchHelloMessage(0L, (short) EncodeConstants.OF13_VERSION_ID);
+        Mockito.doNothing().when(connectionHandler).sendGetFeaturesToSwitch(Matchers.anyShort(), Matchers.anyLong(),
+                Matchers.any(ConnectionAdapter.class));
+
+        connectionHandler.onSwitchHelloMessage(0L, (short) EncodeConstants.OF13_VERSION_ID, connectionAdapter);
         Assert.assertNull(connectionHandler.getSupportedProtocol());
     }
 
     @Test
     public void testOnSwitchHelloMessage2() {
         Mockito.stub(connectionHandler.getMaxOFSupportedProtocol()).toReturn(EncodeConstants.OF13_VERSION_ID);
-        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF13_VERSION_ID);
+        Mockito.doNothing().when(connectionHandler).sendGetFeaturesToSwitch(Matchers.anyShort(), Matchers.anyLong(),
+                Matchers.any(ConnectionAdapter.class));
+        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF13_VERSION_ID, connectionAdapter);
         Assert.assertEquals(EncodeConstants.OF13_VERSION_ID,
                 connectionHandler.getSupportedProtocol().getValue1().getValue());
     }
@@ -117,7 +137,9 @@ public class ShimSwitchConnectionHandlerImplTest {
     @Test
     public void testOnSwitchHelloMessage3() {
         Mockito.stub(connectionHandler.getMaxOFSupportedProtocol()).toReturn(EncodeConstants.OF13_VERSION_ID);
-        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF10_VERSION_ID);
+        Mockito.doNothing().when(connectionHandler).sendGetFeaturesToSwitch(Matchers.anyShort(), Matchers.anyLong(),
+                Matchers.any(ConnectionAdapter.class));
+        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF10_VERSION_ID, connectionAdapter);
         Assert.assertEquals(EncodeConstants.OF10_VERSION_ID,
                 connectionHandler.getSupportedProtocol().getValue1().getValue());
     }
@@ -125,7 +147,9 @@ public class ShimSwitchConnectionHandlerImplTest {
     @Test
     public void testOnSwitchHelloMessage4() {
         Mockito.stub(connectionHandler.getMaxOFSupportedProtocol()).toReturn(EncodeConstants.OF10_VERSION_ID);
-        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF13_VERSION_ID);
+        Mockito.doNothing().when(connectionHandler).sendGetFeaturesToSwitch(Matchers.anyShort(), Matchers.anyLong(),
+                Matchers.any(ConnectionAdapter.class));
+        connectionHandler.onSwitchHelloMessage(1L, (short) EncodeConstants.OF13_VERSION_ID, connectionAdapter);
         Assert.assertEquals(EncodeConstants.OF10_VERSION_ID,
                 connectionHandler.getSupportedProtocol().getValue1().getValue());
     }
@@ -141,8 +165,9 @@ public class ShimSwitchConnectionHandlerImplTest {
 
     @Test
     public void testOnHelloCoreMessage() {
-        Mockito.doNothing().when(connectionHandler).sendGetFeaturesToSwitch((short) EncodeConstants.OF13_VERSION_ID,
-                ShimSwitchConnectionHandlerImpl.DEFAULT_XID, connectionAdapter, 0);
+        Mockito.doNothing().when(connectionHandler).sendGetFeaturesOuputToCore((short) EncodeConstants.OF13_VERSION_ID,
+                0, connectionAdapter);
+
         Pair<Protocol, ProtocolVersions> supportedProtocol = new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW,
                 ProtocolVersions.parse(Protocol.OPENFLOW, EncodeConstants.OF13_VERSION_ID));
         Mockito.stub(connectionHandler.getSupportedProtocol()).toReturn(supportedProtocol);
@@ -157,8 +182,21 @@ public class ShimSwitchConnectionHandlerImplTest {
         msg.getHeader().setModuleId(0);
         connectionHandler.onHelloCoreMessage(requestedProtocols, 0);
         Mockito.verify(coreConnector).SendData(msg.toByteRepresentation());
-        Mockito.verify(connectionHandler).sendGetFeaturesToSwitch((short) EncodeConstants.OF13_VERSION_ID,
-                ShimSwitchConnectionHandlerImpl.DEFAULT_XID, connectionAdapter, 0);
+        Mockito.verify(connectionHandler).sendGetFeaturesOuputToCore((short) EncodeConstants.OF13_VERSION_ID, 0,
+                connectionAdapter);
+    }
+
+    @Test
+    public void testCollectGetFeaturesOutput() {
+        Mockito.doReturn(nodeUpdated).when(connectionHandler).nodeAdded(connectionAdapter);
+        GetFeaturesOutput messageReply = new GetFeaturesOutputBuilder()
+                .setVersion((short) EncodeConstants.OF13_VERSION_ID).build();
+        Future<RpcResult<GetFeaturesOutput>> reply = Futures
+                .immediateFuture(RpcResultBuilder.success(messageReply).build());
+
+        connectionHandler.collectGetFeaturesOuput(reply, connectionAdapter);
+        Mockito.verify(registry).registerConnectionAdapter(connectionAdapter, messageReply);
+        Mockito.verify(notificationProviderService).offerNotification(Matchers.any(NodeUpdated.class));
     }
 
     @Test
@@ -168,14 +206,12 @@ public class ShimSwitchConnectionHandlerImplTest {
 
         Future<RpcResult<GetFeaturesOutput>> reply = Futures
                 .immediateFuture(RpcResultBuilder.success(messageReply).build());
-
-        Mockito.doNothing().when(connectionHandler).sendGetFeaturesOuputToCore(Matchers.any(reply.getClass()),
-                Matchers.eq((short) EncodeConstants.OF13_VERSION_ID), Matchers.eq(0), Matchers.eq(connectionAdapter));
+        Mockito.stub(connectionAdapter.getFeatures(Matchers.any(GetFeaturesInput.class))).toReturn(reply);
+        Mockito.doNothing().when(connectionHandler).collectGetFeaturesOuput(reply, connectionAdapter);
 
         connectionHandler.sendGetFeaturesToSwitch((short) EncodeConstants.OF13_VERSION_ID,
-                ShimSwitchConnectionHandlerImpl.DEFAULT_XID, connectionAdapter, 0);
-        Mockito.verify(connectionHandler).sendGetFeaturesOuputToCore(Matchers.any(reply.getClass()),
-                Matchers.eq((short) EncodeConstants.OF13_VERSION_ID), Matchers.eq(0), Matchers.eq(connectionAdapter));
+                ShimSwitchConnectionHandlerImpl.DEFAULT_XID, connectionAdapter);
+        Mockito.verify(connectionHandler).collectGetFeaturesOuput(reply, connectionAdapter);
 
     }
 
@@ -185,11 +221,9 @@ public class ShimSwitchConnectionHandlerImplTest {
                 .setVersion((short) EncodeConstants.OF13_VERSION_ID).setDatapathId(new BigInteger("1")).build();
         Future<RpcResult<GetFeaturesOutput>> reply = Futures
                 .immediateFuture(RpcResultBuilder.success(messageReply).build());
+        Mockito.stub(connectionHandler.getFeaturesFromRegistry(connectionAdapter)).toReturn(messageReply);
+        connectionHandler.sendGetFeaturesOuputToCore((short) EncodeConstants.OF13_VERSION_ID, 0, connectionAdapter);
 
-        connectionHandler.sendGetFeaturesOuputToCore(reply, (short) EncodeConstants.OF13_VERSION_ID, 0,
-                connectionAdapter);
-
-        Mockito.verify(registry).registerConnectionAdapter(connectionAdapter, new BigInteger("1"));
         Mockito.verify(shimRelay).sendOpenFlowMessageToCore(coreConnector, messageReply,
                 EncodeConstants.OF13_VERSION_ID, 1L, 1L, 0);
     }
