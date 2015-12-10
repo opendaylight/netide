@@ -66,4 +66,9 @@ public class ShimConnectionConfiguration implements ConnectionConfiguration {
         return _transportProtocol;
     }
 
+    @Override
+    public boolean useBarrier() {
+        return false;
+    }
+
 }
