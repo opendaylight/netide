@@ -26,8 +26,10 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
@@ -44,6 +46,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
@@ -110,6 +114,16 @@ public class ShimRelay {
             Future<RpcResult<EchoOutput>> reply = connectionAdapter.echo((EchoInput) msg);
             sendResponseToCore(reply, coreConnector, ofVersion, ((EchoInput) msg).getXid(), datapathId, moduleId);
 
+        } else if (getImplementedInterface(msg).equals(EchoRequestMessage.class.getName())) {
+            EchoInputBuilder builder = new EchoInputBuilder();
+            EchoRequestMessage echoRequestMessage = (EchoRequestMessage) msg;
+            if (echoRequestMessage.getData() != null)
+                builder.setData(echoRequestMessage.getData());
+            builder.setVersion(echoRequestMessage.getVersion());
+            builder.setXid(echoRequestMessage.getXid());
+            Future<RpcResult<EchoOutput>> reply = connectionAdapter.echo(builder.build());
+            sendResponseToCore(reply, coreConnector, ofVersion, echoRequestMessage.getXid(), datapathId, moduleId);
+
         } else if (getImplementedInterface(msg).equals(EchoOutput.class.getName())) {
 
             EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
@@ -161,7 +175,7 @@ public class ShimRelay {
             connectionAdapter.meterMod((MeterModInput) msg);
 
         } else if (getImplementedInterface(msg).equals(MultipartRequestInput.class.getName())) {
-            // TODO: Check why no reply!
+
             connectionAdapter.multipartRequest((MultipartRequestInput) msg);
 
         } else if (getImplementedInterface(msg).equals(PacketOutInput.class.getName())) {
@@ -181,11 +195,14 @@ public class ShimRelay {
             connectionAdapter.setConfig((SetConfigInput) msg);
 
         } else if (getImplementedInterface(msg).equals(TableModInput.class.getName())) {
-
             connectionAdapter.tableMod((TableModInput) msg);
 
+        } else if (getImplementedInterface(msg).equals(RoleRequestInput.class.getName())) {
+            Future<RpcResult<RoleRequestOutput>> reply = connectionAdapter.roleRequest((RoleRequestInput) msg);
+            sendResponseToCore(reply, coreConnector, ofVersion, ((RoleRequestInput) msg).getXid(), datapathId,
+                    moduleId);
         } else {
-            LOG.info("SHIM RELAY: Dataobject not recognized");
+            LOG.info("SHIM RELAY: Dataobject not recognized " + getImplementedInterface(msg));
         }
 
     }
