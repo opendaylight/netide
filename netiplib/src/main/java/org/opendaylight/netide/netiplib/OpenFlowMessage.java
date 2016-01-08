@@ -9,9 +9,9 @@ package org.opendaylight.netide.netiplib;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
@@ -57,7 +57,7 @@ public class OpenFlowMessage extends Message {
 
     @Override
     public byte[] getPayload() {
-        SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
+        SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         SerializationFactory factory = new SerializationFactory();
         factory.setSerializerTable(registry);

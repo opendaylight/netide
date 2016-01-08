@@ -51,7 +51,6 @@
 		<module>parent</module>
 		<module>api</module>
 		<module>config</module>
-		<module>openflowjava-extension</module>
 		<module>netiplib</module>
 		<module>shim</module>
 		<module>features</module>

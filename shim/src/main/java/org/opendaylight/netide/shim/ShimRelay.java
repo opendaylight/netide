@@ -16,13 +16,13 @@ import java.util.concurrent.Future;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.MessageType;
 import org.opendaylight.netide.netiplib.NetIPUtils;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
-import org.opendaylight.netide.openflowjava.protocol.impl.serialization.NetIdeSerializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.serialization.SerializerRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
@@ -68,15 +68,15 @@ public class ShimRelay {
         return new SerializationFactory();
     }
 
-    public NetIdeDeserializationFactory createNetideDeserializationFactory() {
-        return new NetIdeDeserializationFactory();
+    public DeserializationFactory createDeserializationFactory() {
+        return new DeserializationFactory();
     }
 
     public void sendOpenFlowMessageToCore(ZeroMQBaseConnector coreConnector, DataObject msg, short ofVersion, long xId,
             long datapathId, int moduleId) {
 
         SerializationFactory factory = createSerializationFactory();
-        SerializerRegistry registry = new NetIdeSerializerRegistryImpl();
+        SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         ByteBuf output = UnpooledByteBufAllocator.DEFAULT.buffer();
         factory.setSerializerTable(registry);
@@ -94,8 +94,8 @@ public class ShimRelay {
     public void sendToSwitch(ConnectionAdapter connectionAdapter, ByteBuf input, short ofVersion,
             ZeroMQBaseConnector coreConnector, long datapathId, int moduleId) {
 
-        NetIdeDeserializationFactory factory = createNetideDeserializationFactory();
-        DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
+        DeserializationFactory factory = createDeserializationFactory();
+        DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         factory.setRegistry(registry);
         DataObject msg = factory.deserialize(input, ofVersion);

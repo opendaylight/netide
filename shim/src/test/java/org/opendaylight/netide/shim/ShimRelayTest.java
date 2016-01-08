@@ -21,9 +21,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -76,7 +76,7 @@ public class ShimRelayTest {
     SerializationFactory factory;
 
     @Mock
-    NetIdeDeserializationFactory deserializationFactory;
+    DeserializationFactory deserializationFactory;
 
     @Mock
     ConnectionAdapter connectionAdapter;
@@ -106,7 +106,7 @@ public class ShimRelayTest {
         Mockito.when(coreConnector.SendData(Matchers.any(byte[].class))).thenReturn(true);
         Mockito.when(deserializationFactory.deserialize(Matchers.any(ByteBuf.class), Mockito.eq(ofVersion)))
                 .thenReturn(msg);
-        Mockito.when(shimRelay.createNetideDeserializationFactory()).thenReturn(deserializationFactory);
+        Mockito.when(shimRelay.createDeserializationFactory()).thenReturn(deserializationFactory);
         Mockito.when(shimRelay.createSerializationFactory()).thenReturn(factory);
 
     }

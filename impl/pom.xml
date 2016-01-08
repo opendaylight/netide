@@ -151,11 +151,6 @@
       <version>${zeromq.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.netide</groupId>
-      <artifactId>openflowjava-extension</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.javatuples</groupId>
       <artifactId>javatuples</artifactId>
       <version>${javatuples.version}</version>

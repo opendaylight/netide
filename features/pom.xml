@@ -178,11 +178,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <artifactId>openflowjava-extension</artifactId>
-      <groupId>${project.groupId}</groupId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <artifactId>netiplib</artifactId>
       <groupId>${project.groupId}</groupId>
       <version>${project.version}</version>

@@ -37,24 +37,27 @@ public class ConnectionAdaptersRegistry {
 
     public synchronized GetFeaturesOutput getFeaturesOutput(ConnectionAdapter connectionAdapter)
             throws NullPointerException {
-        if (connectionAdapterMap.containsKey(connectionAdapter))
+        if (connectionAdapterMap.containsKey(connectionAdapter)) {
             return connectionAdapterMap.get(connectionAdapter);
+        }
         return null;
     }
 
     public synchronized BigInteger getDatapathID(ConnectionAdapter connectionAdapter) throws NullPointerException {
         if (connectionAdapterMap.containsKey(connectionAdapter)) {
             GetFeaturesOutput obj = connectionAdapterMap.get(connectionAdapter);
-            if (obj != null)
+            if (obj != null) {
                 return obj.getDatapathId();
+            }
         }
         return null;
     }
 
     public synchronized ConnectionAdapter getConnectionAdapter(Long datapathId) throws NullPointerException {
         for (ConnectionAdapter conn : connectionAdapterMap.keySet()) {
-            if (connectionAdapterMap.get(conn).getDatapathId().longValue() == datapathId)
+            if (connectionAdapterMap.get(conn).getDatapathId().longValue() == datapathId) {
                 return conn;
+            }
         }
         return null;
     }
@@ -65,8 +68,9 @@ public class ConnectionAdaptersRegistry {
 
     public synchronized boolean removeConnectionAdapter(ConnectionAdapter conn) throws NullPointerException {
         GetFeaturesOutput datapathID = connectionAdapterMap.remove(conn);
-        if (datapathID != null)
+        if (datapathID != null) {
             return true;
+        }
         return false;
     }
 }

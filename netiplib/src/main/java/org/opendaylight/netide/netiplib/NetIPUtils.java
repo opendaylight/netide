@@ -10,9 +10,9 @@ package org.opendaylight.netide.netiplib;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.javatuples.Pair;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializationFactory;
-import org.opendaylight.netide.openflowjava.protocol.impl.deserialization.NetIdeDeserializerRegistryImpl;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
+import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
@@ -129,9 +129,9 @@ public abstract class NetIPUtils {
         ofm.setHeader(message.header);
 
         // DESERIALIZATION
-        DeserializerRegistry registry = new NetIdeDeserializerRegistryImpl();
+        DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
-        NetIdeDeserializationFactory factory = new NetIdeDeserializationFactory();
+        DeserializationFactory factory = new DeserializationFactory();
         factory.setRegistry(registry);
 
         DataObject dObj = factory.deserialize(buffer, ofVersion);

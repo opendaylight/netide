@@ -56,10 +56,9 @@
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
+             <Export-Package>
               org.opendaylight.netide.shim;version=${project.version},
               org.zeromq, zmq, org.javatuples.*,
-              org.opendaylight.netide.openflowjava.*,
               org.opendaylight.netide.netiplib,
               org.opendaylight.openflowjava.statistics 
             </Export-Package>
@@ -86,11 +85,6 @@
       <groupId>org.zeromq</groupId>
       <artifactId>jeromq</artifactId>
       <version>${zeromq.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opendaylight.netide</groupId>
-      <artifactId>openflowjava-extension</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.javatuples</groupId>
