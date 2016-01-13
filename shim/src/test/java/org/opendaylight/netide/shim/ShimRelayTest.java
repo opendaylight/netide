@@ -13,6 +13,7 @@ import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -402,6 +404,27 @@ public class ShimRelayTest {
                 coreConnector, 1L, 1);
         shimRelay.sendDataObjectToSwitch(connectionAdapter, message, ofVersion, coreConnector, 1L, 1);
         Mockito.verify(connectionAdapter).tableMod(Matchers.any(TableModInput.class));
+    }
+
+    @Test
+    public void testGetImplementedInterface() {
+        TableModInputBuilder builder = new TableModInputBuilder();
+        TableModInput message = builder.build();
+        Mockito.doCallRealMethod().when(shimRelay).getImplementedInterface(message);
+        Assert.assertEquals(TableModInput.class.getName(), shimRelay.getImplementedInterface(message));
+    }
+
+    @Test
+    public void testCreateSerializationFactory() {
+        Mockito.doCallRealMethod().when(shimRelay).createSerializationFactory();
+        Assert.assertEquals(new SerializationFactory().getClass(), shimRelay.createSerializationFactory().getClass());
+    }
+
+    @Test
+    public void testCreateDeserializationFactory() {
+        Mockito.doCallRealMethod().when(shimRelay).createDeserializationFactory();
+        Assert.assertEquals(new DeserializationFactory().getClass(),
+                shimRelay.createDeserializationFactory().getClass());
     }
 
 }

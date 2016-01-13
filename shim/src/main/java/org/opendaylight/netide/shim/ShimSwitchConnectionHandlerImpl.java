@@ -78,6 +78,10 @@ public class ShimSwitchConnectionHandlerImpl implements SwitchConnectionHandler,
         swFeaturesUtil = SwitchFeaturesUtil.getInstance();
     }
 
+    public void setSwitchFeaturesUtil(SwitchFeaturesUtil featureUtil) {
+        swFeaturesUtil = featureUtil;
+    }
+
     public void init() {
         supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_0));
         supportedProtocols.add(new Pair<Protocol, ProtocolVersions>(Protocol.OPENFLOW, ProtocolVersions.OPENFLOW_1_3));

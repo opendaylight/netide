@@ -13,7 +13,7 @@
 	</parent>
 	<artifactId>netide-aggregator</artifactId>
 
-	<name>NetIDE aggregator</name>
+	<name>NetIDE</name>
 	<description>The NetIDE aggregator project used to build all the components.</description>
 	<url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
 	<packaging>pom</packaging>

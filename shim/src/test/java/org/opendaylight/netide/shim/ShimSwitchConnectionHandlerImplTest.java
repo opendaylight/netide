@@ -7,10 +7,16 @@
  */
 package org.opendaylight.netide.shim;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.is;
+
 import com.google.common.util.concurrent.Futures;
 import io.netty.buffer.ByteBuf;
 import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,15 +34,29 @@ import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Protocol;
 import org.opendaylight.netide.netiplib.ProtocolVersions;
-import org.opendaylight.netide.netiplib.ProtocolVersions;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.SwitchFeaturesUtil;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FeatureCapability;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -226,6 +246,87 @@ public class ShimSwitchConnectionHandlerImplTest {
 
         Mockito.verify(shimRelay).sendOpenFlowMessageToCore(coreConnector, messageReply,
                 EncodeConstants.OF13_VERSION_ID, 1L, 1L, 0);
+    }
+
+    @Test
+    public void testGetSupportedOFProtocols() {
+        List<Byte> results = new ArrayList<>();
+        results.add(ProtocolVersions.OPENFLOW_1_0.getValue());
+        results.add(ProtocolVersions.OPENFLOW_1_3.getValue());
+        Assert.assertThat(results, is(connectionHandler.getSupportedOFProtocols()));
+    }
+
+    @Test
+    public void testNodeAdded() {
+        GetFeaturesOutputBuilder featuresBuilder = new GetFeaturesOutputBuilder();
+        GetFeaturesOutput features = featuresBuilder.build();
+        Mockito.stub(registry.getDatapathID(connectionAdapter)).toReturn(new BigInteger("1"));
+        Mockito.stub(registry.getFeaturesOutput(connectionAdapter)).toReturn(features);
+        Mockito.stub(connectionAdapter.getRemoteAddress()).toReturn(new InetSocketAddress(1));
+
+        NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
+        String current = String.valueOf(new BigInteger("1"));
+        builder.setId(new NodeId("openflow:" + current));
+        InstanceIdentifier<Node> identifier = connectionHandler.identifierFromDatapathId(new BigInteger("1"));
+        builder.setNodeRef(new NodeRef(identifier));
+
+        FlowCapableNodeUpdatedBuilder builder2 = new FlowCapableNodeUpdatedBuilder();
+        try {
+            builder2.setIpAddress(resolveIpAddress(new InetSocketAddress(1).getAddress()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        SwitchFeatures swFeatures = new SwitchFeatures() {
+
+            @Override
+            public <E extends Augmentation<SwitchFeatures>> E getAugmentation(Class<E> arg0) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public Class<? extends DataContainer> getImplementedInterface() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public Short getMaxTables() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public Long getMaxBuffers() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public List<Class<? extends FeatureCapability>> getCapabilities() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
+
+        SwitchFeaturesUtil swFeaturesUtil = SwitchFeaturesUtil.getInstance();
+
+        builder2.setSwitchFeatures(swFeaturesUtil.buildSwitchFeatures(features));
+        builder.addAugmentation(FlowCapableNodeUpdated.class, builder2.build());
+
+        Assert.assertEquals(builder.build(), connectionHandler.nodeAdded(connectionAdapter));
+    }
+
+    private static IpAddress resolveIpAddress(final InetAddress address) {
+        String hostAddress = address.getHostAddress();
+        if (address instanceof Inet4Address) {
+            return new IpAddress(new Ipv4Address(hostAddress));
+        }
+        if (address instanceof Inet6Address) {
+            return new IpAddress(new Ipv6Address(hostAddress));
+        }
+        throw new IllegalArgumentException("Unsupported IP address type!");
     }
 
 }
