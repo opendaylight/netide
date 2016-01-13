@@ -34,6 +34,10 @@ public class ZeroMQBaseConnector implements Runnable {
 
     }
 
+    public void setContext(ZMQ.Context cont) {
+        context = cont;
+    }
+
     public void Start() {
         context = ZMQ.context(1);
         thread = new Thread(this);
@@ -45,7 +49,8 @@ public class ZeroMQBaseConnector implements Runnable {
         if (thread != null) {
             ZMQ.Socket stopSocket = context.socket(ZMQ.PUSH);
             stopSocket.connect(CONTROL_ADDRESS);
-            stopSocket.send(STOP_COMMAND);
+            // stopSocket.send(STOP_COMMAND);
+            send(STOP_COMMAND, stopSocket);
             stopSocket.close();
             try {
                 thread.join();
@@ -54,6 +59,18 @@ public class ZeroMQBaseConnector implements Runnable {
                 LOG.error("", e);
             }
         }
+    }
+
+    public boolean send(String data, ZMQ.Socket socket) {
+        if (data != null && socket != null)
+            socket.send(data);
+        return true;
+    }
+
+    public boolean send(ZMsg message, ZMQ.Socket socket) {
+        if (message != null && socket != null)
+            message.send(socket);
+        return true;
     }
 
     public void RegisterCoreListener(ICoreListener listener) {
@@ -66,7 +83,7 @@ public class ZeroMQBaseConnector implements Runnable {
         ZMQ.Socket sendSocket = context.socket(ZMQ.PUSH);
         sendSocket.setIdentity("shim".getBytes());
         sendSocket.connect(CONTROL_ADDRESS);
-        msg.send(sendSocket);
+        send(msg, sendSocket);
         sendSocket.close();
         return true;
     }
