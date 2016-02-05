@@ -108,22 +108,23 @@ public class ZeroMQBaseConnector implements Runnable {
                 ZMsg message = ZMsg.recvMsg(socket);
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
-                    Message msg = NetIPConverter.parseConcreteMessage(data);
-                    if (msg instanceof HelloMessage) {
+                    try{
 
-                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
-                                ((HelloMessage) msg).getHeader().getModuleId());
-                    } else if (msg instanceof OpenFlowMessage) {
+                        Message msg = NetIPConverter.parseConcreteMessage(data);
+                        if (msg instanceof HelloMessage) {
 
-                        byte[] payload = msg.getPayload();
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
-                                Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
-                    } else {
-                        // LOG.info("Core Unrecognized Message received class
-                        // {}, header: {}", msg.getClass(),
-                        // msg.getHeader().getMessageType());
+                            coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
+                                    ((HelloMessage) msg).getHeader().getModuleId());
+                        } else if (msg instanceof OpenFlowMessage) {
+
+                            byte[] payload = msg.getPayload();
+                            coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
+                                    Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
+                        }
+                    }catch(IllegalArgumentException ex) {
+                        LOG.error("NetIp malformed message received. Message dropped.");
                     }
-                }
+                }    
             }
             if (poller.pollin(1)) {
                 ZMsg message = ZMsg.recvMsg(controlSocket);
