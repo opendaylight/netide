@@ -10,6 +10,7 @@ package org.opendaylight.netide.shim;
 import io.netty.buffer.Unpooled;
 import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
+import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.opendaylight.netide.netiplib.OpenFlowMessage;
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ public class ZeroMQBaseConnector implements Runnable {
 
     private static final String STOP_COMMAND = "Control.STOP";
     private static final String CONTROL_ADDRESS = "inproc://ShimControllerQueue";
-
+    private NetIDEProtocolVersion netIpVersion = NetIDEProtocolVersion.VERSION_1_2;
     private static final Logger LOG = LoggerFactory.getLogger(ZeroMQBaseConnector.class);
     private String address;
     private int port;
@@ -111,15 +112,17 @@ public class ZeroMQBaseConnector implements Runnable {
                     try{
 
                         Message msg = NetIPConverter.parseConcreteMessage(data);
-                        if (msg instanceof HelloMessage) {
+                        if (msg.getHeader().getNetIDEProtocolVersion() == netIpVersion) {
+                            if (msg instanceof HelloMessage) {
 
-                            coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
-                                    ((HelloMessage) msg).getHeader().getModuleId());
-                        } else if (msg instanceof OpenFlowMessage) {
+                                coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
+                                        ((HelloMessage) msg).getHeader().getModuleId());
+                            } else if (msg instanceof OpenFlowMessage) {
 
-                            byte[] payload = msg.getPayload();
-                            coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
-                                    Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
+                                byte[] payload = msg.getPayload();
+                                coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
+                                        Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
+                            }
                         }
                     }catch(IllegalArgumentException ex) {
                         LOG.error("NetIp malformed message received. Message dropped.");
