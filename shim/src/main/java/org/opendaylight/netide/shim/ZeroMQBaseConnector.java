@@ -12,6 +12,7 @@ import org.opendaylight.netide.netiplib.HelloMessage;
 import org.opendaylight.netide.netiplib.Message;
 import org.opendaylight.netide.netiplib.NetIPConverter;
 import org.opendaylight.netide.netiplib.OpenFlowMessage;
+import org.opendaylight.netide.netiplib.NetIDEProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
@@ -29,6 +30,7 @@ public class ZeroMQBaseConnector implements Runnable {
     private Thread thread;
 
     private ICoreListener coreListener;
+    private NetIDEProtocolVersion netIPVersion = NetIDEProtocolVersion.VERSION_1_2;
 
     public ZeroMQBaseConnector() {
 
@@ -109,19 +111,19 @@ public class ZeroMQBaseConnector implements Runnable {
                 byte[] data = message.getLast().getData();
                 if (coreListener != null) {
                     Message msg = NetIPConverter.parseConcreteMessage(data);
-                    if (msg instanceof HelloMessage) {
-
-                        coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
-                                ((HelloMessage) msg).getHeader().getModuleId());
-                    } else if (msg instanceof OpenFlowMessage) {
-
-                        byte[] payload = msg.getPayload();
-                        coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
-                                Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
-                    } else {
-                        // LOG.info("Core Unrecognized Message received class
-                        // {}, header: {}", msg.getClass(),
-                        // msg.getHeader().getMessageType());
+		    if (msg.getHeader().getNetIDEProtocolVersion() == netIPVersion) {
+		        if (msg instanceof HelloMessage) {
+		            coreListener.onHelloCoreMessage(((HelloMessage) msg).getSupportedProtocols(),
+		                   ((HelloMessage) msg).getHeader().getModuleId());
+		        } else if (msg instanceof OpenFlowMessage) {
+                            byte[] payload = msg.getPayload();
+		            coreListener.onOpenFlowCoreMessage(msg.getHeader().getDatapathId(),
+		                    Unpooled.wrappedBuffer(payload), msg.getHeader().getModuleId());
+		        } else {
+		            // LOG.info("Core Unrecognized Message received class
+		            // {}, header: {}", msg.getClass(),
+		            // msg.getHeader().getMessageType());
+		        }
                     }
                 }
             }
