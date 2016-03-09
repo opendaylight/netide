@@ -95,6 +95,10 @@ module netide-impl {
                     description "password protecting truststore";
                     type string;
                 }
+                leaf-list cipher-suites {
+                    description "cipher suites";
+                    type string;
+                }
             }
             container threads {
                 leaf boss-threads {
