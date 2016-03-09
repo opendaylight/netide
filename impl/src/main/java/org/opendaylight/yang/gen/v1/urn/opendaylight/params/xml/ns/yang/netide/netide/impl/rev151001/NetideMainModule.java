@@ -1,5 +1,7 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.netide.netide.impl.rev151001;
 
+import java.util.List;
+
 import com.google.common.base.MoreObjects;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -118,6 +120,11 @@ public class NetideMainModule extends
                 @Override
                 public String getTruststorePassword() {
                     return MoreObjects.firstNonNull(tls.getTruststorePassword(), null);
+                }
+
+                @Override
+                public List<String> getCipherSuites() {
+                  return MoreObjects.firstNonNull(tls.getCipherSuites(), null);
                 }
             };
         }
