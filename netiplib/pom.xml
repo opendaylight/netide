@@ -78,6 +78,11 @@
       <version>${openflowjava.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.openflowjava</groupId>
+      <artifactId>openflowjava-util</artifactId>
+      <version>${openflowjava.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-handler</artifactId>
     </dependency>
