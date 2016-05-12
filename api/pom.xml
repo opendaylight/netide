@@ -11,14 +11,14 @@
   <parent>
     <groupId>org.opendaylight.mdsal</groupId>
     <artifactId>binding-parent</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2-Beryllium-SR2</version>
     <relativePath />
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>netide-api</artifactId>
   <packaging>bundle</packaging>
-  <version>0.1.2-SNAPSHOT</version>
+  <version>0.1.2-Beryllium-SR2</version>
   <name>Netide API</name>
   <description>Netide project API</description>
   <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
