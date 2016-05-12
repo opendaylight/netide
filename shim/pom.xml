@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.opendaylight.netide</groupId>
     <artifactId>netide-parent</artifactId>
-    <version>0.1.2-Beryllium-SR2</version>
+    <version>0.1.3-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>shim</artifactId>
-  <version>0.1.2-Beryllium-SR2</version>
+  <version>0.1.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>NetIDE Shim</name>
   <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
