@@ -1,0 +1,46 @@
+module lldp-speaker {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:netide:applications:netide-app";
+    prefix "netide-app";
+    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import config {prefix config; revision-date 2013-04-05;}
+    import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
+    import rpc-context { prefix rpcx; revision-date 2013-06-17; }
+    
+
+    description
+        "Application that implements NetIDE protocol. It acts as a relay between switches and the NetIDE core.";
+
+    revision "2016-06-03" {
+        description
+            "Initial revision";
+    }
+
+    identity netide-app {
+        base "config:module-type";
+        config:java-name-prefix NetideApp;
+    }
+
+    augment "/config:modules/config:module/config:configuration" {
+        case netide-app {
+            when "/config:modules/config:module/config:type = 'netide-app'";
+            container rpc-registry {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity mdsal:binding-rpc-registry;
+                    }
+                }
+            }
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory false;
+                        config:required-identity mdsal:binding-async-data-broker;
+                    }
+                }
+            }
+        }
+    }
+
+}

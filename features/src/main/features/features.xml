@@ -37,4 +37,10 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='${controller.mdsal.version}'>odl-mdsal-xsql</feature>
     <feature version='${project.version}'>odl-netide-impl</feature>
   </feature>
+
+  <feature name='odl-netide-app' description="OpenDaylight :: Netide :: app" version='${project.version}'>
+    <feature version="${openflowplugin.version}">odl-openflowplugin-southbound</feature>
+    <bundle>mvn:org.opendaylight.netide/netide-app/{{VERSION}}</bundle>
+    <configfile finalname="etc/opendaylight/karaf/71-netide-app.xml">mvn:org.opendaylight.netide/netide-app/{{VERSION}}/xml/config</configfile>
+  </feature>
 </features>
