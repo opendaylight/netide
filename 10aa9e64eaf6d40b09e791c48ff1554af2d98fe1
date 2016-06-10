@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Alec Leckey <alexander.j.leckey@intel.com>
+Submitted-by: Alec Leckey <alexander.j.leckey@intel.com>
+Submitted-at: Fri, 10 Jun 2016 08:08:33 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/38456
+Project: netide
+Branch: refs/heads/stable/beryllium
