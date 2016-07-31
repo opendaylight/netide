@@ -6,7 +6,7 @@ module netide-impl {
     import config { prefix config; revision-date 2013-04-05; }
     import opendaylight-md-sal-binding { prefix md-sal-binding; revision-date 2013-10-28;}
     import openflow-configuration {prefix of-config; revision-date 2014-06-30; }
-    import ietf-inet-types {prefix ietf-inet; revision-date 2010-09-24; }
+    import ietf-inet-types {prefix ietf-inet; revision-date 2013-07-15; }
     import opendaylight-sal-binding-broker-impl { prefix sal-broker; revision-date 2013-10-28;}
     
     description
