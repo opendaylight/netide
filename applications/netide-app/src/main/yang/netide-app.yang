@@ -2,7 +2,7 @@ module lldp-speaker {
     yang-version 1;
     namespace "urn:opendaylight:params:xml:ns:yang:netide:applications:netide-app";
     prefix "netide-app";
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     import config {prefix config; revision-date 2013-04-05;}
     import opendaylight-md-sal-binding { prefix mdsal; revision-date 2013-10-28;}
     import rpc-context { prefix rpcx; revision-date 2013-06-17; }
