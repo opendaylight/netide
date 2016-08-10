@@ -165,16 +165,12 @@
       <version>${openflowplugin.version}</version>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>netide-app</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>netide-app</artifactId>
+      <groupId>org.opendaylight.openflowplugin</groupId>
+      <artifactId>features-openflowplugin</artifactId>
+      <classifier>features</classifier>
       <type>xml</type>
-      <classifier>config</classifier>
-      <version>${project.version}</version>
+      <scope>runtime</scope>
+      <version>${openflowplugin.version}</version>
     </dependency>
     <!-- bundle dependencies -->
     <dependency>

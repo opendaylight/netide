@@ -31,7 +31,7 @@ public abstract class NetIPUtils {
     public static MessageHeader StubHeaderFromPayload(byte[] payload) {
         MessageHeader h = new MessageHeader();
         h.setPayloadLength((short) payload.length);
-        h.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        h.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_3);
         return h;
     }
 
@@ -64,6 +64,10 @@ public abstract class NetIPUtils {
                 return toModuleAcknowledgeMessage(message);
             case TOPOLOGY_UPDATE:
                 return toTopologyUpdateMessage(message);
+            case FENCE:
+                return toFenceMessage(message);
+            case HEARTBEAT:
+            	return toHeartbeatMessage(message);
             default:
                 throw new IllegalArgumentException("Unknown message type.");
             }
@@ -233,5 +237,40 @@ public abstract class NetIPUtils {
         tum.setHeader(message.header);
         tum.setTopology(new String(message.getPayload()));
         return tum;
+    }
+    
+    /**
+     * To ManagementMessage.
+     *
+     * @param message
+     *            the message
+     * @return the management message
+     */
+    private static FenceMessage toFenceMessage(Message message) {
+        if (message.getHeader().getMessageType() != MessageType.FENCE)
+            throw new IllegalArgumentException("Can only convert FENCE messages");
+        if (message instanceof FenceMessage)
+            return (FenceMessage) message;
+        FenceMessage ofm = new FenceMessage();
+        ofm.setHeader(message.getHeader());
+        ofm.setPayload(message.getPayload());
+        return ofm;
+    }
+    
+    /**
+     * To heartbeat message.
+     *
+     * @param message
+     *            the message
+     * @return the heartbeat message
+     * @throws OFParseError
+     *             the oF parse error
+     */
+    private static HeartbeatMessage toHeartbeatMessage(Message message) {
+        if (message.getHeader().getMessageType() != MessageType.HEARTBEAT)
+            throw new IllegalArgumentException("Can only convert HEARTBEAT messages");
+        HeartbeatMessage hbm = new HeartbeatMessage();
+        hbm.setHeader(message.header);
+        return hbm;
     }
 }

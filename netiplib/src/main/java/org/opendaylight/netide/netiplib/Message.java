@@ -7,6 +7,8 @@
  */
 package org.opendaylight.netide.netiplib;
 
+import java.util.Arrays;
+
 /**
  * Class representing a simple NetIP message. This also is the base class for
  * concrete message classes.
@@ -79,5 +81,10 @@ public class Message {
 
     public void setPayload(byte[] data) {
         this.payload = data;
+    }
+    
+    @Override
+    public String toString() {
+        return "Message [Header=" + header.toString() + ",Payload=" + Arrays.toString(getPayload()) + "]";
     }
 }

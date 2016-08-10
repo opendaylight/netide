@@ -67,4 +67,9 @@ public class OpenFlowMessage extends Message {
         output.getBytes(0, rawPayload);
         return rawPayload;
     }
+    
+    @Override
+    public String toString() {
+        return "OpenFlowMessage [Header=" + header.toString() + ",OFMessage=" + ofMessage.toString() + "]";
+    }
 }

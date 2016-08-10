@@ -27,7 +27,7 @@ public class MessageHeader {
     private long datapathId;
 
     public MessageHeader() {
-        this.netIDEProtocolVersion = NetIDEProtocolVersion.VERSION_1_1;
+        this.netIDEProtocolVersion = NetIDEProtocolVersion.VERSION_1_3;
     }
 
     /**
@@ -152,5 +152,10 @@ public class MessageHeader {
         System.arraycopy(ByteBuffer.allocate(4).putInt(moduleId).array(), 0, bytes, 8, 4);
         System.arraycopy(ByteBuffer.allocate(8).putLong(datapathId).array(), 0, bytes, 12, 8);
         return bytes;
+    }
+    
+    @Override
+    public String toString() {
+        return "MessageHeader [Version=" + netIDEProtocolVersion.name() + ",Type=" + messageType.name() + ",Length=" + payloadLength + ",ModuleId=" + moduleId + ",TransactionId=" + transactionId + ",DatapathId=" + datapathId + "]";
     }
 }
