@@ -26,7 +26,7 @@ public class TopologyUpdateMessageTest {
     TopologyUpdateMessage message;
     byte[] payload = ByteBufUtils.hexStringToBytes("70 61 79 6C 6F 61 64");
     byte[] expectedMessage = ByteBufUtils
-            .hexStringToBytes("02 06 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
+            .hexStringToBytes("02 07 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
 
     @Before
     public void startUp() throws Exception {

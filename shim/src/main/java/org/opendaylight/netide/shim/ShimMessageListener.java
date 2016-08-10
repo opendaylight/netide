@@ -34,6 +34,8 @@ import org.opendaylight.openflowplugin.openflow.md.core.translator.NotificationP
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInTranslator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PacketInV10Translator;
 import org.opendaylight.openflowplugin.openflow.md.core.translator.PortStatusMessageToNodeConnectorUpdatedTranslator;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
@@ -70,6 +72,7 @@ public class ShimMessageListener
     final private int OF13 = OFConstants.OFP_VERSION_1_3;
     SessionContextOFImpl sc;
     private NotificationPublishService notificationProviderService;
+    final ConvertorManager convertorManager;
 
     public ShimMessageListener(ZeroMQBaseConnector connector, ConnectionAdapter switchConnection, ShimRelay _shimRelay,
             ShimSwitchConnectionHandlerImpl handler, NotificationPublishService _notificationProviderService) {
@@ -78,15 +81,15 @@ public class ShimMessageListener
         this.shimRelay = _shimRelay;
         this.connectionHandler = handler;
         notificationProviderService = _notificationProviderService;
-
+        convertorManager = ConvertorManagerFactory.createDefaultManager();
         messageTranslators = new ConcurrentHashMap<>();
 
         addMessageTranslator(ErrorMessage.class, OF10, new ErrorV10Translator());
         addMessageTranslator(ErrorMessage.class, OF13, new ErrorTranslator());
-        addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator());
-        addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator());
+        addMessageTranslator(FlowRemovedMessage.class, OF10, new FlowRemovedTranslator(convertorManager));
+        addMessageTranslator(FlowRemovedMessage.class, OF13, new FlowRemovedTranslator(convertorManager));
         addMessageTranslator(PacketInMessage.class, OF10, new PacketInV10Translator());
-        addMessageTranslator(PacketInMessage.class, OF13, new PacketInTranslator());
+        addMessageTranslator(PacketInMessage.class, OF13, new PacketInTranslator(convertorManager));
         addMessageTranslator(PortStatusMessage.class, OF10, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(PortStatusMessage.class, OF13, new PortStatusMessageToNodeConnectorUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class, OF13,
@@ -94,10 +97,10 @@ public class ShimMessageListener
         addMessageTranslator(MultipartReplyMessage.class, OF10, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(MultipartReplyMessage.class, OF13, new MultiPartMessageDescToNodeUpdatedTranslator());
         addMessageTranslator(ExperimenterMessage.class, OF10, new ExperimenterTranslator());
-        addMessageTranslator(MultipartReplyMessage.class, OF10, new MultipartReplyTranslator());
-        addMessageTranslator(MultipartReplyMessage.class, OF13, new MultipartReplyTranslator());
+        addMessageTranslator(MultipartReplyMessage.class, OF10, new MultipartReplyTranslator(convertorManager));
+        addMessageTranslator(MultipartReplyMessage.class, OF13, new MultipartReplyTranslator(convertorManager));
         addMessageTranslator(MultipartReplyMessage.class, OF13,
-                new MultipartReplyTableFeaturesToTableUpdatedTranslator());
+                new MultipartReplyTableFeaturesToTableUpdatedTranslator(convertorManager));
         addMessageTranslator(GetFeaturesOutput.class, OF10, new FeaturesV10ToNodeConnectorUpdatedTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF10, new NotificationPlainTranslator());
         addMessageTranslator(NotificationQueueWrapper.class, OF13, new NotificationPlainTranslator());
