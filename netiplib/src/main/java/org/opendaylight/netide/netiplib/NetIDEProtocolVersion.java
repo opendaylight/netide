@@ -26,12 +26,16 @@ public enum NetIDEProtocolVersion {
     /**
      * The Version 1.3
      */
-    VERSION_1_3((byte) 0x04);
+    VERSION_1_3((byte) 0x04),
+    /**
+     * The Version 1.4
+     */
+    VERSION_1_4((byte) 0x05);
 
     private byte value;
 
     /**
-     * Instantiates a new Net iDE protocol version.
+     * Instantiates a new NetIDE protocol version.
      *
      * @param value the value
      */
@@ -49,10 +53,10 @@ public enum NetIDEProtocolVersion {
     }
 
     /**
-     * Parse net iDE protocol version.
+     * Parse NetIDE protocol version.
      *
      * @param value the value
-     * @return the net iDE protocol version
+     * @return the NetIDE protocol version
      */
     public static NetIDEProtocolVersion parse(final byte value) {
         for (NetIDEProtocolVersion c : NetIDEProtocolVersion.values()) {

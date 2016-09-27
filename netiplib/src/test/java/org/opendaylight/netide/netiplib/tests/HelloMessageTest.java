@@ -34,7 +34,7 @@ public class HelloMessageTest {
      * <p>
      * Payload: - OpenFlow:1.1 (0x11, 0x02) - NetConf:1.0 (0x12, 0x01)
      */
-    private static final byte[] expectedMessage1 = new byte[] { 0x02, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x11, 0x00,
+    private static final byte[] expectedMessage1 = new byte[] { 0x05, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00, 0x11, 0x00,
         0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x11, 0x02, 0x12, 0x01 };
 
     /**
@@ -44,7 +44,7 @@ public class HelloMessageTest {
     @Test
     public void TestMessageSerialization() {
         HelloMessage testMessage = new HelloMessage();
-        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         testMessage.getHeader().setPayloadLength((short) 4);
         testMessage.getHeader().setTransactionId(17);
         testMessage.getHeader().setModuleId(2);
@@ -64,7 +64,7 @@ public class HelloMessageTest {
     public void TestMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage1);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(testMessage.getHeader().getMessageType(), MessageType.HELLO);
         Assert.assertEquals(testMessage.getHeader().getPayloadLength(), 4);
         Assert.assertEquals(testMessage.getHeader().getTransactionId(), 17);
@@ -83,7 +83,7 @@ public class HelloMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof HelloMessage);
         HelloMessage hm = (HelloMessage) testMessage;
-        Assert.assertEquals(hm.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(hm.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(hm.getHeader().getMessageType(), MessageType.HELLO);
         Assert.assertEquals(hm.getHeader().getPayloadLength(), 4);
         Assert.assertEquals(hm.getHeader().getTransactionId(), 17);

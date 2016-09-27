@@ -27,7 +27,7 @@ public class MessageHeader {
     private long datapathId;
 
     public MessageHeader() {
-        this.netIDEProtocolVersion = NetIDEProtocolVersion.VERSION_1_3;
+        this.netIDEProtocolVersion = NetIDEProtocolVersion.VERSION_1_4;
     }
 
     /**

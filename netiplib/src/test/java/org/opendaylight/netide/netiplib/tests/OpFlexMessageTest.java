@@ -26,12 +26,12 @@ public class OpFlexMessageTest {
     OpFlexMessage message;
     byte[] payload = ByteBufUtils.hexStringToBytes("70 61 79 6C 6F 61 64");
     byte[] expectedMessage = ByteBufUtils
-            .hexStringToBytes("02 13 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
+            .hexStringToBytes("05 13 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
 
     @Before
     public void startUp() throws Exception {
         MessageHeader header = new MessageHeader();
-        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         header.setMessageType(MessageType.OPFLEX);
         header.setPayloadLength((short) 7);
         header.setTransactionId(17);
@@ -51,7 +51,7 @@ public class OpFlexMessageTest {
     public void testMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, testMessage.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, testMessage.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.OPFLEX, testMessage.getHeader().getMessageType());
         Assert.assertEquals(7, testMessage.getHeader().getPayloadLength());
         Assert.assertEquals(17, testMessage.getHeader().getTransactionId());
@@ -66,7 +66,7 @@ public class OpFlexMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof OpFlexMessage);
         OpFlexMessage netconfMessage = (OpFlexMessage) testMessage;
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, netconfMessage.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, netconfMessage.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.OPFLEX, netconfMessage.getHeader().getMessageType());
         Assert.assertEquals(7, netconfMessage.getHeader().getPayloadLength());
         Assert.assertEquals(17, netconfMessage.getHeader().getTransactionId());

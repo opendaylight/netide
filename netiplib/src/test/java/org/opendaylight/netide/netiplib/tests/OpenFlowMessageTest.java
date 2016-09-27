@@ -25,7 +25,7 @@ public class OpenFlowMessageTest {
     OpenFlowMessage ofMessage;
     byte[] expectedOfMessage = ByteBufUtils.hexStringToBytes("04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
     byte[] expectedNetipMessage = ByteBufUtils.hexStringToBytes(
-            "02 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
+            "05 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
     GetQueueConfigInput message;
 
     @Before
@@ -48,7 +48,7 @@ public class OpenFlowMessageTest {
     public void testMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedNetipMessage);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, testMessage.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, testMessage.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.OPENFLOW, testMessage.getHeader().getMessageType());
         Assert.assertEquals(16, testMessage.getHeader().getPayloadLength());
         Assert.assertEquals(17, testMessage.getHeader().getTransactionId());
@@ -63,7 +63,7 @@ public class OpenFlowMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof OpenFlowMessage);
         OpenFlowMessage of = (OpenFlowMessage) testMessage;
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, of.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, of.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.OPENFLOW, of.getHeader().getMessageType());
         Assert.assertEquals(16, of.getHeader().getPayloadLength());
         Assert.assertEquals(17, of.getHeader().getTransactionId());

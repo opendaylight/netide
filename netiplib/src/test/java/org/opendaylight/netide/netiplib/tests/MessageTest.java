@@ -25,12 +25,12 @@ public class MessageTest {
     Message message;
     byte[] payload = ByteBufUtils.hexStringToBytes("04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
     byte[] expectedMessage = ByteBufUtils.hexStringToBytes(
-            "02 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
+            "05 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 04 16 00 10 00 00 00 11 00 00 04 d2 00 00 00 00");
 
     @Before
     public void startUp() throws Exception {
         MessageHeader header = new MessageHeader();
-        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         header.setMessageType(MessageType.OPENFLOW);
         header.setPayloadLength((short) 16);
         header.setTransactionId(17);
@@ -48,7 +48,7 @@ public class MessageTest {
     public void testMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(testMessage.getHeader().getMessageType(), MessageType.OPENFLOW);
         Assert.assertEquals(testMessage.getHeader().getPayloadLength(), 16);
         Assert.assertEquals(testMessage.getHeader().getTransactionId(), 17);

@@ -31,7 +31,7 @@ public class ManagementMessageTest {
      * <p>
      * Payload: - bla (0x62 0x6c 0x61)
      */
-    private static final byte[] expectedMessage1 = new byte[] { 0x02, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0x11, 0x00,
+    private static final byte[] expectedMessage1 = new byte[] { 0x05, 0x03, 0x00, 0x03, 0x00, 0x00, 0x00, 0x11, 0x00,
         0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x62, 0x6c, 0x61 };
 
     /**
@@ -42,7 +42,7 @@ public class ManagementMessageTest {
     @Test
     public void TestMessageSerialization() {
         ManagementMessage testMessage = new ManagementMessage();
-        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         testMessage.getHeader().setPayloadLength((short) 3);
         testMessage.getHeader().setTransactionId(17);
         testMessage.getHeader().setModuleId(2);
@@ -63,7 +63,7 @@ public class ManagementMessageTest {
     public void TestMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage1);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(testMessage.getHeader().getMessageType(), MessageType.MANAGEMENT);
         Assert.assertEquals(testMessage.getHeader().getPayloadLength(), 3);
         Assert.assertEquals(testMessage.getHeader().getTransactionId(), 17);
@@ -83,7 +83,7 @@ public class ManagementMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof ManagementMessage);
         ManagementMessage mm = (ManagementMessage) testMessage;
-        Assert.assertEquals(mm.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(mm.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(mm.getHeader().getMessageType(), MessageType.MANAGEMENT);
         Assert.assertEquals(mm.getHeader().getPayloadLength(), 3);
         Assert.assertEquals(mm.getHeader().getTransactionId(), 17);
