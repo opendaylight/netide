@@ -31,7 +31,7 @@ public class StatusImpl implements NetideService {
     @Override
     public Future<RpcResult<StatusOutput>> status() {
         StatusOutputBuilder builder = new StatusOutputBuilder();
-        builder.setNetipVersion(NetIDEProtocolVersion.VERSION_1_1.getValue());
+        builder.setNetipVersion(NetIDEProtocolVersion.VERSION_1_4.getValue());
         builder.setOfVersions(connectionHandler.getSupportedOFProtocols());
         builder.setConnectedSwitches(connectionHandler.getNumberOfSwitches());
         return RpcResultBuilder.success(builder.build()).buildFuture();

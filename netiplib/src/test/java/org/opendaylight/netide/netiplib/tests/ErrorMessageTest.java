@@ -24,7 +24,7 @@ import org.opendaylight.netide.netiplib.ProtocolVersions;
  */
 public class ErrorMessageTest {
 
-    private static final byte[] expectedMessage1 = new byte[] { 0x02, 0x02, 0x00, 0x04, 0x00, 0x00, 0x00, 0x11, 0x00,
+    private static final byte[] expectedMessage1 = new byte[] { 0x05, 0x02, 0x00, 0x04, 0x00, 0x00, 0x00, 0x11, 0x00,
         0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A, 0x11, 0x02, 0x12, 0x01 };
 
     /**
@@ -34,7 +34,7 @@ public class ErrorMessageTest {
     @Test
     public void TestMessageSerialization() {
         ErrorMessage testMessage = new ErrorMessage();
-        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        testMessage.getHeader().setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         testMessage.getHeader().setPayloadLength((short) 4);
         testMessage.getHeader().setTransactionId(17);
         testMessage.getHeader().setModuleId(2);
@@ -54,7 +54,7 @@ public class ErrorMessageTest {
     public void TestMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage1);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(testMessage.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(testMessage.getHeader().getMessageType(), MessageType.ERROR);
         Assert.assertEquals(testMessage.getHeader().getPayloadLength(), 4);
         Assert.assertEquals(testMessage.getHeader().getTransactionId(), 17);
@@ -73,7 +73,7 @@ public class ErrorMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof ErrorMessage);
         ErrorMessage em = (ErrorMessage) testMessage;
-        Assert.assertEquals(em.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_1);
+        Assert.assertEquals(em.getHeader().getNetIDEProtocolVersion(), NetIDEProtocolVersion.VERSION_1_4);
         Assert.assertEquals(em.getHeader().getMessageType(), MessageType.ERROR);
         Assert.assertEquals(em.getHeader().getPayloadLength(), 4);
         Assert.assertEquals(em.getHeader().getTransactionId(), 17);

@@ -31,7 +31,7 @@ public abstract class NetIPUtils {
     public static MessageHeader StubHeaderFromPayload(byte[] payload) {
         MessageHeader h = new MessageHeader();
         h.setPayloadLength((short) payload.length);
-        h.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_3);
+        h.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         return h;
     }
 

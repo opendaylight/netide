@@ -26,12 +26,12 @@ public class TopologyUpdateMessageTest {
     TopologyUpdateMessage message;
     byte[] payload = ByteBufUtils.hexStringToBytes("70 61 79 6C 6F 61 64");
     byte[] expectedMessage = ByteBufUtils
-            .hexStringToBytes("02 07 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
+            .hexStringToBytes("05 07 00 07 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A 70 61 79 6C 6F 61 64");
 
     @Before
     public void startUp() throws Exception {
         MessageHeader header = new MessageHeader();
-        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         header.setMessageType(MessageType.TOPOLOGY_UPDATE);
         header.setPayloadLength((short) 7);
         header.setTransactionId(17);
@@ -51,7 +51,7 @@ public class TopologyUpdateMessageTest {
     public void testMessageParsingGeneral() {
         Message testMessage = NetIPConverter.parseRawMessage(expectedMessage);
         Assert.assertNotNull(testMessage);
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, testMessage.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, testMessage.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.TOPOLOGY_UPDATE, testMessage.getHeader().getMessageType());
         Assert.assertEquals(7, testMessage.getHeader().getPayloadLength());
         Assert.assertEquals(17, testMessage.getHeader().getTransactionId());
@@ -66,7 +66,7 @@ public class TopologyUpdateMessageTest {
         Assert.assertNotNull(testMessage);
         Assert.assertTrue(testMessage instanceof TopologyUpdateMessage);
         TopologyUpdateMessage netconfMessage = (TopologyUpdateMessage) testMessage;
-        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_1, netconfMessage.getHeader().getNetIDEProtocolVersion());
+        Assert.assertEquals(NetIDEProtocolVersion.VERSION_1_4, netconfMessage.getHeader().getNetIDEProtocolVersion());
         Assert.assertEquals(MessageType.TOPOLOGY_UPDATE, netconfMessage.getHeader().getMessageType());
         Assert.assertEquals(7, netconfMessage.getHeader().getPayloadLength());
         Assert.assertEquals(17, netconfMessage.getHeader().getTransactionId());

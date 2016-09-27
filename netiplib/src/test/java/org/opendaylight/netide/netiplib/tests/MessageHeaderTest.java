@@ -23,12 +23,12 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 public class MessageHeaderTest {
     MessageHeader header;
     byte[] expectedHeader = ByteBufUtils
-            .hexStringToBytes("02 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A");
+            .hexStringToBytes("05 11 00 10 00 00 00 11 00 00 00 02 00 00 00 00 00 00 00 2A");
 
     @Before
     public void startUp() throws Exception {
         header = new MessageHeader();
-        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_1);
+        header.setNetIDEProtocolVersion(NetIDEProtocolVersion.VERSION_1_4);
         header.setMessageType(MessageType.OPENFLOW);
         header.setPayloadLength((short) 16);
         header.setTransactionId(17);
