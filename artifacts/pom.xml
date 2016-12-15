@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.opendaylight.netide</groupId>
     <artifactId>netide-parent</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2-Boron-SR2</version>
     <relativePath>../parent</relativePath>
   </parent>
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>netide-artifacts</artifactId>
-  <version>0.2.2-SNAPSHOT</version>
+  <version>0.2.2-Boron-SR2</version>
   <packaging>pom</packaging>
   <name>NetIDE artifacts</name>
   <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
