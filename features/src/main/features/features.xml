@@ -34,7 +34,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <feature name='odl-netide-rest' version='${project.version}' description='OpenDaylight :: Netide :: REST'>
     <feature version='${restconf.version}'>odl-restconf</feature>
     <feature version='${restconf.version}'>odl-mdsal-apidocs</feature>
-    <feature version='${controller.mdsal.version}'>odl-mdsal-xsql</feature>
     <feature version='${project.version}'>odl-netide-impl</feature>
   </feature>
 </features>
