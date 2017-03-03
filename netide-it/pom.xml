@@ -11,6 +11,9 @@
     <relativePath>../parent</relativePath>
   </parent>
   <artifactId>netide-it</artifactId>
+  <!-- <name> formatting is used by autorelease to parse and notify projects on
+       build failure. Please do not modify this unless you have a good reason. -->
+  <name>ODL :: netide :: ${project.artifactId}</name>
   <build>
     <plugins>
       <plugin>
@@ -28,7 +31,7 @@
     </plugins>
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
+        <!--This plugin's configuration is used to store Eclipse m2e settings
           only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -39,14 +42,14 @@
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId> org.ops4j.pax.exam 
+                    <groupId> org.ops4j.pax.exam
                     </groupId>
-                    <artifactId> maven-paxexam-plugin 
+                    <artifactId> maven-paxexam-plugin
                     </artifactId>
-                    <versionRange> [1.2.4,) 
+                    <versionRange> [1.2.4,)
                     </versionRange>
                     <goals>
-                      <goal> generate-depends-file 
+                      <goal> generate-depends-file
                       </goal>
                     </goals>
                   </pluginExecutionFilter>
