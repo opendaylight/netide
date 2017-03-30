@@ -6,14 +6,14 @@
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent</artifactId>
     <version>1.8.0-SNAPSHOT</version>
-    <relativePath />
+    <relativePath/>
   </parent>
+    
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>netide-parent</artifactId>
   <version>0.3.0-SNAPSHOT</version>
@@ -22,6 +22,7 @@
   <!-- <name> formatting is used by autorelease to parse and notify projects on
        build failure. Please do not modify this unless you have a good reason. -->
   <name>ODL :: netide :: ${project.artifactId}</name>
+
   <licenses>
     <license>
       <name>The Eclipse Public License v1.0</name>
@@ -35,6 +36,7 @@
     <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
     <tag>HEAD</tag>
   </scm>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jmxGeneratorPath>${project.build.directory}/yang-gen-config</jmxGeneratorPath>
@@ -49,6 +51,7 @@
     <javatuples.version>1.2</javatuples.version>
     <netty.version>4.0.30.Final</netty.version>
     <osgi.version>5.0.0</osgi.version>
+    <slf4j.version>1.7.21</slf4j.version>
     <openflowplugin.version>0.4.0-SNAPSHOT</openflowplugin.version>
     <!-- Sonar config -->
     <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
@@ -104,7 +107,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.12</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
