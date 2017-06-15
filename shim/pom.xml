@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.opendaylight.netide</groupId>
     <artifactId>netide-parent</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.4-Boron-SR4</version>
     <relativePath>../parent</relativePath>
   </parent>
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>shim</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.2.4-Boron-SR4</version>
   <packaging>bundle</packaging>
   <name>NetIDE Shim</name>
   <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
