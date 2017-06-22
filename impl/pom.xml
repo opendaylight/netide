@@ -11,13 +11,13 @@
   <parent>
     <groupId>org.opendaylight.netide</groupId>
     <artifactId>netide-parent</artifactId>
-    <version>0.2.4-SNAPSHOT</version>
+    <version>0.2.5-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opendaylight.netide</groupId>
   <artifactId>netide-impl</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.2.5-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>${project.artifactId}</name>
   <url>https://wiki.opendaylight.org/view/NetIDE:Main</url>
