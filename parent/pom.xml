@@ -45,7 +45,7 @@
     <config.version>0.7.0-SNAPSHOT</config.version>
     <mdsal.version>1.6.0-SNAPSHOT</mdsal.version>
     <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
-    <yangtools.version>1.2.0-SNAPSHOT</yangtools.version>
+    <yangtools.version>1.2.0</yangtools.version>
     <zeromq.version>0.3.4</zeromq.version>
     <javatuples.version>1.2</javatuples.version>
     <netty.version>4.0.30.Final</netty.version>
