@@ -1,4 +1,5 @@
 # UUID                                                                	Group Name
 #
+07bc5bd7451d7990efa1665593dabc33a470d590                              	saml/odl-gerrit-netide-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                              	GitHub Replication
 ldap:cn=odl-gerrit-netide-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-netide-committers
